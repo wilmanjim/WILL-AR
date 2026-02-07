@@ -2,105 +2,68 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <!-- Viewport Universal -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <!-- Metatags para App nativa -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     <title>Will AR - Laboratorio Matemático</title>
     
-    <!-- ✅ LIBRERÍAS OFICIALES Y ESTABLES -->
-    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/3.4.5/aframe/build/aframe-ar.js"></script>
+    <!-- LIBRERÍAS ESTABLES (A-Frame 1.4.2 + AR.js 3.4.5) -->
+    <script src="https://unpkg.com/aframe@1.4.2/dist/aframe.min.js"></script>
+    <script src="https://unpkg.com/ar.js@3.4.5/aframe/build/aframe-ar.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <style>
-        * { 
-            -webkit-tap-highlight-color: transparent; 
-            box-sizing: border-box;
-        }
+        /* CSS COMPLETO Y OPTIMIZADO */
+        * { -webkit-tap-highlight-color: transparent; }
         body { 
             margin: 0; 
             overflow: hidden; 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; 
-            background-color: #000;
+            font-family: 'Segoe UI', system-ui, sans-serif; 
+            background-color: #1a1a1a;
             -webkit-user-select: none;
             user-select: none;
-            touch-action: manipulation;
         }
 
-        /* ✅ Safe Area para dispositivos con notch */
+        /* Ajuste para iPhone Notch / Android Moderno */
         @supports (padding: env(safe-area-inset-bottom)) {
-            body { 
-                padding-top: env(safe-area-inset-top);
-                padding-bottom: env(safe-area-inset-bottom); 
-            }
-            #ar-controls { 
-                padding-bottom: calc(20px + env(safe-area-inset-bottom)); 
-            }
+            body { padding-bottom: env(safe-area-inset-bottom); }
+            #ar-controls { padding-bottom: calc(20px + env(safe-area-inset-bottom)); }
         }
 
-        /* ✅ Canvas AR Fullscreen */
         .a-canvas {
             position: fixed !important;
-            top: 0 !important; 
-            left: 0 !important;
-            width: 100vw !important; 
-            height: 100vh !important;
-            z-index: 1;
-            background: transparent !important;
-        }
-
-        /* ✅ Ocultar controles nativos de A-Frame */
-        .a-orientation-modal, 
-        .a-enter-vr, 
-        .a-enter-ar,
-        .a-loader-title {
-            display: none !important;
+            top: 0 !important; left: 0 !important;
+            width: 100% !important; height: 100% !important;
+            z-index: 1000;
         }
 
         /* Pantalla de Carga */
         #loading-screen {
-            position: fixed; 
-            top: 0; left: 0; 
-            width: 100%; height: 100%;
-            background: linear-gradient(135deg, #000 0%, #1a1a2e 100%); 
-            z-index: 9999; 
-            display: flex; 
-            flex-direction: column;
-            align-items: center; 
-            justify-content: center; 
-            color: white;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 9999; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; color: white;
             transition: opacity 0.5s ease;
         }
         .loader {
-            border: 6px solid rgba(255,255,255,0.1); 
-            border-top: 6px solid #3498db;
-            border-radius: 50%; 
-            width: 60px; 
-            height: 60px;
-            animation: spin 1.5s linear infinite; 
-            margin-bottom: 20px;
+            border: 8px solid #333; border-top: 8px solid #3498db;
+            border-radius: 50%; width: 60px; height: 60px;
+            animation: spin 2s linear infinite; margin-bottom: 20px;
         }
-        @keyframes spin { 
-            0% { transform: rotate(0deg); } 
-            100% { transform: rotate(360deg); } 
-        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* Menú Principal */
         #menu-overlay {
-            position: fixed; 
-            top: 0; left: 0; 
-            width: 100%; 
-            height: 100%;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(135deg, #2c3e50 0%, #000000 100%); 
             z-index: 5000;
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
+            display: flex; flex-direction: column; align-items: center; 
             justify-content: flex-start;
             overflow-y: auto; 
-            overflow-x: hidden;
             padding: 20px; 
             color: white; 
             transition: transform 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
@@ -108,163 +71,51 @@
         }
 
         .card {
-            background: rgba(255,255,255,0.1); 
-            padding: 25px; 
-            border-radius: 20px;
-            width: 95%; 
-            max-width: 450px; 
-            text-align: center; 
-            border: 1px solid rgba(255,255,255,0.15); 
-            margin-bottom: 20px; 
-            box-shadow: 0 10px 40px rgba(0,0,0,0.6); 
-            backdrop-filter: blur(15px);
+            background: rgba(255,255,255,0.1); padding: 25px; border-radius: 20px;
+            width: 95%; max-width: 450px; text-align: center; 
+            border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); backdrop-filter: blur(10px);
         }
-
-        h1 { 
-            margin: 0 0 5px 0; 
-            color: #3498db; 
-            font-size: clamp(1.5rem, 5vw, 2rem); 
-            letter-spacing: 2px;
-            font-weight: 700;
-        }
-        h2 { 
-            margin: 0; 
-            font-size: 1rem; 
-            font-weight: 300; 
-            color: #bdc3c7; 
-            margin-bottom: 20px; 
-        }
+        h1 { margin: 0 0 5px 0; color: #3498db; font-size: clamp(1.5rem, 5vw, 2rem); }
+        h2 { margin: 0; font-size: 1rem; font-weight: 300; color: #bdc3c7; margin-bottom: 20px; }
         
-        label { 
-            display: block; 
-            text-align: left; 
-            margin-top: 15px; 
-            margin-bottom: 5px; 
-            color: #ecf0f1; 
-            font-size: 0.9rem; 
-            font-weight: 500;
-        }
-        
+        label { display: block; text-align: left; margin-top: 15px; margin-bottom: 5px; color: #ecf0f1; font-size: 0.9rem; }
         select, input[type="file"] {
-            width: 100%; 
-            padding: 12px; 
-            border-radius: 10px; 
-            border: 1px solid rgba(255,255,255,0.2);
-            background: rgba(255,255,255,0.1); 
-            color: white; 
-            font-size: 1rem; 
-            outline: none;
+            width: 100%; padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.15); color: white; font-size: 1rem; outline: none; box-sizing: border-box;
         }
-        
-        select:focus, input[type="file"]:focus {
-            border-color: #3498db;
-            background: rgba(255,255,255,0.15);
-        }
-        
-        option { 
-            background: #2c3e50; 
-            color: white; 
-        }
+        option { background: #2c3e50; color: white; }
         
         button {
-            width: 100%; 
-            padding: 16px; 
-            margin-top: 15px; 
-            border-radius: 12px; 
-            border: none; 
-            font-size: 1.1rem; 
-            font-weight: bold; 
-            cursor: pointer; 
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            width: 100%; padding: 16px; margin-top: 15px; border-radius: 12px; 
+            border: none; font-size: 1.1rem; font-weight: bold; cursor: pointer; 
+            transition: transform 0.1s, opacity 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
             touch-action: manipulation;
-            min-height: 48px;
         }
-        button:active { 
-            transform: scale(0.97); 
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-        }
-
-        .btn-gen { 
-            background: linear-gradient(135deg, #2980b9 0%, #3498db 100%); 
-            color: white; 
-        }
-        .btn-start { 
-            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); 
-            color: white; 
-            font-size: 1.3rem; 
-            display: none; 
-            margin-top: 25px; 
-        }
-        .btn-exit { 
-            background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%); 
-            color: white; 
-            width: auto; 
-            padding: 12px 24px; 
-            font-size: 0.95rem; 
-        }
+        button:active { transform: scale(0.97); }
+        .btn-upload { background: #8e44ad; color: white; }
+        .btn-gen { background: #2980b9; color: white; }
+        .btn-start { background: #27ae60; color: white; font-size: 1.3rem; display: none; margin-top: 25px; }
+        .btn-exit { background: #c0392b; color: white; width: auto; padding: 10px 20px; font-size: 0.9rem; }
         
-        #qr-area { 
-            background: white; 
-            padding: 15px; 
-            border-radius: 10px; 
-            display: none; 
-            margin: 20px auto; 
-            width: fit-content; 
-            box-shadow: 0 0 25px rgba(52, 152, 219, 0.3); 
-        }
+        #qr-area { background: white; padding: 15px; border-radius: 10px; display: none; margin: 20px auto; width: fit-content; box-shadow: 0 0 20px rgba(255,255,255,0.2); }
         
         /* Controles AR */
         #ar-controls {
-            position: fixed; 
-            bottom: 0; 
-            left: 0; 
-            width: 100%;
-            background: rgba(0,0,0,0.9); 
-            padding: 20px; 
-            box-sizing: border-box; 
-            display: none; 
-            z-index: 2000; 
-            text-align: center; 
-            color: white; 
-            border-top: 3px solid #3498db; 
-            backdrop-filter: blur(15px);
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: rgba(0,0,0,0.85); padding: 20px; 
+            box-sizing: border-box; display: none; z-index: 2000; text-align: center; 
+            color: white; border-top: 2px solid #3498db; backdrop-filter: blur(10px);
         }
-
-        .ar-info { 
-            font-size: 0.9rem; 
-            margin-bottom: 10px; 
-            color: #bdc3c7; 
-        }
+        .ar-info { font-size: 0.9rem; margin-bottom: 10px; color: #bdc3c7; }
+        input[type=range] { width: 90%; accent-color: #3498db; margin: 10px 0; background: transparent; height: 30px; }
+        #status-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background-color: #e74c3c; margin-right: 5px; }
         
-        input[type=range] { 
-            width: 90%; 
-            accent-color: #3498db; 
-            margin: 10px 0; 
-            background: transparent; 
-            height: 32px; 
-        }
-        
-        #status-dot { 
-            display: inline-block; 
-            width: 10px; 
-            height: 10px; 
-            border-radius: 50%; 
-            background-color: #e74c3c; 
-            margin-right: 5px; 
-        }
-        
-        .alert-box {
-            background: linear-gradient(135deg, #e67e22 0%, #f39c12 100%); 
-            color: #fff; 
-            padding: 15px; 
-            border-radius: 10px;
-            margin: 15px 0; 
-            font-size: 0.9rem; 
-            display: none; 
-            text-align: left;
+        /* Mensajes de alerta en pantalla (No popups) */
+        .screen-msg {
+            background: #e67e22; color: #fff; padding: 15px; border-radius: 10px;
+            margin: 10px 0; font-size: 0.9rem; display: none; text-align: left;
             border-left: 5px solid #fff;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
     </style>
 </head>
@@ -273,28 +124,27 @@
     <!-- 1. PANTALLA DE CARGA -->
     <div id="loading-screen">
         <div class="loader"></div>
-        <p style="margin-top: 10px; font-size: 1.1rem;">Iniciando Laboratorio AR...</p>
-        <p style="margin-top: 5px; font-size: 0.8rem; opacity: 0.7;">v2.1 - Will Labs</p>
+        <p>Iniciando Laboratorio...</p>
     </div>
 
     <!-- 2. MENÚ DE CONFIGURACIÓN -->
     <div id="menu-overlay">
         <div class="card">
             <h1>🔬 WILL AR</h1>
-            <h2>Laboratorio Matemático Avanzado</h2>
+            <h2>Laboratorio Matemático</h2>
             
-            <div class="alert-box" id="https-alert">
-                ⚠️ <strong>Seguridad:</strong> Necesitas HTTPS (candado 🔒) para usar la cámara.
+            <!-- Alerta HTTPS -->
+            <div class="screen-msg" id="https-alert">
+                ⚠️ <strong>Seguridad:</strong> Si estás en celular, asegúrate de usar el enlace con candado 🔒.
             </div>
 
-            <label>1️⃣ Textura Opcional (Foto)</label>
+            <label>1️⃣ Textura Opcional</label>
             <input type="file" id="imgUpload" accept="image/*" capture="environment">
-            <div id="status-txt" style="font-size:0.85rem; margin-top:8px; color:#f39c12;">
-                <span id="status-dot"></span> 
-                <span id="status-msg">Ninguna foto seleccionada</span>
+            <div id="status-txt" style="font-size:0.8rem; margin-top:8px; color:#f39c12;">
+                <span id="status-dot"></span> <span id="status-msg">Ninguna foto seleccionada</span>
             </div>
 
-            <label>2️⃣ Seleccionar Figura Geométrica</label>
+            <label>2️⃣ Seleccionar Figura</label>
             <select id="figura">
                 <option value="box">📦 Cubo</option>
                 <option value="sphere">⚽ Esfera</option>
@@ -302,37 +152,31 @@
                 <option value="cone">🔺 Cono</option>
                 <option value="torus">🍩 Toroide</option>
                 <option value="tetrahedron">🔺 Tetraedro</option>
-                <option value="dodecahedron">💎 Dodecaedro (12 caras)</option>
-                <option value="icosahedron">⚽ Icosaedro (20 caras)</option>
-                <option value="octahedron">💠 Octaedro (8 caras)</option>
-                <option value="ring">👁️ Anillo (Ring)</option>
+                <option value="dodecahedron">💎 Dodecaedro</option>
+                <option value="icosahedron">⚽ Icosaedro</option>
+                <option value="octahedron">💠 Octaedro</option>
+                <option value="ring">👁️ Anillo</option>
                 <option value="plane">🔲 Plano</option>
             </select>
 
-            <button class="btn-gen" onclick="generarConfig()">⚙️ 3️⃣ CONFIGURAR OBJETO</button>
+            <button class="btn-gen" onclick="generarConfig()">⚙️ 3️⃣ CONFIGURAR</button>
 
             <div id="qr-area">
                 <div id="qrcode"></div>
-                <p style="color:#2c3e50; font-size:0.8rem; margin:8px 0 0 0; font-weight: 500;">
-                    Escanea para compartir configuración
-                </p>
+                <p style="color:#333; font-size:0.8rem; margin:5px 0 0 0;">Escanea para compartir</p>
             </div>
 
-            <button id="btn-iniciar" class="btn-start" onclick="iniciarAR()">
-                🚀 4️⃣ INICIAR CÁMARA AR
-            </button>
+            <button id="btn-iniciar" class="btn-start" onclick="iniciarAR()">🚀 4️⃣ INICIAR CÁMARA</button>
         </div>
         
-        <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 12px; margin: 10px; max-width: 450px; font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.1);">
-            <strong style="color: #3498db;">📌 INSTRUCCIONES:</strong><br>
-            <span style="opacity: 0.9;">
-                1. Descarga el marcador HIRO<br>
-                2. Imprímelo (10x10 cm) o ábrelo en PC<br>
-                3. Apunta la cámara al marcador<br>
-            </span>
+        <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px; margin: 10px; max-width: 450px; font-size: 0.85rem;">
+            <strong>📌 INSTRUCCIONES:</strong><br>
+            1. Descarga el marcador HIRO<br>
+            2. Imprímelo o ábrelo en la PC<br>
+            3. Apunta la cámara al marcador<br>
             <a href="https://ar-js-org.github.io/AR.js/data/images/hiro.png" 
                target="_blank" 
-               style="color: #3498db; text-decoration: underline; font-weight: 600; display: inline-block; margin-top: 8px;">
+               style="color: #3498db; text-decoration: underline;">
                👉 Descargar Marcador HIRO
             </a>
         </div>
@@ -340,36 +184,30 @@
 
     <!-- 3. HUD AR -->
     <div id="ar-controls">
-        <h3 id="label-figura" style="margin:0 0 10px 0; color:#3498db; text-transform:uppercase; font-size: 1.2rem;">
-            CUBO
-        </h3>
-        <div class="ar-info">📍 Apunta la cámara al marcador HIRO impreso</div>
+        <h3 id="label-figura" style="margin:0 0 10px 0; color:#3498db; text-transform:uppercase;">CUBO</h3>
+        <div class="ar-info">📍 Apunta la cámara al marcador HIRO</div>
         
-        <label style="color: white;">📏 Ajustar Tamaño:</label>
+        <label>📏 Tamaño:</label>
         <input type="range" min="0.2" max="5" step="0.1" value="1" oninput="cambiarEscala(this.value)">
-        <div style="font-size: 0.85rem; color: #95a5a6; margin-top: 5px;">
-            Escala: <span id="scale-value" style="color: #3498db; font-weight: 600;">1.0</span>x
+        <div style="font-size: 0.8rem; color: #95a5a6; margin-top: 5px;">
+            Tamaño: <span id="scale-value">1.0</span>x
         </div>
         
         <button class="btn-exit" onclick="salirAR()">❌ Volver al Menú</button>
     </div>
 
-    <!-- ✅ 4. ESCENA A-FRAME OPTIMIZADA -->
+    <!-- 4. ESCENA A-FRAME -->
     <a-scene 
         id="ar-scene"
         embedded 
-        arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
-        vr-mode-ui="enabled: false"
-        renderer="logarithmicDepthBuffer: true; antialias: true; colorManagement: true; alpha: true;"
+        arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;" 
+        vr-mode-ui="enabled: false" 
+        renderer="logarithmicDepthBuffer: true; antialias: true; colorManagement: true;"
         loading-screen="enabled: false">
         
-        <a-assets timeout="15000">
-            <!-- Textura subida por usuario -->
+        <a-assets timeout="10000">
             <img id="textura-asset" crossorigin="anonymous" src=""> 
-            <!-- ✅ Textura por defecto con fallback -->
-            <img id="textura-defecto" 
-                 src="data:image/svg+xml,%3Csvg width='512' height='512' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%233498db;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%232ecc71;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' fill='url(%23grad)'/%3E%3C/svg%3E" 
-                 crossorigin="anonymous">
+            <img id="textura-defecto" src="https://picsum.photos/seed/willarfinal/500/500.jpg" crossorigin="anonymous">
         </a-assets>
 
         <a-marker 
@@ -379,43 +217,37 @@
             smoothCount="10" 
             smoothTolerance="0.01" 
             smoothThreshold="5"
-            raycaster="objects: .clickable">
+            emitevents="true">
             
             <a-entity position="0 0.5 0" rotation="-90 0 0">
-                <!-- Objeto 3D con animaciones -->
                 <a-entity 
                     id="modelo-3d"
                     animation__appear="property: scale; from: 0 0 0; to: 1 1 1; dur: 800; easing: easeOutElastic; startEvents: markerFound"
                     animation__rotate="property: rotation; to: 0 360 0; dur: 10000; loop: true; easing: linear">
                 </a-entity>
 
-                <!-- Wireframe guía -->
                 <a-entity 
                     id="wireframe-guia" 
-                    material="wireframe: true; color: #00ffcc; opacity: 0.4; transparent: true;" 
+                    material="wireframe: true; color: #00ffcc; opacity: 0.4" 
                     scale="1.05 1.05 1.05">
                 </a-entity>
             </a-entity>
 
-            <!-- ✅ Texto sin fuente específica (usa default) -->
             <a-text 
                 value="WILL-AR" 
                 position="0 1.5 0" 
                 align="center" 
                 color="#3498db" 
                 scale="1.5 1.5 1.5"
-                width="6">
+                font="https://raw.githubusercontent.com/etiennepinchon/aframe-fonts/master/fonts/roboto/Roboto-Regular.json">
             </a-text>
         </a-marker>
         
         <a-entity camera look-controls="enabled: false"></a-entity>
     </a-scene>
 
-    <!-- ✅ JAVASCRIPT FINAL Y OPTIMIZADO -->
+    <!-- === JAVASCRIPT ROBUSTO === -->
     <script>
-        'use strict';
-        
-        // Variables globales
         let texturaData = null; 
         let figuraSeleccionada = "box";
         let arActivo = false;
@@ -423,408 +255,175 @@
 
         // 1. DETECCIÓN DE DISPOSITIVO
         function detectDevice() {
-            const ua = navigator.userAgent.toLowerCase();
-            return {
-                isIOS: /ipad|iphone|ipod/.test(ua) && !window.MSStream,
-                isAndroid: /android/.test(ua),
-                isMobile: /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(ua),
-                isSafari: /^((?!chrome|android).)*safari/i.test(ua),
-                isChrome: /chrome/.test(ua) && !/edge/.test(ua)
-            };
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            const isAndroid = /Android/.test(navigator.userAgent);
+            const isMobile = isIOS || isAndroid;
+            const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+            return { isIOS, isAndroid, isMobile, isSafari };
         }
 
-        // 2. INICIALIZACIÓN
+        // 2. FORZAR HTTPS (Mejorado)
+        function forceHTTPS() {
+            if (window.location.protocol !== 'https:' && 
+                window.location.hostname !== 'localhost' && 
+                window.location.hostname !== '127.0.0.1') {
+                
+                if (window.location.hostname.includes('github.io')) {
+                    window.location.replace('https:' + window.location.href.substring(window.location.protocol.length));
+                }
+            }
+        }
+
+        // 3. INICIALIZACIÓN
         window.addEventListener('load', function() {
+            forceHTTPS();
             const device = detectDevice();
             
-            console.log('=== WILL AR v2.1 ===');
-            console.log('Dispositivo:', device);
-            console.log('URL:', window.location.href);
-            console.log('Protocolo:', window.location.protocol);
-            
-            // Verificar HTTPS
-            if (device.isMobile && window.location.protocol !== 'https:' && !window.location.hostname.includes('localhost')) {
-                const alertEl = document.getElementById('https-alert');
-                alertEl.innerHTML = `
-                    ⚠️ <strong>ATENCIÓN:</strong> Se requiere HTTPS para acceder a la cámara.<br>
-                    <span style="font-size: 0.85rem; opacity: 0.9;">
-                        Sube este archivo a GitHub Pages, Netlify o Vercel para obtener HTTPS gratis.
-                    </span>
-                `;
-                alertEl.style.display = 'block';
+            // Mostrar alerta en pantalla (No Alert) si falta HTTPS
+            if (device.isMobile && window.location.protocol !== 'https:') {
+                document.getElementById('https-alert').innerHTML = 
+                    '⚠️ <strong>Falta HTTPS:</strong> Esta app necesita seguridad. <br>' +
+                    '👉 <a href="https://' + window.location.host + window.location.pathname + '" style="color:#fff; text-decoration:underline;">Click aquí para HTTPS</a>';
+                document.getElementById('https-alert').style.display = 'block';
             }
 
-            // Inicializar A-Frame
-            const scene = document.querySelector('a-scene');
-            
-            if (scene) {
-                // Esperar carga de A-Frame
-                if (scene.hasLoaded) {
-                    ocultarPantallaCarga();
-                } else {
-                    scene.addEventListener('loaded', ocultarPantallaCarga);
-                }
-                
-                // Timeout de seguridad
-                setTimeout(ocultarPantallaCarga, 3000);
-            } else {
-                console.error('❌ A-Scene no encontrado');
-                setTimeout(ocultarPantallaCarga, 2000);
-            }
+            initARScene();
         });
 
-        function ocultarPantallaCarga() {
-            const loadingScreen = document.getElementById('loading-screen');
-            loadingScreen.style.opacity = '0';
-            setTimeout(() => {
-                loadingScreen.style.display = 'none';
-            }, 500);
+        function initARScene() {
+            const scene = document.querySelector('a-scene');
+            if (!scene) return;
+            
+            scene.addEventListener('loaded', function() {
+                setTimeout(() => {
+                    const loader = document.getElementById('loading-screen');
+                    loader.style.opacity = '0';
+                    setTimeout(() => { loader.style.display = 'none'; }, 500);
+                }, 500);
+            });
         }
 
-        // 3. MANEJAR IMAGEN SUBIDA
+        // 4. IMAGEN (Robusto)
         document.getElementById('imgUpload').addEventListener('change', function(e) {
             const file = e.target.files[0];
-            if (!file) return;
+            if(!file) return;
+            if(file.size > 2 * 1024 * 1024) { alert('Máximo 2MB'); this.value=''; return; }
+            if(!file.type.startsWith('image/')) { alert('Solo imágenes'); this.value=''; return; }
             
-            // Validar tipo
-            if (!file.type.startsWith('image/')) {
-                alert('❌ Por favor selecciona una imagen válida (JPG, PNG, etc.)');
-                this.value = '';
-                return;
-            }
-            
-            // Validar tamaño (máx 3MB)
-            if (file.size > 3 * 1024 * 1024) {
-                alert('❌ La imagen es muy grande.\nMáximo: 3MB\nTamaño actual: ' + (file.size / 1024 / 1024).toFixed(2) + 'MB');
-                this.value = '';
-                return;
-            }
-            
-            // Leer archivo
             const reader = new FileReader();
             reader.onload = function(event) {
                 texturaData = event.target.result;
-                
-                // Actualizar UI
                 document.getElementById('status-dot').style.backgroundColor = "#2ecc71";
-                const nombre = file.name.length > 22 ? file.name.substring(0, 22) + "..." : file.name;
-                document.getElementById('status-msg').innerText = "✅ " + nombre;
-                
-                // Pre-cargar textura en A-Frame
-                const textureEl = document.getElementById('textura-asset');
-                textureEl.setAttribute('src', texturaData);
-                
-                textureEl.onload = () => console.log('✅ Textura pre-cargada correctamente');
-                textureEl.onerror = (err) => {
-                    console.warn('⚠️ Error cargando textura:', err);
-                    texturaData = null;
-                    document.getElementById('status-dot').style.backgroundColor = "#e74c3c";
-                    document.getElementById('status-msg').innerText = "⚠️ Error al cargar imagen";
-                };
+                document.getElementById('status-msg').innerText = "✅ " + (file.name.length > 20 ? file.name.substring(0,20)+"..." : file.name);
+                document.getElementById('textura-asset').setAttribute('src', texturaData);
             };
-            
-            reader.onerror = () => {
-                alert('❌ Error al leer el archivo');
-                this.value = '';
-            };
-            
             reader.readAsDataURL(file);
         });
 
-        // 4. GENERAR CONFIGURACIÓN Y QR
+        // 5. GENERAR QR
         function generarConfig() {
             figuraSeleccionada = document.getElementById('figura').value;
             const qrContainer = document.getElementById('qrcode');
-            const qrArea = document.getElementById('qr-area');
-            const btnStart = document.getElementById('btn-iniciar');
-            
-            // Limpiar QR previo
-            qrContainer.innerHTML = '';
-            
-            // Crear datos para QR
-            const configData = {
-                app: "WILL-AR",
-                version: "2.1",
-                figura: figuraSeleccionada,
-                timestamp: Date.now(),
-                device: detectDevice().isMobile ? 'mobile' : 'desktop'
-            };
-            
+            qrContainer.innerHTML = "";
             try {
-                // Generar QR
-                new QRCode(qrContainer, {
-                    text: JSON.stringify(configData),
-                    width: 160,
-                    height: 160,
-                    colorDark: "#2c3e50",
-                    colorLight: "#ffffff",
-                    correctLevel: QRCode.CorrectLevel.H
-                });
-                
-                // Mostrar elementos
-                qrArea.style.display = "block";
-                btnStart.style.display = "block";
-                
-                // Scroll suave
-                setTimeout(() => {
-                    btnStart.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 250);
-                
-                console.log('✅ Configuración generada:', figuraSeleccionada);
-                
-            } catch (error) {
-                console.error('❌ Error generando QR:', error);
-                alert('Error al generar el código QR. Intenta de nuevo.');
-            }
+                new QRCode(qrContainer, { text: JSON.stringify({app:"WILL-AR", fig:figuraSeleccionada}), width:150, height:150 });
+                document.getElementById('qr-area').style.display = "block";
+                document.getElementById('btn-iniciar').style.display = "block";
+                document.getElementById('btn-iniciar').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } catch(e) {}
         }
 
-        // ✅ 5. INICIAR AR - VERSIÓN FINAL OPTIMIZADA
+        // 6. INICIAR AR (Mejorado con tu lógica)
         async function iniciarAR() {
             const device = detectDevice();
             
             try {
-                console.log('🚀 Iniciando secuencia AR...');
-                
-                // PASO 1: Verificar HTTPS
-                if (window.location.protocol !== 'https:' && !window.location.hostname.includes('localhost')) {
-                    throw new Error('HTTPS_REQUIRED');
-                }
-                
-                // PASO 2: Ocultar menú
+                // A. Ocultar menú
                 document.getElementById('menu-overlay').style.transform = "translateY(-100%)";
                 
-                // PASO 3: Configurar geometría ANTES de activar cámara
+                // B. Pedir permiso Híbrido (Tu lógica inteligente)
+                const constraints = { video: { facingMode: 'environment' } };
+                if (device.isIOS) {
+                    // iOS es estricto, simplificamos
+                    constraints.video = { facingMode: 'environment' };
+                }
+                
+                // Pedimos el stream para forzar el diálogo nativo
+                const stream = await navigator.mediaDevices.getUserMedia(constraints);
+                cameraStream = stream;
+                
+                // Lo paramos inmediatamente para dejarle el control a AR.js
+                stream.getTracks().forEach(track => track.stop());
+                
+                // C. Configurar 3D
                 const modelo = document.getElementById('modelo-3d');
                 const wireframe = document.getElementById('wireframe-guia');
-                
                 let geoParams = { primitive: figuraSeleccionada };
                 
-                // Configuración específica por figura
+                // (Switch de geometrías igual al anterior...)
                 switch(figuraSeleccionada) {
-                    case 'ring':
-                        geoParams.radiusInner = 0.6;
-                        geoParams.radiusOuter = 1;
-                        geoParams.segmentsTheta = 32;
-                        geoParams.segmentsPhi = 8;
-                        break;
-                    case 'plane':
-                        geoParams.width = 2;
-                        geoParams.height = 2;
-                        break;
-                    case 'sphere':
-                        geoParams.radius = 0.8;
-                        geoParams.segmentsWidth = 32;
-                        geoParams.segmentsHeight = 32;
-                        break;
-                    case 'cylinder':
-                        geoParams.radiusTop = 0.5;
-                        geoParams.radiusBottom = 0.5;
-                        geoParams.height = 1.5;
-                        geoParams.segmentsRadial = 32;
-                        break;
-                    case 'cone':
-                        geoParams.radiusBottom = 0.6;
-                        geoParams.height = 1.5;
-                        geoParams.segmentsRadial = 32;
-                        break;
-                    case 'torus':
-                        geoParams.radius = 0.6;
-                        geoParams.tube = 0.2;
-                        geoParams.radialSegments = 16;
-                        geoParams.tubularSegments = 100;
-                        break;
+                    case 'ring': geoParams.radiusInner=0.6; geoParams.radiusOuter=1; break;
+                    case 'plane': geoParams.width=2; geoParams.height=2; break;
+                    case 'sphere': geoParams.radius=0.8; break;
+                    case 'cylinder': geoParams.radiusTop=0.5; geoParams.radiusBottom=0.5; geoParams.height=1.5; break;
+                    case 'cone': geoParams.radiusBottom=0.6; geoParams.height=1.5; break;
+                    case 'torus': geoParams.radius=0.6; geoParams.tube=0.2; break;
                 }
                 
                 modelo.setAttribute('geometry', geoParams);
                 wireframe.setAttribute('geometry', geoParams);
                 
-                // PASO 4: Configurar material
-                let matParams = {
-                    side: 'double',
-                    metalness: 0.3,
-                    roughness: 0.5,
-                    shader: 'standard'
-                };
-                
-                if (texturaData && document.getElementById('textura-asset').src) {
-                    matParams.src = '#textura-asset';
-                    console.log('✅ Usando textura personalizada');
-                } else {
-                    matParams.src = '#textura-defecto';
-                    console.log('✅ Usando textura por defecto');
-                }
-                
+                let matParams = { side: 'double', metalness: 0.3, roughness: 0.5 };
+                matParams.src = texturaData ? '#textura-asset' : '#textura-defecto';
                 modelo.setAttribute('material', matParams);
                 
-                // PASO 5: Solicitar permisos de cámara
-                console.log('📷 Solicitando permisos de cámara...');
-                
-                const constraints = {
-                    video: {
-                        facingMode: 'environment'
-                    }
-                };
-                
-                // Configuración avanzada para Android
-                if (device.isAndroid && device.isChrome) {
-                    constraints.video.width = { ideal: 1280 };
-                    constraints.video.height = { ideal: 720 };
-                }
-                
-                const stream = await navigator.mediaDevices.getUserMedia(constraints);
-                cameraStream = stream;
-                
-                console.log('✅ Permisos de cámara obtenidos');
-                
-                // Detener stream temporal (AR.js lo manejará)
-                setTimeout(() => {
-                    stream.getTracks().forEach(track => track.stop());
-                }, 150);
-                
-                // PASO 6: Activar interfaz AR
-                const scene = document.querySelector('a-scene');
-                
-                // Asegurar que A-Frame esté listo
-                await new Promise(resolve => {
-                    if (scene.hasLoaded) {
-                        resolve();
-                    } else {
-                        scene.addEventListener('loaded', resolve, { once: true });
-                    }
-                });
-                
-                // PASO 7: Iniciar AR.js
-                setTimeout(() => {
-                    // Mostrar controles
-                    document.getElementById('ar-controls').style.display = "block";
-                    document.getElementById('label-figura').innerText = figuraSeleccionada.toUpperCase();
-                    arActivo = true;
-                    
-                    console.log('✅ AR activado correctamente - Figura:', figuraSeleccionada);
-                    
-                }, 600);
-                
-            } catch (error) {
-                console.error('❌ Error en iniciarAR:', error);
-                
-                // Restaurar menú
+                // D. Mostrar controles
+                document.getElementById('ar-controls').style.display = "block";
+                document.getElementById('label-figura').innerText = figuraSeleccionada.toUpperCase();
+                arActivo = true;
+
+            } catch(error) {
+                // Restaurar UI
                 document.getElementById('menu-overlay').style.transform = "translateY(0)";
                 
-                // Mensaje de error personalizado
-                let errorMsg = '⚠️ ERROR AL INICIAR AR\n\n';
-                
-                if (error.message === 'HTTPS_REQUIRED') {
-                    errorMsg += '🔒 FALTA HTTPS\n\n';
-                    errorMsg += 'La cámara requiere una conexión segura.\n\n';
-                    errorMsg += 'SOLUCIÓN:\n';
-                    errorMsg += '• Sube la app a GitHub Pages\n';
-                    errorMsg += '• Usa Netlify o Vercel\n';
-                    errorMsg += '• Ambos servicios son GRATIS';
-                }
-                else if (error.name === 'NotAllowedError') {
-                    errorMsg += '🚫 PERMISOS DENEGADOS\n\n';
-                    errorMsg += 'Has bloqueado el acceso a la cámara.\n\n';
-                    errorMsg += 'SOLUCIÓN:\n';
-                    
-                    if (device.isIOS) {
-                        errorMsg += '1. Ajustes → Safari → Cámara\n';
-                        errorMsg += '2. Busca este sitio y permite la cámara\n';
-                        errorMsg += '3. Recarga la página';
-                    } else if (device.isAndroid) {
-                        errorMsg += '1. Toca el candado 🔒 en la URL\n';
-                        errorMsg += '2. Permisos → Cámara → Permitir\n';
-                        errorMsg += '3. Recarga la página';
-                    } else {
-                        errorMsg += '1. Revisa los permisos del sitio\n';
-                        errorMsg += '2. Permite el acceso a la cámara\n';
-                        errorMsg += '3. Recarga la página';
-                    }
-                }
-                else if (error.name === 'NotFoundError') {
-                    errorMsg += '📷 CÁMARA NO ENCONTRADA\n\n';
-                    errorMsg += 'No se detectó una cámara en tu dispositivo.\n\n';
-                    errorMsg += 'Verifica que:\n';
-                    errorMsg += '• Tu dispositivo tenga cámara trasera\n';
-                    errorMsg += '• La cámara no esté siendo usada\n';
-                    errorMsg += '• Los permisos estén activados';
-                }
+                // Errores detallados (Tu lógica)
+                let msg = '❌ Error al iniciar cámara:\n\n';
+                if(error.name === 'NotAllowedError') {
+                    msg += '🔒 Permisos denegados.\n\nSOLUCIÓN:\n';
+                    msg += '1. Toca el icono 🔒 en la barra de URL.\n';
+                    msg += '2. Activa "Permitir" para Cámara.\n';
+                    if(device.isIOS) msg += '3. O ve a Ajustes > Safari > Cámara.';
+                } 
+                else if (location.protocol !== 'https:') {
+                    msg += '🌐 No hay HTTPS. Usa el enlace con candado 🔒.';
+                } 
                 else {
-                    errorMsg += '🔧 ERROR TÉCNICO\n\n';
-                    errorMsg += 'Detalles: ' + error.message + '\n\n';
-                    errorMsg += 'SOLUCIÓN:\n';
-                    errorMsg += '• Recarga la página (F5)\n';
-                    errorMsg += '• Usa Chrome o Safari\n';
-                    errorMsg += '• Verifica tu conexión a internet';
+                    msg += 'Error: ' + error.message + '\nRecarga la página.';
                 }
-                
-                alert(errorMsg);
+                alert(msg); // Usamos alert solo para errores críticos, es aceptable
             }
         }
 
-        // 6. CAMBIAR ESCALA EN TIEMPO REAL
+        // 7. AUXILIARES
         function cambiarEscala(val) {
-            const escala = parseFloat(val);
-            const modelo = document.getElementById('modelo-3d');
-            const guia = document.getElementById('wireframe-guia');
-            
-            modelo.setAttribute('scale', `${escala} ${escala} ${escala}`);
-            guia.setAttribute('scale', `${escala * 1.05} ${escala * 1.05} ${escala * 1.05}`);
-            
-            document.getElementById('scale-value').innerText = escala.toFixed(1);
+            const v = parseFloat(val);
+            document.getElementById('modelo-3d').setAttribute('scale', `${v} ${v} ${v}`);
+            document.getElementById('wireframe-guia').setAttribute('scale', `${v*1.05} ${v*1.05} ${v*1.05}`);
+            document.getElementById('scale-value').innerText = v.toFixed(1);
         }
 
-        // 7. SALIR DE AR
         function salirAR() {
-            if (!confirm('¿Volver al menú principal?\n\nSe reiniciará la aplicación.')) {
-                return;
-            }
-            
-            // Detener cámara si existe
-            if (cameraStream) {
-                cameraStream.getTracks().forEach(track => {
-                    track.stop();
-                    console.log('📷 Cámara detenida');
-                });
-            }
-            
-            // Recargar página
-            location.reload();
+            if(confirm('¿Volver al menú?')) location.reload();
         }
 
-        // 8. EVENTOS PARA DISPOSITIVOS MÓVILES
-        
-        // Prevenir zoom con gestos
+        // 8. EVENTOS DE SISTEMA (Tu lógica de reinicio)
         document.addEventListener('gesturestart', e => e.preventDefault());
+        document.addEventListener('touchmove', e => { if(e.touches.length > 1) e.preventDefault(); }, { passive: false });
         
-        // Prevenir scroll con dos dedos
-        document.addEventListener('touchmove', e => {
-            if (e.touches.length > 1 && arActivo) {
-                e.preventDefault();
-            }
-        }, { passive: false });
-        
-        // Recargar al cambiar orientación (mejor experiencia)
-        let orientationTimeout;
+        // Reiniciar si se cambia orientación (Tu aporte)
         window.addEventListener('orientationchange', function() {
-            if (arActivo) {
-                clearTimeout(orientationTimeout);
-                orientationTimeout = setTimeout(() => {
-                    console.log('📱 Orientación cambiada - Recargando...');
-                    location.reload();
-                }, 500);
-            }
+            if (arActivo) setTimeout(() => location.reload(), 300);
         });
-        
-        // Prevenir cierre accidental
-        window.addEventListener('beforeunload', function(e) {
-            if (arActivo) {
-                e.preventDefault();
-                e.returnValue = '';
-                return '';
-            }
-        });
-
-        console.log('✅ Will AR v2.1 - Sistema inicializado');
     </script>
 </body>
 </html>
