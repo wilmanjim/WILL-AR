@@ -5,12 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>WILL AR - Laboratorio Matemático</title>
-
-<!-- LIBRERÍAS -->
-<script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
-<script src="https://raw.githack.com/AR-js-org/AR.js/3.4.3/aframe/build/aframe-ar.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
+<!-- VERSIONES ESTABLES Y CORREGIDAS -->
+<script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/ar-js-org@3.4.4/aframe/build/aframe-ar.js"></script>
 <style>
 * {
   margin: 0;
@@ -18,7 +15,6 @@
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
 }
-
 body {
   margin: 0;
   overflow: hidden;
@@ -30,7 +26,6 @@ body {
   touch-action: manipulation;
   overscroll-behavior: none;
 }
-
 #init-screen {
   position: fixed;
   top: 0;
@@ -44,36 +39,26 @@ body {
   align-items: center;
   justify-content: center;
   color: white;
-  padding: 20px;
   text-align: center;
+  padding: 20px;
 }
-
-#init-screen.hidden {
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.5s;
-}
-
 .init-logo {
   font-size: 3rem;
   margin-bottom: 15px;
   color: #3498db;
 }
-
 .init-title {
   font-size: 2rem;
   color: #ecf0f1;
   margin-bottom: 10px;
   font-weight: 700;
 }
-
 .init-desc {
   max-width: 85%;
   color: #bdc3c7;
   line-height: 1.6;
   margin: 15px 0 25px 0;
 }
-
 .btn-start {
   background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
   color: white;
@@ -88,7 +73,13 @@ body {
   min-width: 260px;
   transition: all 0.2s;
 }
-
+.btn-start:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(46, 204, 113, 0.6);
+}
+.btn-start:active {
+  transform: scale(0.97);
+}
 #https-warning {
   background: #e74c3c;
   color: white;
@@ -98,7 +89,6 @@ body {
   font-weight: bold;
   display: none;
 }
-
 #menu-overlay {
   position: fixed;
   top: 0;
@@ -113,9 +103,7 @@ body {
   justify-content: center;
   padding: 20px;
   color: white;
-  overflow-y: auto;
 }
-
 .card {
   background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(10px);
@@ -128,7 +116,6 @@ body {
   margin-bottom: 20px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
 }
-
 label {
   display: block;
   text-align: left;
@@ -138,52 +125,17 @@ label {
   font-size: 0.9rem;
   font-weight: 500;
 }
-
-select, input[type="range"] {
+select {
   width: 100%;
   padding: 12px;
   border-radius: 10px;
   border: none;
   background: rgba(255, 255, 255, 0.12);
   color: white;
-  outline: none;
-}
-
-input[type="range"] {
-  padding: 0;
-  height: 30px;
-  accent-color: #3498db;
-}
-
-.file-input-wrapper {
-  position: relative;
-  width: 100%;
-  margin-top: 10px;
-}
-
-.file-input-wrapper input[type="file"] {
-  position: absolute;
-  opacity: 0;
-  width: 100%;
-  height: 100%;
-  cursor: pointer;
-  z-index: 10;
-}
-
-.file-input-label {
-  display: block;
-  width: 100%;
-  padding: 12px;
-  background: rgba(142, 68, 173, 0.85);
-  color: white;
-  border-radius: 10px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.2s;
   font-size: 0.95rem;
-  font-weight: 500;
+  outline: none;
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
-
 button {
   width: 100%;
   padding: 13px;
@@ -195,12 +147,10 @@ button {
   cursor: pointer;
   transition: all 0.2s;
 }
-
 .btn-gen {
   background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
   color: white;
 }
-
 .btn-start-ar {
   background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
   color: white;
@@ -209,7 +159,6 @@ button {
   margin-top: 20px;
   padding: 15px;
 }
-
 .btn-back {
   background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
   color: white;
@@ -220,7 +169,6 @@ button {
   min-width: 120px;
   margin-top: 15px;
 }
-
 #ar-scene-container {
   position: fixed;
   top: 0;
@@ -230,7 +178,6 @@ button {
   z-index: 1;
   display: none;
 }
-
 #camera-status {
   position: fixed;
   top: 15px;
@@ -250,15 +197,13 @@ button {
   text-align: center;
   display: none;
 }
-
 .status-ok {
   color: #27ae60 !important;
   border-color: #27ae60 !important;
 }
-
 #controls {
   position: fixed;
-  bottom: 15px;
+  bottom: 12px;
   left: 0;
   width: 100%;
   z-index: 1000;
@@ -266,101 +211,117 @@ button {
   padding: 0 15px;
   display: none;
 }
-
 .controls-wrapper {
   display: flex;
-  flex-direction: column;
   justify-content: center;
-  gap: 12px;
+  gap: 10px;
   background: rgba(10, 10, 20, 0.85);
-  padding: 12px 20px;
-  border-radius: 25px;
+  padding: 10px 15px;
+  border-radius: 20px;
   border: 2px solid rgba(52, 152, 219, 0.3);
   backdrop-filter: blur(10px);
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+  max-width: 400px;
+  margin: 0 auto;
 }
-
-.scale-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: white;
-  font-size: 0.9rem;
-}
-
-.action-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-}
-
 .btn-control {
   background: rgba(52, 152, 219, 0.9);
   color: #fff;
   border: none;
-  width: 50px;
-  height: 50px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   cursor: pointer;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
   transition: all 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-weight: normal;
   padding: 0;
 }
-
+.btn-control:active {
+  transform: scale(0.92);
+}
+.btn-control:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(52, 152, 219, 0.5);
+}
 #exit-btn {
   position: fixed;
-  top: 15px;
-  right: 15px;
+  top: 12px;
+  right: 12px;
   background: rgba(231, 76, 60, 0.9);
   color: #fff;
-  width: 48px;
-  height: 48px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   border: none;
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   z-index: 1002;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
   cursor: pointer;
   display: none;
   transition: all 0.2s;
 }
-
-#preview {
-  max-width: 100%;
-  max-height: 150px;
-  margin-top: 10px;
-  border-radius: 8px;
+#exit-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 5px 15px rgba(231, 76, 60, 0.5);
+}
+#exit-btn:active {
+  transform: scale(0.95);
+}
+.measurements {
+  background: rgba(52, 152, 219, 0.2);
+  padding: 10px;
+  border-radius: 10px;
+  margin: 10px 15px 0 15px;
+  font-size: 0.85rem;
+  border: 2px solid rgba(52, 152, 219, 0.4);
   display: none;
 }
-
-.info-section {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 15px;
-  border-radius: 10px;
-  margin: 15px;
-  max-width: 450px;
-  font-size: 0.85rem;
-  line-height: 1.6;
-  text-align: left;
-}
-
-.info-section a {
+.measurements-title {
+  text-align: center;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
   color: #3498db;
-  text-decoration: underline;
   font-weight: bold;
 }
-
-#medidas-display {
-  margin-top: 10px;
+.measurement-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.measurement-item {
   background: rgba(0, 0, 0, 0.5);
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #3498db;
-  font-size: 0.9rem;
+  padding: 8px;
+  border-radius: 6px;
+  text-align: center;
+  border: 2px solid rgba(52, 152, 219, 0.4);
+}
+.measurement-label {
+  display: block;
+  font-size: 0.75rem;
+  color: #95a5a6;
+  margin-bottom: 4px;
+}
+.measurement-value {
+  display: block;
+  font-size: 1rem;
+  color: #3498db;
+  font-weight: bold;
+}
+@media (max-width: 480px) {
+  .btn-control {
+    width: 45px;
+    height: 45px;
+    font-size: 1.2rem;
+  }
+  #exit-btn {
+    width: 38px;
+    height: 38px;
+  }
 }
 </style>
 </head>
@@ -372,36 +333,25 @@ button {
   <h1 class="init-title">WILL AR</h1>
   <p class="init-desc">
     Laboratorio Matemático de Realidad Aumentada<br>
-    Configura tu figura y apunta al marcador
+    Apunta tu cámara al marcador HIRO para ver figuras 3D
   </p>
   <div id="https-warning">
     ⚠️ Requiere HTTPS para funcionar en móviles
   </div>
-  <button class="btn-start" id="start-btn">✅ COMENZAR</button>
-  <div class="info-section">
-    <strong>📌 Instrucciones:</strong><br><br>
-    1. Configura tu figura y textura<br>
-    2. Presiona "INICIAR AR"<br>
-    3. <strong>Permite el permiso</strong> de cámara cuando se pida<br>
-    4. Descarga e imprime el <strong>marcador HIRO</strong><br>
-    5. Apunta la cámara al marcador<br><br>
-    <a href="https://raw.githack.com/AR-js-org/AR.js/master/data/images/hiro.png" target="_blank">
+  <button class="btn-start" id="start-btn">✅ INICIAR CÁMARA</button>
+  <p style="font-size:0.8rem; margin-top:25px; color:#95a5a6;">
+    <a href="https://raw.githack.com/AR-js-org/AR.js/master/data/images/hiro.png" 
+       target="_blank" 
+       style="color:#3498db; text-decoration:underline;">
       👉 Descargar marcador HIRO (A4)
     </a>
-  </div>
+  </p>
 </div>
 
 <!-- MENÚ DE CONFIGURACIÓN -->
 <div id="menu-overlay">
   <div class="card">
     <h2 style="color: #3498db; margin-bottom: 15px;">⚙️ CONFIGURACIÓN</h2>
-    
-    <label>🎨 Textura (Opcional)</label>
-    <div class="file-input-wrapper">
-      <input type="file" id="imgUpload" accept="image/jpeg,image/png,image/jpg">
-      <label for="imgUpload" class="file-input-label">📁 Seleccionar Imagen</label>
-    </div>
-    <img id="preview" alt="Vista previa">
     
     <label>🔷 Figura Geométrica</label>
     <select id="figura">
@@ -421,260 +371,454 @@ button {
 <!-- ESCENA AR -->
 <div id="ar-scene-container"></div>
 
-<!-- CONTROLES AR -->
+<!-- CONTROLES MINIMALISTAS -->
 <div id="controls">
   <div class="controls-wrapper">
-    <!-- CONTROL DE ESCALA (TAMAÑO) -->
-    <div class="scale-row">
-      <span>📏 Tamaño:</span>
-      <input type="range" id="scale-slider" min="0.5" max="2.0" step="0.1" value="1.0" oninput="cambiarEscala(this.value)">
-      <span id="scale-val">1.0x</span>
-    </div>
-    
-    <!-- MEDICIONES DIGITALES -->
-    <div id="medidas-display">
-      📐 H: <strong id="med-h">100</strong>cm | 
-      A: <strong id="med-w">100</strong>cm | 
-      P: <strong id="med-d">100</strong>cm
-    </div>
-
-    <!-- BOTONES DE ACCIÓN -->
-    <div class="action-buttons">
-      <button class="btn-control" onclick="toggleRotacion()" title="Rotación">⏸️</button>
-      <button class="btn-control" onclick="toggleRegla()" title="Ver Regla">📐</button>
-      <button class="btn-control" onclick="salirAR()" title="Salir">✕</button>
+    <button class="btn-control" id="btn-rotate" onclick="toggleRotacion()" title="Rotación">⏸️</button>
+    <button class="btn-control" id="btn-scale-down" onclick="cambiarEscala(-0.2)" title="Reducir">➖</button>
+    <button class="btn-control" id="btn-scale-up" onclick="cambiarEscala(0.2)" title="Aumentar">➕</button>
+    <button class="btn-control" id="btn-measure" onclick="toggleMediciones()" title="Medidas">📏</button>
+    <button class="btn-control" id="btn-exit" onclick="salirAR()" title="Salir">✕</button>
+  </div>
+  
+  <div class="measurements" id="measure-panel">
+    <div class="measurements-title">📏 MEDIDAS (cm)</div>
+    <div class="measurement-grid">
+      <div class="measurement-item">
+        <span class="measurement-label">Altura (Y)</span>
+        <span class="measurement-value"><span id="measure-height">100</span></span>
+      </div>
+      <div class="measurement-item">
+        <span class="measurement-label">Ancho (X)</span>
+        <span class="measurement-value"><span id="measure-width">100</span></span>
+      </div>
+      <div class="measurement-item">
+        <span class="measurement-label">Profundidad (Z)</span>
+        <span class="measurement-value"><span id="measure-depth">100</span></span>
+      </div>
+      <div class="measurement-item">
+        <span class="measurement-label">Escala</span>
+        <span class="measurement-value"><span id="scale-value">1.0</span>x</span>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- BOTÓN SALIDA RÁPIDA -->
+<!-- BOTÓN DE SALIDA -->
 <button id="exit-btn" onclick="salirAR()">✕</button>
 
-<!-- ESTADO -->
+<!-- STATUS DE CÁMARA -->
 <div id="camera-status">🔍 Buscando marcador HIRO...</div>
 
 <script>
 let texturaData = null;
 let figuraSeleccionada = "box";
-let escalaActual = 1.0;
+let arActivo = false;
 let rotacionActiva = true;
-let reglaVisible = true;
+let cameraStream = null;
 let sceneLoaded = false;
+let escalaActual = 1.0;
+let medicionesVisible = false;
 
-// DATOS DE DIMENSIONES BASE (cm)
+// Dimensiones base para cálculos (en cm)
 const dimensionesBase = {
-  box: { h: 100, w: 100, d: 100 },
-  sphere: { h: 160, w: 160, d: 160 },
-  cylinder: { h: 200, w: 100, d: 100 },
-  cone: { h: 200, w: 100, d: 100 },
-  torus: { h: 40, w: 200, d: 200 }
+  box: { altura: 100, ancho: 100, profundidad: 100 },
+  sphere: { altura: 100, ancho: 100, profundidad: 100 },
+  cylinder: { altura: 150, ancho: 100, profundidad: 100 },
+  cone: { altura: 150, ancho: 100, profundidad: 100 },
+  torus: { altura: 60, ancho: 100, profundidad: 100 }
 };
 
-// INICIO
+// ===== VERIFICACIÓN HTTPS =====
 window.addEventListener('load', () => {
-  if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
+  const esHTTPS = location.protocol === 'https:';
+  const esLocalhost = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+  
+  if (!esHTTPS && !esLocalhost) {
     document.getElementById('https-warning').style.display = 'block';
   }
 });
 
-document.getElementById('start-btn').addEventListener('click', () => {
-  if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
-    alert('⚠️ Requiere HTTPS');
+// ===== SOLICITAR PERMISOS DE CÁMARA =====
+document.getElementById('start-btn').addEventListener('click', async () => {
+  const esHTTPS = location.protocol === 'https:';
+  const esLocalhost = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+  
+  if (!esHTTPS && !esLocalhost) {
+    alert('⚠️ Esta aplicación requiere HTTPS para acceder a la cámara en dispositivos móviles.\n\nSoluciones:\n• Usa localhost para pruebas\n• Despliega en GitHub Pages (https://)\n• Usa servidor con SSL');
     return;
   }
-  document.getElementById('init-screen').classList.add('hidden');
-  setTimeout(() => {
-    document.getElementById('menu-overlay').style.display = 'flex';
-  }, 500);
-});
-
-// TEXTURA
-document.getElementById('imgUpload').addEventListener('change', function(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  if (file.size > 5 * 1024 * 1024) { alert('Muy grande'); return; }
   
-  const reader = new FileReader();
-  reader.onload = function(event) {
-    texturaData = event.target.result;
-    document.getElementById('preview').src = texturaData;
-    document.getElementById('preview').style.display = 'block';
-  };
-  reader.readAsDataURL(file);
+  try {
+    console.log('📷 Solicitando permisos de cámara...');
+    
+    // Solicitar permisos EXPLÍCITAMENTE antes de iniciar AR
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: 'environment', // Cámara trasera
+        width: { ideal: 1280 },
+        height: { ideal: 720 },
+        frameRate: { ideal: 30 }
+      }
+    });
+    
+    // Guardar el stream para referencia
+    cameraStream = stream;
+    
+    console.log('✅ Permisos de cámara concedidos');
+    
+    // Detener el stream temporalmente (AR.js lo reiniciará)
+    stream.getTracks().forEach(track => track.stop());
+    
+    // Ocultar pantalla inicial y mostrar menú
+    document.getElementById('init-screen').style.display = 'none';
+    
+    setTimeout(() => {
+      document.getElementById('menu-overlay').style.display = 'flex';
+    }, 400);
+    
+  } catch (err) {
+    console.error('❌ Error al solicitar permisos:', err);
+    
+    let mensaje = 'Error al acceder a la cámara:\n\n';
+    
+    switch(err.name) {
+      case 'NotAllowedError':
+        mensaje += '• Permiso denegado por el usuario\n';
+        mensaje += '• Solución: Recarga y permite el permiso cuando el navegador lo solicite';
+        break;
+      case 'NotFoundError':
+        mensaje += '• No se encontró cámara en este dispositivo\n';
+        mensaje += '• Solución: Verifica que la cámara esté conectada y funcione';
+        break;
+      case 'NotReadableError':
+        mensaje += '• La cámara está en uso por otra aplicación\n';
+        mensaje += '• Solución: Cierra otras apps que usen la cámara';
+        break;
+      case 'SecurityError':
+        mensaje += '• Bloqueado por seguridad del navegador\n';
+        mensaje += '• Solución: Usa conexión HTTPS segura';
+        break;
+      default:
+        mensaje += `• Error: ${err.name}\n`;
+        mensaje += '• Solución: Revisa la consola del navegador para más detalles';
+    }
+    
+    mensaje += '\n\n📱 iOS: Configuración > Safari > Cámara: Permitir\n🤖 Android: Configuración > Apps > Chrome > Permisos > Cámara: Permitir';
+    
+    alert(mensaje);
+  }
 });
 
+// ===== GENERAR CONFIGURACIÓN =====
 function generarConfig() {
   figuraSeleccionada = document.getElementById('figura').value;
+  
+  // Mostrar botón de inicio
   document.getElementById('btn-iniciar-ar').style.display = 'block';
+  
+  console.log('✅ Configuración generada:', figuraSeleccionada);
 }
 
-// --- INICIAR AR ---
-function iniciarAR() {
-  console.log('🎬 Iniciando AR...');
+// ===== INICIAR REALIDAD AUMENTADA =====
+async function iniciarAR() {
+  if (!cameraStream) {
+    alert('⚠️ Primero permite el acceso a la cámara');
+    return;
+  }
+  
+  console.log('🎬 Iniciando Realidad Aumentada...');
+  
+  // Ocultar menú
   document.getElementById('menu-overlay').style.display = 'none';
   
-  // 1. Inyectar Escena
+  // Construir escena AR DINÁMICAMENTE
   construirEscenaAR();
   
+  // Mostrar contenedores
   document.getElementById('ar-scene-container').style.display = 'block';
   document.getElementById('controls').style.display = 'block';
   document.getElementById('exit-btn').style.display = 'block';
   document.getElementById('camera-status').style.display = 'block';
   
-  // 2. Esperar a que A-Frame cargue
-  setTimeout(() => {
-    crearFiguraYRegla();
-    configurarEventos();
-    actualizarMediciones();
-  }, 1500);
+  arActivo = true;
+  
+  // Esperar inicialización de la escena
+  await new Promise(resolve => setTimeout(resolve, 1200));
+  
+  // Crear figura 3D
+  crearFigura3D();
+  
+  // Configurar eventos de marcador
+  configurarEventosMarcador();
+  
+  console.log('🚀 AR iniciado correctamente');
 }
 
-// --- PLANTILLA ESCENA (CON REGLA CONTENEDORA) ---
+// ===== CONSTRUIR ESCENA AR =====
 function construirEscenaAR() {
   const container = document.getElementById('ar-scene-container');
+  
+  // HTML de la escena con configuración CORRECTA de cámara
   container.innerHTML = `
     <a-scene
       embedded
-      arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
+      arjs="sourceType: webcam;
+             sourceWidth: 1280;
+             sourceHeight: 720;
+             displayWidth: 1280;
+             displayHeight: 720;
+             debugUIEnabled: false;
+             detectionMode: mono_and_matrix;
+             matrixCodeType: 3x3;
+             maxDetectionRate: 60;
+             canvasWidth: 1280;
+             canvasHeight: 720;"
       vr-mode-ui="enabled: false"
-      renderer="logarithmicDepthBuffer: true; precision: medium;"
+      renderer="logarithmicDepthBuffer: true;
+                 precision: medium;
+                 antialias: true;"
       loading-screen="enabled: false"
       device-orientation-permission-ui="enabled: false"
       style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
       
       <a-assets timeout="40000">
-        <img id="textura-asset" crossorigin="anonymous" src="${texturaData ? texturaData : 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/textures/cube/skyboxsun25deg/px.jpg'}">
+        <img id="textura-defecto" 
+             src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/textures/cube/skyboxsun25deg/px.jpg"
+             crossorigin="anonymous">
       </a-assets>
       
+      <!-- Iluminación -->
       <a-entity light="type: ambient; color: #FFF; intensity: 0.8"></a-entity>
       <a-entity light="type: directional; color: #FFF; intensity: 0.6" position="1 2 1"></a-entity>
       
-      <a-marker preset="hiro" id="hiro-marker" smooth="true" smoothCount="10">
-        <a-entity id="contenedor-principal" position="0 0 0">
-            <!-- Modelo 3D -->
-            <a-entity id="modelo-3d" position="0 0.5 0"></a-entity>
-            
-            <!-- REGLA HOLOGRÁFICA COMPLETA -->
-            <a-entity id="regla-virtual" visible="true">
-                <!-- EJE ALTURA (Y) - CYAN NEÓN -->
-                <a-entity position="-0.6 0 0">
-                    <a-cylinder radius="0.015" height="2.1" color="#00FFFF" material="shader: flat; emissive: #00FFFF; emissiveIntensity: 0.8; transparent: true; opacity: 0.7; side: double"></a-cylinder>
-                    <!-- Marcas 0, 50, 100 -->
-                    <a-box position="0 0 0" width="0.15" height="0.02" depth="0.02" color="#00FFFF" material="shader: flat; emissive: #00FFFF; opacity: 0.8"></a-box>
-                    <a-text value="0" position="-0.2 0 0" scale="0.3 0.3 0.3" color="#00FFFF" align="right" shader="flat"></a-text>
-                    
-                    <a-box position="0 0.5 0" width="0.1" height="0.015" depth="0.015" color="#00FFFF"></a-box>
-                    <a-text value="50cm" position="-0.25 0.5 0" scale="0.25 0.25 0.25" color="#00FFFF" align="right"></a-text>
-
-                    <a-box position="0 1.0 0" width="0.15" height="0.02" depth="0.02" color="#00FFFF"></a-box>
-                    <a-text value="100cm" position="-0.25 1.0 0" scale="0.25 0.25 0.25" color="#00FFFF" align="right"></a-text>
-                    
-                    <a-text value="ALTURA" position="-0.25 -1.1 0" align="right" color="#00FFFF" scale="0.3 0.3 0.3" shader="flat"></a-text>
-                </a-entity>
-
-                <!-- EJE ANCHO (X) - MAGENTA NEÓN -->
-                <a-entity position="0 -0.6 0">
-                    <a-cylinder radius="0.015" height="2.1" color="#FF00FF" rotation="0 0 90" material="shader: flat; emissive: #FF00FF; emissiveIntensity: 0.8; transparent: true; opacity: 0.7; side: double"></a-cylinder>
-                    <!-- Marcas -->
-                    <a-box position="0 0 0" width="0.02" height="0.15" depth="0.02" color="#FF00FF"></a-box>
-                    <a-text value="0" position="0 -0.25 0" scale="0.3 0.3 0.3" color="#FF00FF" align="center"></a-text>
-                    
-                    <a-box position="0.5 0 0" width="0.015" height="0.1" depth="0.015" color="#FF00FF"></a-box>
-                    <a-text value="50cm" position="0.5 -0.25 0" scale="0.25 0.25 0.25" color="#FF00FF" align="center"></a-text>
-
-                    <a-box position="1.0 0 0" width="0.02" height="0.15" depth="0.02" color="#FF00FF"></a-box>
-                    <a-text value="100cm" position="1.0 -0.25 0" scale="0.25 0.25 0.25" color="#FF00FF" align="center"></a-text>
-                    
-                    <a-text value="ANCHO" position="0 -0.4 0" align="center" color="#FF00FF" scale="0.3 0.3 0.3"></a-text>
-                </a-entity>
-
-                <!-- EJE PROFUNDIDAD (Z) - LIMA NEÓN -->
-                <a-entity position="0.6 0 0">
-                    <a-cylinder radius="0.015" height="2.1" color="#00FF00" rotation="0 90 90" material="shader: flat; emissive: #00FF00; emissiveIntensity: 0.8; transparent: true; opacity: 0.7; side: double"></a-cylinder>
-                    <!-- Marcas -->
-                    <a-box position="0 0 0" width="0.02" height="0.15" depth="0.02" color="#00FF00"></a-box>
-                    
-                    <a-box position="0 0 0.5" width="0.015" height="0.1" depth="0.015" color="#00FF00"></a-box>
-                    <a-text value="50cm" position="0 -0.25 0.5" scale="0.25 0.25 0.25" color="#00FF00" align="center"></a-text>
-
-                    <a-box position="0 0 1.0" width="0.02" height="0.15" depth="0.02" color="#00FF00"></a-box>
-                    <a-text value="100cm" position="0 -0.25 1.0" scale="0.25 0.25 0.25" color="#00FF00" align="center"></a-text>
-                    
-                    <a-text value="PROF" position="0 -0.4 0" align="center" color="#00FF00" scale="0.3 0.3 0.3"></a-text>
-                </a-entity>
-            </a-entity>
-        </a-entity>
+      <!-- Marcador HIRO -->
+      <a-marker
+        preset="hiro"
+        id="hiro-marker"
+        smooth="true"
+        smoothCount="10"
+        smoothTolerance="0.01"
+        smoothThreshold="5">
+        
+        <a-entity id="contenedor-principal" position="0 0 0"></a-entity>
+        
       </a-marker>
+      
+      <!-- Cámara -->
+      <a-entity camera position="0 1.6 0"></a-entity>
     </a-scene>
   `;
+  
   sceneLoaded = true;
 }
 
-// --- CREAR FIGURA Y APLICAR ESCALA INICIAL ---
-function crearFiguraYRegla() {
+// ===== CREAR FIGURA 3D CON REGLA GRADUADA =====
+function crearFigura3D() {
   const contenedor = document.getElementById('contenedor-principal');
-  if(!contenedor) return;
+  if (!contenedor) {
+    console.error('❌ Contenedor no encontrado');
+    return;
+  }
   
-  // Crear entidad 3D (se limpia y recrea si es necesario, pero aquí solo la creamos una vez)
+  // Limpiar contenedor
+  contenedor.innerHTML = '';
+  
+  // Crear modelo principal
   const modelo = document.createElement('a-entity');
   modelo.setAttribute('id', 'modelo-3d');
   modelo.setAttribute('position', '0 0.5 0');
   
-  let geo = '';
-  let rot = '0 45 0';
+  // Configuración geométrica
+  let geoParams = '';
+  let rotation = '0 45 0';
+  
   switch(figuraSeleccionada) {
-    case 'box': geo = 'primitive: box; width: 1; height: 1; depth: 1'; break;
-    case 'sphere': geo = 'primitive: sphere; radius: 0.5'; rot='0 0 0'; break;
-    case 'cylinder': geo = 'primitive: cylinder; radius: 0.5; height: 1.5'; break;
-    case 'cone': geo = 'primitive: cone; radiusBottom: 0.5; height: 1.5'; break;
-    case 'torus': geo = 'primitive: torus; radius: 0.5; radiusTubular: 0.15'; break;
+    case 'box':
+      geoParams = 'primitive: box; width: 1; height: 1; depth: 1';
+      break;
+    case 'sphere':
+      geoParams = 'primitive: sphere; radius: 0.5; segmentsWidth: 32; segmentsHeight: 32';
+      rotation = '0 0 0';
+      break;
+    case 'cylinder':
+      geoParams = 'primitive: cylinder; radius: 0.5; height: 1.5; segmentsRadial: 24';
+      break;
+    case 'cone':
+      geoParams = 'primitive: cone; radiusBottom: 0.5; radiusTop: 0; height: 1.5; segmentsRadial: 16';
+      break;
+    case 'torus':
+      geoParams = 'primitive: torus; radius: 0.5; radiusTubular: 0.15; segmentsRadial: 24; segmentsTubular: 16';
+      break;
+    default:
+      geoParams = 'primitive: box; width: 1; height: 1; depth: 1';
   }
   
-  modelo.setAttribute('geometry', geo);
-  modelo.setAttribute('material', 'src: #textura-asset; metalness: 0.3; roughness: 0.5');
-  modelo.setAttribute('rotation', rot);
-  if(rotacionActiva) modelo.setAttribute('animation', 'property: rotation; to: 0 360 0; dur: 8000; loop: true; easing: linear');
+  modelo.setAttribute('geometry', geoParams);
+  modelo.setAttribute('rotation', rotation);
+  
+  // Material por defecto
+  const materialParams = `color: #4ECDC4; metalness: 0.3; roughness: 0.5; side: double`;
+  modelo.setAttribute('material', materialParams);
+  
+  // Animación de rotación
+  if (rotacionActiva) {
+    modelo.setAttribute('animation', 'property: rotation; to: 0 360 0; dur: 8000; loop: true; easing: linear');
+  }
+  
+  // Wireframe guía
+  const wireframe = document.createElement('a-entity');
+  wireframe.setAttribute('id', 'wireframe-guia');
+  wireframe.setAttribute('geometry', geoParams);
+  wireframe.setAttribute('material', 'wireframe: true; color: #FFE66D; opacity: 0.6; side: double');
+  wireframe.setAttribute('scale', '1.05 1.05 1.05');
+  wireframe.setAttribute('rotation', rotation);
+  wireframe.setAttribute('position', '0 0.5 0');
+  
+  // ===== REGLA GRADUADA SOBRE EJES =====
+  const regla = document.createElement('a-entity');
+  regla.setAttribute('id', 'regla-graduada');
+  regla.setAttribute('position', '0 0.5 0');
+  
+  regla.innerHTML = `
+    <!-- ===== EJE Y (ALTURA - AMARILLO) ===== -->
+    <a-entity position="0 0 0">
+      <!-- Línea principal del eje Y -->
+      <a-cylinder radius="0.015" height="2.0" color="#FFD700" 
+                  position="0 0 0"
+                  rotation="90 0 0"
+                  material="shader: flat; emissive: #FFD700; emissiveIntensity: 0.8; side: double"></a-cylinder>
+      
+      <!-- Marcas de graduación cada 25cm -->
+      <a-box position="0 -1.0 0" width="0.15" height="0.03" depth="0.03" color="#FFD700" material="shader: flat; emissive: #FFD700; emissiveIntensity: 0.8"></a-box>
+      <a-text value="0cm" position="0.15 -1.0 0" scale="0.3 0.3 0.3" color="#FFD700" align="left" shader="flat"></a-text>
+      
+      <a-box position="0 -0.5 0" width="0.12" height="0.025" depth="0.025" color="#FFD700" material="shader: flat; emissive: #FFD700; emissiveIntensity: 0.6"></a-box>
+      <a-text value="50cm" position="0.15 -0.5 0" scale="0.28 0.28 0.28" color="#FFD700" align="left" shader="flat"></a-text>
+      
+      <a-box position="0 0.0 0" width="0.15" height="0.03" depth="0.03" color="#FFD700" material="shader: flat; emissive: #FFD700; emissiveIntensity: 0.8"></a-box>
+      <a-text value="100cm" position="0.15 0.0 0" scale="0.3 0.3 0.3" color="#FFD700" align="left" shader="flat"></a-text>
+      
+      <a-box position="0 0.5 0" width="0.12" height="0.025" depth="0.025" color="#FFD700" material="shader: flat; emissive: #FFD700; emissiveIntensity: 0.6"></a-box>
+      <a-text value="150cm" position="0.15 0.5 0" scale="0.28 0.28 0.28" color="#FFD700" align="left" shader="flat"></a-text>
+      
+      <a-box position="0 1.0 0" width="0.15" height="0.03" depth="0.03" color="#FFD700" material="shader: flat; emissive: #FFD700; emissiveIntensity: 0.8"></a-box>
+      <a-text value="200cm" position="0.15 1.0 0" scale="0.3 0.3 0.3" color="#FFD700" align="left" shader="flat"></a-text>
+      
+      <!-- Etiqueta del eje -->
+      <a-text value="Y (Altura)" position="0.2 1.3 0" scale="0.35 0.35 0.35" color="#FFD700" align="center" shader="flat"></a-text>
+    </a-entity>
+    
+    <!-- ===== EJE X (ANCHO - VERDE) ===== -->
+    <a-entity position="0 0 0">
+      <!-- Línea principal del eje X -->
+      <a-cylinder radius="0.015" height="2.0" color="#00FF88" 
+                  position="0 0 0"
+                  rotation="90 90 0"
+                  material="shader: flat; emissive: #00FF88; emissiveIntensity: 0.8; side: double"></a-cylinder>
+      
+      <!-- Marcas de graduación cada 25cm -->
+      <a-box position="-1.0 0 0" width="0.03" height="0.15" depth="0.03" color="#00FF88" material="shader: flat; emissive: #00FF88; emissiveIntensity: 0.8"></a-box>
+      <a-text value="0cm" position="-1.0 -0.2 0" scale="0.3 0.3 0.3" color="#00FF88" align="center" shader="flat"></a-text>
+      
+      <a-box position="-0.5 0 0" width="0.025" height="0.12" depth="0.025" color="#00FF88" material="shader: flat; emissive: #00FF88; emissiveIntensity: 0.6"></a-box>
+      <a-text value="50cm" position="-0.5 -0.2 0" scale="0.28 0.28 0.28" color="#00FF88" align="center" shader="flat"></a-text>
+      
+      <a-box position="0.0 0 0" width="0.03" height="0.15" depth="0.03" color="#00FF88" material="shader: flat; emissive: #00FF88; emissiveIntensity: 0.8"></a-box>
+      <a-text value="100cm" position="0.0 -0.2 0" scale="0.3 0.3 0.3" color="#00FF88" align="center" shader="flat"></a-text>
+      
+      <a-box position="0.5 0 0" width="0.025" height="0.12" depth="0.025" color="#00FF88" material="shader: flat; emissive: #00FF88; emissiveIntensity: 0.6"></a-box>
+      <a-text value="150cm" position="0.5 -0.2 0" scale="0.28 0.28 0.28" color="#00FF88" align="center" shader="flat"></a-text>
+      
+      <a-box position="1.0 0 0" width="0.03" height="0.15" depth="0.03" color="#00FF88" material="shader: flat; emissive: #00FF88; emissiveIntensity: 0.8"></a-box>
+      <a-text value="200cm" position="1.0 -0.2 0" scale="0.3 0.3 0.3" color="#00FF88" align="center" shader="flat"></a-text>
+      
+      <!-- Etiqueta del eje -->
+      <a-text value="X (Ancho)" position="1.3 -0.35 0" scale="0.35 0.35 0.35" color="#00FF88" align="center" shader="flat"></a-text>
+    </a-entity>
+    
+    <!-- ===== EJE Z (PROFUNDIDAD - ROJO) ===== -->
+    <a-entity position="0 0 0">
+      <!-- Línea principal del eje Z -->
+      <a-cylinder radius="0.015" height="2.0" color="#FF6B6B" 
+                  position="0 0 0"
+                  rotation="0 90 90"
+                  material="shader: flat; emissive: #FF6B6B; emissiveIntensity: 0.8; side: double"></a-cylinder>
+      
+      <!-- Marcas de graduación cada 25cm -->
+      <a-box position="0 0 -1.0" width="0.03" height="0.15" depth="0.03" color="#FF6B6B" material="shader: flat; emissive: #FF6B6B; emissiveIntensity: 0.8"></a-box>
+      <a-text value="0cm" position="0 -0.2 -1.0" scale="0.3 0.3 0.3" color="#FF6B6B" align="center" shader="flat"></a-text>
+      
+      <a-box position="0 0 -0.5" width="0.025" height="0.12" depth="0.025" color="#FF6B6B" material="shader: flat; emissive: #FF6B6B; emissiveIntensity: 0.6"></a-box>
+      <a-text value="50cm" position="0 -0.2 -0.5" scale="0.28 0.28 0.28" color="#FF6B6B" align="center" shader="flat"></a-text>
+      
+      <a-box position="0 0 0.0" width="0.03" height="0.15" depth="0.03" color="#FF6B6B" material="shader: flat; emissive: #FF6B6B; emissiveIntensity: 0.8"></a-box>
+      <a-text value="100cm" position="0 -0.2 0.0" scale="0.3 0.3 0.3" color="#FF6B6B" align="center" shader="flat"></a-text>
+      
+      <a-box position="0 0 0.5" width="0.025" height="0.12" depth="0.025" color="#FF6B6B" material="shader: flat; emissive: #FF6B6B; emissiveIntensity: 0.6"></a-box>
+      <a-text value="150cm" position="0 -0.2 0.5" scale="0.28 0.28 0.28" color="#FF6B6B" align="center" shader="flat"></a-text>
+      
+      <a-box position="0 0 1.0" width="0.03" height="0.15" depth="0.03" color="#FF6B6B" material="shader: flat; emissive: #FF6B6B; emissiveIntensity: 0.8"></a-box>
+      <a-text value="200cm" position="0 -0.2 1.0" scale="0.3 0.3 0.3" color="#FF6B6B" align="center" shader="flat"></a-text>
+      
+      <!-- Etiqueta del eje -->
+      <a-text value="Z (Prof)" position="0 -0.35 1.3" scale="0.35 0.35 0.35" color="#FF6B6B" align="center" shader="flat"></a-text>
+    </a-entity>
+  `;
   
   contenedor.appendChild(modelo);
+  contenedor.appendChild(wireframe);
+  contenedor.appendChild(regla);
   
-  // Aplicar escala inicial a Modelo y Regla
-  cambiarEscala(1.0);
-}
-
-// --- CAMBIAR ESCALA (OBJETO + REGLA) ---
-function cambiarEscala(val) {
-  escalaActual = parseFloat(val);
-  const modelo = document.getElementById('modelo-3d');
-  const regla = document.getElementById('regla-virtual');
-  
-  if(modelo) modelo.setAttribute('scale', `${escalaActual} ${escalaActual} ${escalaActual}`);
-  if(regla) regla.setAttribute('scale', `${escalaActual} ${escalaActual} ${escalaActual}`);
-  
-  document.getElementById('scale-val').innerText = escalaActual.toFixed(1) + 'x';
+  // Actualizar mediciones
   actualizarMediciones();
+  
+  console.log('✅ Figura 3D creada con regla graduada:', figuraSeleccionada);
 }
 
-// --- ACTUALIZAR TEXTO DE MEDIDAS (UI) ---
-function actualizarMediciones() {
-  const base = dimensionesBase[figuraSeleccionada];
-  if(!base) return;
+// ===== CONFIGURAR EVENTOS DE MARCADOR =====
+function configurarEventosMarcador() {
+  const marker = document.querySelector('#hiro-marker');
+  if (!marker) {
+    console.error('❌ Marcador no encontrado');
+    return;
+  }
   
-  const h = Math.round(base.h * escalaActual);
-  const w = Math.round(base.w * escalaActual);
-  const d = Math.round(base.d * escalaActual);
+  marker.addEventListener('markerFound', () => {
+    console.log('✅ ¡Marcador HIRO detectado!');
+    
+    const status = document.getElementById('camera-status');
+    status.textContent = '✅ ¡Objeto 3D visible!';
+    status.className = 'status-ok';
+    
+    // Ocultar mensaje después de 3 segundos
+    setTimeout(() => {
+      if (status) {
+        status.style.display = 'none';
+      }
+    }, 3000);
+  });
   
-  document.getElementById('med-h').innerText = h;
-  document.getElementById('med-w').innerText = w;
-  document.getElementById('med-d').innerText = d;
+  marker.addEventListener('markerLost', () => {
+    console.log('🔍 Marcador perdido');
+    
+    const status = document.getElementById('camera-status');
+    if (status) {
+      status.textContent = '🔍 Buscando marcador HIRO...';
+      status.className = '';
+      status.style.display = 'block';
+    }
+  });
 }
 
-// --- CONTROLES ---
+// ===== FUNCIONES DE CONTROL =====
 function toggleRotacion() {
   rotacionActiva = !rotacionActiva;
   const modelo = document.getElementById('modelo-3d');
-  const btn = document.querySelector('.action-buttons .btn-control:first-child');
-  if(modelo) {
-    if(rotacionActiva) {
+  const btn = document.getElementById('btn-rotate');
+  
+  if (modelo) {
+    if (rotacionActiva) {
       modelo.setAttribute('animation', 'property: rotation; to: 0 360 0; dur: 8000; loop: true; easing: linear');
       btn.innerHTML = '⏸️';
     } else {
@@ -684,35 +828,82 @@ function toggleRotacion() {
   }
 }
 
-function toggleRegla() {
-  reglaVisible = !reglaVisible;
-  const regla = document.getElementById('regla-virtual');
-  if(regla) regla.setAttribute('visible', reglaVisible);
+function cambiarEscala(delta) {
+  // Limitar escala entre 0.3 y 3.0
+  escalaActual = Math.max(0.3, Math.min(3.0, escalaActual + delta));
+  
+  const modelo = document.getElementById('modelo-3d');
+  const guia = document.getElementById('wireframe-guia');
+  
+  if (modelo) modelo.setAttribute('scale', `${escalaActual} ${escalaActual} ${escalaActual}`);
+  if (guia) guia.setAttribute('scale', `${escalaActual * 1.05} ${escalaActual * 1.05} ${escalaActual * 1.05}`);
+  
+  // Actualizar valor mostrado
+  document.getElementById('scale-value').innerText = escalaActual.toFixed(1);
+  
+  // Actualizar mediciones
+  actualizarMediciones();
+  
+  console.log(`📏 Escala cambiada a: ${escalaActual.toFixed(1)}x`);
 }
 
-function configurarEventos() {
-  const marker = document.querySelector('#hiro-marker');
-  if(marker) {
-    marker.addEventListener('markerFound', () => {
-      document.getElementById('camera-status').textContent = '✅ ¡Objeto Medido!';
-      document.getElementById('camera-status').className = 'status-ok';
-      setTimeout(()=> document.getElementById('camera-status').style.display='none', 2000);
-    });
-    marker.addEventListener('markerLost', () => {
-      document.getElementById('camera-status').textContent = '🔍 Buscando...';
-      document.getElementById('camera-status').className = '';
-      document.getElementById('camera-status').style.display='block';
-    });
-  }
+function toggleMediciones() {
+  medicionesVisible = !medicionesVisible;
+  const panel = document.getElementById('measure-panel');
+  panel.style.display = medicionesVisible ? 'block' : 'none';
+}
+
+function actualizarMediciones() {
+  const dims = dimensionesBase[figuraSeleccionada];
+  if (!dims) return;
+  
+  // Calcular dimensiones reales según escala
+  const altura = Math.round(dims.altura * escalaActual);
+  const ancho = Math.round(dims.ancho * escalaActual);
+  const profundidad = Math.round(dims.profundidad * escalaActual);
+  
+  // Actualizar UI
+  document.getElementById('measure-height').innerText = altura;
+  document.getElementById('measure-width').innerText = ancho;
+  document.getElementById('measure-depth').innerText = profundidad;
 }
 
 function salirAR() {
-  if(confirm('¿Salir?')) location.reload();
+  if (confirm('¿Volver al menú principal?')) {
+    // Limpiar recursos de cámara
+    try {
+      const video = document.querySelector('video');
+      if (video && video.srcObject) {
+        video.srcObject.getTracks().forEach(track => track.stop());
+        video.srcObject = null;
+      }
+    } catch (e) {
+      console.log('Info: No se encontró stream de cámara');
+    }
+    
+    // Recargar aplicación
+    location.reload();
+  }
 }
+
 function volverInicio() {
   document.getElementById('menu-overlay').style.display = 'none';
-  document.getElementById('init-screen').classList.remove('hidden');
+  setTimeout(() => {
+    document.getElementById('init-screen').style.display = 'flex';
+  }, 400);
 }
+
+// ===== BLOQUEAR GESTOS PROBLEMÁTICOS =====
+['gesturestart', 'gesturechange', 'gestureend'].forEach(event => {
+  document.addEventListener(event, e => e.preventDefault(), { passive: false });
+});
+
+document.addEventListener('touchmove', e => {
+  if (e.touches.length > 1) e.preventDefault();
+}, { passive: false });
+
+console.log('✅ WILL AR - Sistema inicializado correctamente');
 </script>
+
 </body>
 </html>
