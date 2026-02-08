@@ -57,7 +57,7 @@
             overflow-y: auto; padding: 20px; 
             color: var(--text-color, white);
         }
-        #menu-overlay.hidden { display: none; }
+        #menu-overlay.hidden { display: none !important; }
 
         .card {
             background: rgba(255,255,255,0.1); padding: 20px; border-radius: 20px;
@@ -126,6 +126,7 @@
             font-weight: bold; cursor: pointer; transition: all 0.2s;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3); margin-top: 12px;
         }
+        button:active { transform: scale(0.98); }
         .btn-gen { background: linear-gradient(135deg, #2980b9 0%, #3498db 100%); }
         .btn-start { 
             background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); 
@@ -265,19 +266,84 @@
             0%, 100% { opacity: 1; }
             50% { opacity: 0.7; }
         }
+
+        /* MODAL DE PERMISOS */
+        #permission-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 10001;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .permission-content {
+            background: linear-gradient(135deg, #2c3e50 0%, #1a1a2e 100%);
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 400px;
+            text-align: center;
+            color: white;
+            border: 2px solid #3498db;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+        }
+
+        .permission-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .permission-content h2 {
+            color: #3498db;
+            margin-bottom: 15px;
+        }
+
+        .permission-content p {
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .btn-permission {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s;
+        }
+
+        .btn-permission:active {
+            transform: scale(0.98);
+        }
     </style>
 </head>
 <body>
 
     <!-- ESCENA AR -->
     <a-scene 
+        id="ar-scene"
         embedded 
-        arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono;"
+        arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono; trackingMethod: best;"
         vr-mode-ui="enabled: false"
         renderer="logarithmicDepthBuffer: true; antialias: true; precision: medium;"
         loading-screen="enabled: false"
         device-orientation-permission-ui="enabled: false"
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;">
+        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; display: none;">
         
         <a-assets timeout="30000">
             <img id="textura-defecto" src="https://cdn.pixabay.com/photo/2016/11/29/05/45/astronomy-1867616_960_720.jpg" crossorigin="anonymous">
@@ -299,12 +365,11 @@
                 <!-- WIREFRAME -->
                 <a-entity id="wireframe-guia" position="0 0.5 0" material="wireframe: true; color: #FFE66D; opacity: 0.7; side: double"></a-entity>
 
-                <!-- REGLA HOLOGRÁFICA MEJORADA -->
+                <!-- REGLA HOLOGRÁFICA -->
                 <a-entity id="regla-virtual" visible="true" position="0 0 0">
-                    <!-- Eje Altura (Amarillo) - Vertical -->
+                    <!-- Eje Altura (Amarillo) -->
                     <a-entity id="eje-altura" position="-0.6 0.5 0">
                         <a-cylinder radius="0.015" height="1" color="#FFD700" position="0 0 0"></a-cylinder>
-                        <!-- Marcas cada 10cm (0.1 unidades) -->
                         <a-box position="0 -0.5 0" width="0.1" height="0.02" depth="0.02" color="#FFD700"></a-box>
                         <a-box position="0 -0.4 0" width="0.08" height="0.015" depth="0.015" color="#FFD700"></a-box>
                         <a-box position="0 -0.3 0" width="0.08" height="0.015" depth="0.015" color="#FFD700"></a-box>
@@ -316,14 +381,13 @@
                         <a-box position="0 0.3 0" width="0.08" height="0.015" depth="0.015" color="#FFD700"></a-box>
                         <a-box position="0 0.4 0" width="0.08" height="0.015" depth="0.015" color="#FFD700"></a-box>
                         <a-box position="0 0.5 0" width="0.1" height="0.02" depth="0.02" color="#FFD700"></a-box>
-                        
                         <a-text value="0" position="-0.15 0.0 0" scale="0.3 0.3 0.3" color="#FFD700" align="right"></a-text>
                         <a-text value="50" position="-0.15 0.25 0" scale="0.25 0.25 0.25" color="#FFD700" align="right"></a-text>
                         <a-text value="100" position="-0.15 0.5 0" scale="0.25 0.25 0.25" color="#FFD700" align="right"></a-text>
                         <a-text value="ALTO" position="-0.15 -0.6 0" align="right" color="#FFD700" scale="0.25 0.25 0.25"></a-text>
                     </a-entity>
 
-                    <!-- Eje Ancho (Verde) - Horizontal X -->
+                    <!-- Eje Ancho (Verde) -->
                     <a-entity id="eje-ancho" position="0 0 0">
                         <a-cylinder radius="0.015" height="1" color="#00FF88" rotation="0 0 90" position="0 0 0"></a-cylinder>
                         <a-box position="-0.5 0 0" width="0.02" height="0.1" depth="0.02" color="#00FF88"></a-box>
@@ -337,14 +401,13 @@
                         <a-box position="0.3 0 0" width="0.015" height="0.08" depth="0.015" color="#00FF88"></a-box>
                         <a-box position="0.4 0 0" width="0.015" height="0.08" depth="0.015" color="#00FF88"></a-box>
                         <a-box position="0.5 0 0" width="0.02" height="0.1" depth="0.02" color="#00FF88"></a-box>
-                        
                         <a-text value="0" position="0.0 -0.15 0" scale="0.3 0.3 0.3" color="#00FF88" align="center"></a-text>
                         <a-text value="50" position="0.25 -0.15 0" scale="0.25 0.25 0.25" color="#00FF88" align="center"></a-text>
                         <a-text value="100" position="0.5 -0.15 0" scale="0.25 0.25 0.25" color="#00FF88" align="center"></a-text>
                         <a-text value="ANCHO" position="0 -0.25 0" align="center" color="#00FF88" scale="0.25 0.25 0.25"></a-text>
                     </a-entity>
 
-                    <!-- Eje Profundidad (Rojo) - Horizontal Z -->
+                    <!-- Eje Profundidad (Rojo) -->
                     <a-entity id="eje-profundidad" position="0.6 0.5 0">
                         <a-cylinder radius="0.015" height="1" color="#FF6B6B" rotation="90 0 0" position="0 0 0"></a-cylinder>
                         <a-box position="0 0 -0.5" width="0.02" height="0.1" depth="0.02" color="#FF6B6B"></a-box>
@@ -358,7 +421,6 @@
                         <a-box position="0 0 0.3" width="0.015" height="0.08" depth="0.015" color="#FF6B6B"></a-box>
                         <a-box position="0 0 0.4" width="0.015" height="0.08" depth="0.015" color="#FF6B6B"></a-box>
                         <a-box position="0 0 0.5" width="0.02" height="0.1" depth="0.02" color="#FF6B6B"></a-box>
-                        
                         <a-text value="0" position="0.15 -0.15 0.0" scale="0.3 0.3 0.3" color="#FF6B6B" align="left"></a-text>
                         <a-text value="50" position="0.15 -0.15 0.25" scale="0.25 0.25 0.25" color="#FF6B6B" align="left"></a-text>
                         <a-text value="100" position="0.15 -0.15 0.5" scale="0.25 0.25 0.25" color="#FF6B6B" align="left"></a-text>
@@ -378,6 +440,16 @@
 
     <!-- LOADING -->
     <div id="loading-screen"><div class="loader"></div><p>Cargando Laboratorio AR...</p></div>
+
+    <!-- MODAL DE PERMISOS -->
+    <div id="permission-modal">
+        <div class="permission-content">
+            <div class="permission-icon">📷</div>
+            <h2>Permiso de Cámara</h2>
+            <p>Para usar la Realidad Aumentada, necesitamos acceso a tu cámara. Por favor, acepta cuando tu navegador te lo solicite.</p>
+            <button class="btn-permission" onclick="solicitarPermisosCamara()">✅ Activar Cámara</button>
+        </div>
+    </div>
 
     <!-- MENÚ -->
     <div id="menu-overlay">
@@ -451,7 +523,8 @@
             1. Activa opciones de accesibilidad si lo necesitas.<br>
             2. Configura tu figura.<br>
             3. Presiona "INICIAR AR".<br>
-            4. Apunta al marcador HIRO.<br><br>
+            4. Permite el acceso a la cámara.<br>
+            5. Apunta al marcador HIRO.<br><br>
             <a href="https://ar-js-org.github.io/AR.js/data/images/hiro.png" target="_blank" style="color: #3498db;">👉 Descargar Marcador HIRO</a>
         </div>
     </div>
@@ -520,9 +593,8 @@
         let markerDetected = false;
         let rotacionActiva = true;
         let audioEnabled = true;
-        let audioSintetizado = null;
+        let camaraPermitida = false;
 
-        // DIMENSIONES CORREGIDAS - 1 unidad A-Frame = 100cm
         const dimensionesBase = {
             box: { altura: 100, ancho: 100, profundidad: 100, vertices: 8, caras: 6 },
             sphere: { altura: 100, ancho: 100, profundidad: 100, vertices: 0, caras: 1 },
@@ -613,7 +685,35 @@
             document.getElementById('audio-toggle').classList.toggle('active');
         }
 
-        // SISTEMA DE AUDIO CON WEB SPEECH API
+        // SISTEMA DE PERMISOS DE CÁMARA
+        async function solicitarPermisosCamara() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        facingMode: 'environment',
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    } 
+                });
+                
+                // Detener el stream inmediatamente (AR.js manejará la cámara)
+                stream.getTracks().forEach(track => track.stop());
+                
+                camaraPermitida = true;
+                document.getElementById('permission-modal').style.display = 'none';
+                
+                // Mostrar escena AR
+                document.getElementById('ar-scene').style.display = 'block';
+                
+                console.log('✅ Permisos de cámara concedidos');
+                
+            } catch (error) {
+                console.error('❌ Error al solicitar permisos:', error);
+                alert('No se pudo acceder a la cámara. Por favor, verifica los permisos en la configuración de tu navegador.');
+            }
+        }
+
+        // SISTEMA DE AUDIO
         function reproducirAudio() {
             if (!audioEnabled) {
                 alert('El audio está desactivado. Actívalo en las opciones de accesibilidad.');
@@ -630,7 +730,6 @@
             const texto = `${info.audio}. Dimensiones actuales: Alto ${altura} centímetros, Ancho ${ancho} centímetros, Profundidad ${profundidad} centímetros. La figura tiene ${dims.vertices} vértices y ${dims.caras} caras.`;
 
             if ('speechSynthesis' in window) {
-                // Cancelar audio previo
                 window.speechSynthesis.cancel();
                 
                 const utterance = new SpeechSynthesisUtterance(texto);
@@ -723,7 +822,6 @@
             let geoParams = '';
             let rotation = '0 45 0';
             
-            // GEOMETRÍAS CORREGIDAS (1 unidad = 100cm)
             switch(figuraSeleccionada) {
                 case 'box': 
                     geoParams = 'primitive: box; width: 1; height: 1; depth: 1'; 
@@ -784,13 +882,21 @@
         }
 
         function iniciarAR() {
+            // Ocultar menú
             document.getElementById('menu-overlay').classList.add('hidden');
+            
+            // Mostrar modal de permisos
+            document.getElementById('permission-modal').style.display = 'flex';
+            
+            // Preparar controles
             document.getElementById('ar-controls').style.display = "block";
             document.getElementById('camera-status').style.display = "block";
             
+            // Crear figura
             crearFigura3D();
             actualizarInfoFigura();
 
+            // Configurar eventos del marcador
             const marker = document.querySelector('#hiro-marker');
             
             marker.addEventListener('markerFound', () => {
@@ -799,9 +905,8 @@
                 
                 const statusText = document.getElementById('camera-status');
                 statusText.innerText = '✅ Marcador detectado';
-                statusText.className = 'status-active';
+                statusText.classList.add('status-active');
                 
-                // Reproducir audio automáticamente al detectar marcador
                 if (audioEnabled) {
                     setTimeout(() => {
                         reproducirAudio();
@@ -817,10 +922,9 @@
                 markerDetected = false;
                 const statusText = document.getElementById('camera-status');
                 statusText.innerText = '🔍 Buscando marcador...';
-                statusText.className = '';
+                statusText.classList.remove('status-active');
                 statusText.style.display = 'block';
                 
-                // Detener audio si se pierde el marcador
                 if (window.speechSynthesis) {
                     window.speechSynthesis.cancel();
                     document.getElementById('audio-indicator').style.display = 'none';
@@ -856,6 +960,8 @@
                     btn.innerHTML = '▶️ Rotar';
                 }
             }
+            
+            console.log('🔄 Rotación:', rotacionActiva ? 'ACTIVA' : 'PAUSADA');
         }
 
         function cambiarEscala(val) {
