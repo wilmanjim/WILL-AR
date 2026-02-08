@@ -6,7 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <title>Will AR - Laboratorio Matemático</title>
     
-    <!-- LIBRERÍAS - ORDEN CORRECTO -->
+    <!-- LIBRERÍAS -->
     <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -267,7 +267,7 @@
             50% { opacity: 0.7; }
         }
 
-        /* OCULTAR TEXTO DE A-FRAME ANTES DE INICIALIZAR */
+        /* OCULTAR TEXTO DE A-FRAME */
         a-scene {
             position: fixed !important;
             top: 0 !important;
@@ -275,6 +275,22 @@
             width: 100% !important;
             height: 100% !important;
             z-index: 0 !important;
+        }
+
+        /* TIP VISUAL */
+        .tip-box {
+            background: rgba(241, 196, 15, 0.9);
+            color: #000;
+            padding: 12px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+        .tip-box strong {
+            display: block;
+            margin-bottom: 5px;
+            color: #c0392b;
         }
     </style>
 </head>
@@ -350,6 +366,15 @@
             <button id="btn-iniciar" class="btn-start" onclick="iniciarAR()">🚀 INICIAR AR</button>
         </div>
         
+        <div class="tip-box">
+            <strong>💡 CONSEJOS IMPORTANTES:</strong>
+            1. Imprime el marcador HIRO a TAMAÑO REAL (no muy pequeño).<br>
+            2. Coloca el marcador sobre una superficie PLANA bien iluminada.<br>
+            3. Mantén el celular a 20-30cm de distancia del marcador.<br>
+            4. Apunta directamente al marcador (perpendicular, no en ángulo).<br>
+            5. Si no detecta, acerca/aleja lentamente el celular.
+        </div>
+        
         <div style="color: #aaa; font-size: 0.8rem; text-align: center; max-width: 400px; margin-bottom: 20px;">
             <strong>INSTRUCCIONES:</strong><br>
             1. Activa opciones de accesibilidad si lo necesitas.<br>
@@ -416,7 +441,7 @@
         <button class="btn-exit" onclick="salirAR()">❌ Salir</button>
     </div>
 
-    <!-- CONTENEDOR PARA LA ESCENA AR (SE CREA DINÁMICAMENTE) -->
+    <!-- CONTENEDOR PARA LA ESCENA AR -->
     <div id="ar-container"></div>
 
     <script>
@@ -429,6 +454,7 @@
         let rotacionActiva = true;
         let audioEnabled = true;
         let sceneCreated = false;
+        let currentRotation = 0; // AÑADIDO: rastrear rotación actual
 
         const dimensionesBase = {
             box: { altura: 100, ancho: 100, profundidad: 100, vertices: 8, caras: 6 },
@@ -520,7 +546,7 @@
             document.getElementById('audio-toggle').classList.toggle('active');
         }
 
-        // CREAR ESCENA AR DINÁMICAMENTE
+        // CREAR ESCENA AR DINÁMICAMENTE CON MEJOR DETECCIÓN
         function crearEscenaAR() {
             if (sceneCreated) return;
             
@@ -530,9 +556,16 @@
                 <a-scene 
                     id="ar-scene"
                     embedded 
-                    arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
+                    arjs="sourceType: webcam; 
+                          debugUIEnabled: false; 
+                          detectionMode: mono_and_matrix; 
+                          matrixCodeType: 3x3;
+                          cameraParametersUrl: https://raw.githack.com/AR-js-org/AR.js/master/data/data/camera_para.dat;
+                          maxDetectionRate: 60;
+                          canvasWidth: 1280;
+                          canvasHeight: 960;"
                     vr-mode-ui="enabled: false"
-                    renderer="logarithmicDepthBuffer: true; antialias: true; colorManagement: true; sortObjects: true; physicallyCorrectLights: true; maxCanvasWidth: 1920; maxCanvasHeight: 1920;"
+                    renderer="logarithmicDepthBuffer: true; antialias: true; colorManagement: true; sortObjects: true;"
                     loading-screen="enabled: false">
                     
                     <a-assets>
@@ -543,9 +576,10 @@
                         preset="hiro" 
                         id="hiro-marker"
                         smooth="true" 
-                        smoothCount="10" 
+                        smoothCount="5" 
                         smoothTolerance="0.01" 
-                        smoothThreshold="5">
+                        smoothThreshold="2"
+                        raycaster="objects: .clickable">
                         
                         <a-entity id="contenedor-principal" position="0 0 0">
                             
@@ -593,17 +627,16 @@
                     </a-marker>
                     
                     <a-entity camera></a-entity>
-                    <a-entity light="type: ambient; color: #FFF; intensity: 0.8"></a-entity>
-                    <a-entity light="type: directional; color: #FFF; intensity: 0.6" position="1 2 1"></a-entity>
+                    <a-entity light="type: ambient; color: #FFF; intensity: 0.9"></a-entity>
+                    <a-entity light="type: directional; color: #FFF; intensity: 0.7" position="1 2 1"></a-entity>
                 </a-scene>
             `;
             
             container.innerHTML = sceneHTML;
             sceneCreated = true;
             
-            console.log('✅ Escena AR creada dinámicamente');
+            console.log('✅ Escena AR creada con detección mejorada');
             
-            // Esperar a que A-Frame se inicialice
             setTimeout(() => {
                 configurarEventosMarker();
             }, 1000);
@@ -720,7 +753,6 @@
                     document.getElementById('status-dot').style.backgroundColor = "#2ecc71";
                     document.getElementById('status-msg').innerText = "✅ Cargada";
                     
-                    // Actualizar textura si ya existe
                     const texDefecto = document.getElementById('textura-defecto');
                     if (texDefecto) {
                         texDefecto.setAttribute('src', texturaData);
@@ -804,6 +836,7 @@
 
             modelo.setAttribute('geometry', geoParams);
             modelo.setAttribute('rotation', rotation);
+            currentRotation = 45; // Inicializar rotación actual
             
             let materialParams = 'color: #4ECDC4; metalness: 0.3; roughness: 0.5; side: double';
             if (texturaData) {
@@ -811,8 +844,9 @@
             }
             modelo.setAttribute('material', materialParams);
             
+            // CORREGIDO: Sistema de animación mejorado
             if(rotacionActiva) {
-                modelo.setAttribute('animation', 'property: rotation; to: 0 405 0; dur: 10000; loop: true; easing: linear');
+                activarRotacion(modelo);
             }
             
             const wireframe = wireframeViejo || document.createElement('a-entity');
@@ -830,18 +864,36 @@
             console.log('✅ Figura creada:', figuraSeleccionada);
         }
 
+        // FUNCIÓN PARA ACTIVAR ROTACIÓN
+        function activarRotacion(modelo) {
+            if (!modelo) return;
+            modelo.setAttribute('animation', {
+                property: 'rotation',
+                to: '0 405 0',
+                dur: 10000,
+                loop: true,
+                easing: 'linear'
+            });
+        }
+
+        // FUNCIÓN PARA PAUSAR ROTACIÓN
+        function pausarRotacion(modelo) {
+            if (!modelo) return;
+            // Obtener rotación actual
+            const rotObj = modelo.getAttribute('rotation');
+            currentRotation = rotObj.y;
+            // Remover animación
+            modelo.removeAttribute('animation');
+            // Fijar en posición actual
+            modelo.setAttribute('rotation', `0 ${currentRotation} 0`);
+        }
+
         function iniciarAR() {
-            // Crear escena AR dinámicamente
             crearEscenaAR();
-            
-            // Ocultar menú
             document.getElementById('menu-overlay').classList.add('hidden');
-            
-            // Mostrar controles
             document.getElementById('ar-controls').style.display = "block";
             document.getElementById('camera-status').style.display = "block";
             
-            // Esperar a que la escena esté lista
             setTimeout(() => {
                 crearFigura3D();
                 actualizarInfoFigura();
@@ -862,22 +914,26 @@
             alert(mensaje);
         }
 
+        // CORREGIDO: Toggle rotación mejorado
         function toggleRotacion() {
             rotacionActiva = !rotacionActiva;
             const modelo = document.getElementById('modelo-3d');
             const btn = document.getElementById('btn-rotation');
             
-            if(modelo) {
-                if(rotacionActiva) {
-                    modelo.setAttribute('animation', 'property: rotation; to: 0 405 0; dur: 10000; loop: true; easing: linear');
-                    btn.innerHTML = '⏸️ Pausar';
-                } else {
-                    modelo.removeAttribute('animation');
-                    btn.innerHTML = '▶️ Rotar';
-                }
+            if(!modelo) {
+                console.error('❌ Modelo no encontrado');
+                return;
             }
             
-            console.log('🔄 Rotación:', rotacionActiva ? 'ACTIVA' : 'PAUSADA');
+            if(rotacionActiva) {
+                activarRotacion(modelo);
+                btn.innerHTML = '⏸️ Pausar';
+                console.log('🔄 Rotación ACTIVADA');
+            } else {
+                pausarRotacion(modelo);
+                btn.innerHTML = '▶️ Rotar';
+                console.log('⏸️ Rotación PAUSADA en', currentRotation, '°');
+            }
         }
 
         function cambiarEscala(val) {
@@ -958,7 +1014,6 @@
             }
         }
 
-        // Prevenir gestos de zoom
         document.addEventListener('gesturestart', e => e.preventDefault());
         document.addEventListener('touchmove', e => {
             if(e.touches.length > 1) e.preventDefault();
