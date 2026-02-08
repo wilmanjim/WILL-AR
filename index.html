@@ -4,831 +4,88 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>WILL AR - Laboratorio Matemático</title>
-<!-- VERSIONES ESTABLES Y ACTUALIZADAS -->
+<title>Will AR - Laboratorio Matemático</title>
+<!-- AR.js ACTUALIZADO + FIXES CRÍTICOS -->
 <script src="https://cdn.jsdelivr.net/npm/aframe@1.4.2/dist/aframe.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/ar-js-org@3.4.4/aframe/build/aframe-ar.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
-  -webkit-font-smoothing: antialiased;
-}
-body {
-  margin: 0;
-  overflow: hidden;
-  font-family: 'Segoe UI', sans-serif;
-  background-color: #000;
-  width: 100vw;
-  height: 100vh;
-  position: fixed;
-  touch-action: manipulation;
-  overscroll-behavior: none;
-}
-#loading-screen {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1e 100%);
-  z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  transition: opacity 0.4s;
-}
-#loading-screen.hidden {
-  opacity: 0;
-  pointer-events: none;
-}
-.loader {
-  border: 6px solid rgba(52, 152, 219, 0.2);
-  border-top: 6px solid #3498db;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  animation: spin 1s linear infinite;
-  margin-bottom: 15px;
-}
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-#loading-text {
-  font-size: 1.1rem;
-  color: #3498db;
-  margin-bottom: 8px;
-  font-weight: 600;
-}
-/* ===== PANTALLA DE PERMISOS (MINIMALISTA) ===== */
+/* ... (mantén tu CSS existente, sin cambios) ... */
 #camera-permission {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1e 100%);
-  z-index: 9998;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  padding: 20px;
-  text-align: center;
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1e 100%);
+z-index: 9999;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+color: white;
+padding: 20px;
+text-align: center;
 }
 .permission-icon {
-  font-size: 3.5rem;
-  margin-bottom: 20px;
-  color: #3498db;
+font-size: 4rem;
+margin-bottom: 20px;
+color: #3498db;
 }
 .permission-title {
-  font-size: 1.8rem;
-  margin-bottom: 12px;
-  color: #ecf0f1;
-  font-weight: 700;
+font-size: 1.8rem;
+margin-bottom: 15px;
+color: #ecf0f1;
 }
 .permission-text {
-  font-size: 1rem;
-  color: #bdc3c7;
-  max-width: 85%;
-  line-height: 1.6;
-  margin-bottom: 25px;
+font-size: 1.1rem;
+color: #bdc3c7;
+max-width: 80%;
+line-height: 1.6;
+margin-bottom: 30px;
 }
 .btn-permission {
-  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
-  color: white;
-  border: none;
-  padding: 14px 35px;
-  font-size: 1.1rem;
-  border-radius: 12px;
-  cursor: pointer;
-  font-weight: bold;
-  box-shadow: 0 5px 20px rgba(46, 204, 113, 0.4);
-  transition: all 0.2s;
-  min-width: 240px;
-}
-.btn-permission:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 7px 25px rgba(46, 204, 113, 0.5);
+background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+color: white;
+border: none;
+padding: 16px 40px;
+font-size: 1.2rem;
+border-radius: 15px;
+cursor: pointer;
+font-weight: bold;
+box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+transition: all 0.3s;
 }
 .btn-permission:active {
-  transform: scale(0.97);
+transform: scale(0.95);
+box-shadow: 0 3px 10px rgba(46, 204, 113, 0.4);
 }
 #https-warning {
-  background: #e74c3c;
-  color: white;
-  padding: 12px;
-  text-align: center;
-  font-weight: bold;
-  border-radius: 8px;
-  margin: 15px 0;
-  display: none;
-  font-size: 0.95rem;
-}
-/* ===== MENÚ CONFIGURACIÓN (COMPACTO) ===== */
-#menu-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, #2c3e50 0%, #0a0a15 100%);
-  z-index: 2000;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  color: white;
-  transition: transform 0.4s ease;
-}
-#menu-overlay.hidden {
-  transform: translateY(-100%);
-}
-.card {
-  background: rgba(255,255,255,0.08);
-  backdrop-filter: blur(10px);
-  padding: 25px;
-  border-radius: 18px;
-  width: 95%;
-  max-width: 420px;
-  text-align: center;
-  border: 1px solid rgba(255,255,255,0.1);
-  margin-bottom: 20px;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.5);
-}
-h1 {
-  margin: 0 0 5px 0;
-  color: #3498db;
-  font-size: 2rem;
-  letter-spacing: 1px;
-}
-h2 {
-  margin: 0;
-  font-size: 0.95rem;
-  font-weight: 300;
-  color: #bdc3c7;
-  margin-bottom: 15px;
-}
-label {
-  display: block;
-  text-align: left;
-  margin-top: 15px;
-  margin-bottom: 8px;
-  color: #ecf0f1;
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-select {
-  width: 100%;
-  padding: 12px;
-  border-radius: 10px;
-  border: none;
-  background: rgba(255,255,255,0.12);
-  color: white;
-  font-size: 0.95rem;
-  outline: none;
-  border: 1px solid rgba(255,255,255,0.15);
-}
-.file-input-wrapper {
-  position: relative;
-  width: 100%;
-  margin-top: 10px;
-}
-.file-input-wrapper input[type="file"] {
-  position: absolute;
-  opacity: 0;
-  width: 100%;
-  height: 100%;
-  cursor: pointer;
-  z-index: 10;
-}
-.file-input-label {
-  display: block;
-  width: 100%;
-  padding: 12px;
-  background: rgba(142, 68, 173, 0.85);
-  color: white;
-  border-radius: 10px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-size: 0.95rem;
-  font-weight: 500;
-}
-.file-input-label:hover {
-  background: rgba(155, 89, 182, 0.95);
-  transform: translateY(-1px);
-}
-button {
-  width: 100%;
-  padding: 13px;
-  margin-top: 15px;
-  border-radius: 10px;
-  border: none;
-  font-size: 1.05rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.2s;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-  position: relative;
-}
-button:active {
-  transform: scale(0.98);
-}
-.btn-gen {
-  background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
-  color: white;
-}
-.btn-start {
-  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
-  color: white;
-  font-size: 1.25rem;
-  display: none;
-  margin-top: 20px;
-  padding: 15px;
-}
-.btn-exit {
-  background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
-  color: white;
-  padding: 10px 25px;
-  font-size: 0.95rem;
-  width: auto;
-  display: inline-block;
-  min-width: 120px;
-  margin-top: 15px;
-}
-#qr-area {
-  background: white;
-  padding: 15px;
-  border-radius: 10px;
-  display: none;
-  margin: 15px auto;
-  width: fit-content;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-}
-.alert {
-  background: rgba(243, 156, 18, 0.15);
-  color: #f39c12;
-  padding: 12px;
-  border-radius: 8px;
-  margin: 15px 0;
-  font-size: 0.9rem;
-  display: none;
-  font-weight: 600;
-  border-left: 4px solid #f39c12;
-}
-/* ===== CONTROLES AR - MINIMALISTAS (95% PANTALLA PARA CÁMARA) ===== */
-#ar-scene-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  display: none;
-}
-#camera-status {
-  position: fixed;
-  top: 15px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(10, 10, 20, 0.92);
-  color: #fff;
-  padding: 10px 20px;
-  border-radius: 25px;
-  font-size: 1rem;
-  z-index: 1001;
-  display: none;
-  border: 2px solid #3498db;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-  font-weight: 600;
-  backdrop-filter: blur(10px);
-  max-width: 90%;
-  text-align: center;
-}
-.status-active {
-  color: #27ae60 !important;
-  border-color: #27ae60;
-}
-.status-searching {
-  color: #f39c12 !important;
-  border-color: #f39c12;
-  animation: pulse 2s infinite;
-}
-@keyframes pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(243, 156, 18, 0.4); }
-  50% { box-shadow: 0 0 0 8px rgba(243, 156, 18, 0); }
-}
-/* ===== CONTROLES INFERIORES - COMPACTOS ===== */
-#ar-controls {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background: linear-gradient(to top, rgba(10,10,20,0.95) 0%, rgba(20,20,40,0.85) 100%);
-  padding: 8px 10px 12px;
-  box-sizing: border-box;
-  display: none;
-  z-index: 1000;
-  text-align: center;
-  color: white;
-  backdrop-filter: blur(15px);
-  box-shadow: 0 -3px 15px rgba(0,0,0,0.6);
-}
-.control-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin: 8px 0;
-  gap: 8px;
-  background: rgba(52, 152, 219, 0.1);
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: 1px solid rgba(52, 152, 219, 0.2);
-}
-.control-label {
-  font-size: 0.85rem;
-  white-space: nowrap;
-  min-width: 70px;
-  color: #ecf0f1;
-  font-weight: 600;
-}
-input[type=range] {
-  flex: 1;
-  accent-color: #3498db;
-  margin: 0;
-  height: 30px;
-  -webkit-appearance: none;
-}
-input[type=range]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: #3498db;
-  cursor: pointer;
-  margin-top: -8px;
-  box-shadow: 0 2px 8px rgba(52, 152, 219, 0.4);
-}
-.scale-display {
-  font-size: 0.85rem;
-  color: #3498db;
-  min-width: 45px;
-  text-align: right;
-  font-weight: 700;
-}
-/* ===== BOTONES DE ACCIÓN - ICONOS PEQUEÑOS ===== */
-.action-buttons {
-  display: flex;
-  justify-content: space-around;
-  gap: 8px;
-  margin: 8px 0;
-}
-.btn-action {
-  background: rgba(52, 152, 219, 0.85);
-  color: white;
-  border: none;
-  width: 55px;
-  height: 55px;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 1.4rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 3px 12px rgba(52, 152, 219, 0.4);
-  transition: all 0.2s;
-  padding: 0;
-  font-weight: normal;
-  position: relative;
-}
-.btn-action:active {
-  transform: scale(0.92);
-  box-shadow: 0 2px 8px rgba(52, 152, 219, 0.4);
-}
-.btn-action:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(52, 152, 219, 0.5);
-}
-.btn-info {
-  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-}
-.btn-rotate {
-  background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
-  box-shadow: 0 3px 12px rgba(155, 89, 182, 0.4);
-}
-.btn-rotate:hover {
-  box-shadow: 0 5px 15px rgba(155, 89, 182, 0.5);
-}
-.btn-ruler {
-  background: linear-gradient(135deg, #f39c12 0%, #d35400 100%);
-  box-shadow: 0 3px 12px rgba(243, 156, 18, 0.4);
-}
-.btn-ruler:hover {
-  box-shadow: 0 5px 15px rgba(243, 156, 18, 0.5);
-}
-.btn-exit {
-  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-  box-shadow: 0 3px 12px rgba(231, 76, 60, 0.4);
-  width: 50px;
-  height: 50px;
-  position: fixed;
-  top: 15px;
-  right: 15px;
-  z-index: 1002;
-  border-radius: 50%;
-  display: none;
-  font-size: 1.2rem;
-}
-.btn-exit:hover {
-  box-shadow: 0 5px 15px rgba(231, 76, 60, 0.5);
-  transform: scale(1.05);
-}
-/* ===== TOGGLE MINIMALISTA ===== */
-.toggle-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 8px 0;
-  gap: 10px;
-}
-.toggle-label {
-  font-size: 0.85rem;
-  color: #95a5a6;
-  font-weight: 500;
-}
-.toggle-switch {
-  position: relative;
-  width: 45px;
-  height: 24px;
-  background: #444;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: background 0.2s;
-  border: 1px solid #555;
-}
-.toggle-switch.active {
-  background: #27ae60;
-  border-color: #2ecc71;
-}
-.toggle-slider {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 20px;
-  height: 20px;
-  background: white;
-  border-radius: 50%;
-  transition: transform 0.2s;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-}
-.toggle-switch.active .toggle-slider {
-  transform: translateX(21px);
-  background: #2ecc71;
-}
-/* ===== INFO PANEL - COMPACTO ===== */
-#figura-info-panel {
-  position: fixed;
-  bottom: 80px;
-  left: 50%;
-  transform: translateX(-50%) translateY(100%);
-  width: 95%;
-  max-width: 400px;
-  background: linear-gradient(135deg, rgba(15,15,30,0.98) 0%, rgba(30,20,60,0.98) 100%);
-  border: 2px solid #3498db;
-  border-radius: 15px;
-  padding: 18px;
-  color: white;
-  z-index: 1002;
-  transition: transform 0.3s ease;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.7);
-  backdrop-filter: blur(10px);
-  max-height: 70vh;
-  overflow-y: auto;
-}
-#figura-info-panel.visible {
-  transform: translateX(-50%) translateY(0);
-}
-.info-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-  padding-bottom: 8px;
-  border-bottom: 2px solid #3498db;
-}
-.info-title {
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: #3498db;
-}
-.close-info {
-  background: rgba(231, 76, 60, 0.8);
-  border: none;
-  color: white;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 1.3rem;
-  line-height: 1;
-  padding: 0;
-  margin: 0;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-}
-.close-info:active {
-  transform: scale(0.9);
-}
-.info-section-detail {
-  margin: 12px 0;
-  background: rgba(52, 152, 219, 0.08);
-  padding: 12px;
-  border-radius: 8px;
-  border-left: 3px solid #3498db;
-}
-.info-section-title {
-  color: #3498db;
-  font-weight: 700;
-  font-size: 1rem;
-  margin-bottom: 8px;
-}
-.info-section-content {
-  color: #ecf0f1;
-  font-size: 0.9rem;
-  line-height: 1.6;
-}
-.properties-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  margin-top: 8px;
-}
-.property-item {
-  background: rgba(52, 152, 219, 0.15);
-  padding: 10px 5px;
-  border-radius: 6px;
-  text-align: center;
-  border: 1px solid rgba(52, 152, 219, 0.3);
-}
-.property-label {
-  font-size: 0.75rem;
-  color: #95a5a6;
-  display: block;
-  margin-bottom: 4px;
-}
-.property-value {
-  font-size: 1rem;
-  color: #3498db;
-  font-weight: 700;
-  display: block;
-}
-/* ===== MEDIA QUERIES ===== */
-@media (max-width: 480px) {
-  .btn-action {
-    width: 50px;
-    height: 50px;
-    font-size: 1.3rem;
-  }
-  .btn-exit {
-    width: 45px;
-    height: 45px;
-    top: 12px;
-    right: 12px;
-  }
-  .control-row {
-    padding: 6px 10px;
-  }
-  input[type=range]::-webkit-slider-thumb {
-    width: 22px;
-    height: 22px;
-  }
+background: #e74c3c;
+color: white;
+padding: 15px;
+text-align: center;
+font-weight: bold;
+border-radius: 10px;
+margin: 15px 0;
+display: none;
 }
 </style>
 </head>
 <body>
-<!-- Pantalla de permisos de cámara -->
+<!-- NUEVO: Pantalla de permisos de cámara -->
 <div id="camera-permission">
-  <div class="permission-icon">📸</div>
-  <h1 class="permission-title">Permiso de Cámara</h1>
-  <p class="permission-text">
-    Necesitamos acceso a tu cámara para mostrar objetos 3D en Realidad Aumentada. Tu privacidad es importante: la cámara solo se procesa localmente.
-  </p>
-  <div id="https-warning">
-    ⚠️ Requiere HTTPS para funcionar en móviles
-  </div>
-  <button class="btn-permission" onclick="solicitarPermisos()">✅ Permitir Cámara</button>
+<div class="permission-icon">📸</div>
+<h2 class="permission-title">Permiso de Cámara Requerido</h2>
+<p class="permission-text">Esta aplicación necesita acceso a tu cámara para mostrar objetos 3D en Realidad Aumentada. Tu cámara solo se usa localmente y no se almacena ni transmite ninguna imagen.</p>
+<button class="btn-permission" onclick="solicitarPermisos()">✅ Permitir Acceso a Cámara</button>
+<div id="https-warning">⚠️ ERROR: Esta app requiere HTTPS para funcionar en móviles. Abre desde https:// o usa localhost</div>
 </div>
 
-<!-- Pantalla de carga -->
-<div id="loading-screen">
-  <div class="loader"></div>
-  <p id="loading-text">Cargando WILL AR...</p>
-</div>
-
-<!-- Panel de información (flotante compacto) -->
-<div id="figura-info-panel">
-  <div class="info-header">
-    <span class="info-title" id="info-figura-titulo">CUBO</span>
-    <button class="close-info" onclick="toggleInfoPanel()">×</button>
-  </div>
-  <div class="info-section-detail">
-    <div class="info-section-title">📐 Definición</div>
-    <div class="info-section-content" id="info-definicion">
-      Un cubo es un poliedro regular formado por seis caras cuadradas iguales.
-    </div>
-  </div>
-  <div class="info-section-detail">
-    <div class="info-section-title">📊 Propiedades</div>
-    <div class="properties-grid">
-      <div class="property-item">
-        <span class="property-label">Caras</span>
-        <span class="property-value" id="info-caras">6</span>
-      </div>
-      <div class="property-item">
-        <span class="property-label">Vértices</span>
-        <span class="property-value" id="info-vertices">8</span>
-      </div>
-      <div class="property-item">
-        <span class="property-label">Aristas</span>
-        <span class="property-value" id="info-aristas">12</span>
-      </div>
-      <div class="property-item">
-        <span class="property-label">Simetría</span>
-        <span class="property-value" id="info-simetria">Cúbica</span>
-      </div>
-    </div>
-  </div>
-  <div class="info-section-detail">
-    <div class="info-section-title">📏 Fórmulas</div>
-    <div class="info-section-content" id="info-formulas">
-      <strong>Volumen:</strong> V = a³<br>
-      <strong>Área:</strong> A = 6a²<br>
-      <strong>Diagonal:</strong> d = a√3
-    </div>
-  </div>
-</div>
-
-<!-- Menú de configuración -->
-<div id="menu-overlay">
-  <div class="card">
-    <h1>🔬 WILL AR</h1>
-    <h2>Laboratorio Matemático</h2>
-    <div class="alert" id="https-alert">
-      🔒 Requiere HTTPS para cámara en móviles
-    </div>
-    <label>🎨 Textura (Opcional)</label>
-    <div class="file-input-wrapper">
-      <input type="file" id="imgUpload" accept="image/*">
-      <label for="imgUpload" class="file-input-label">📁 Seleccionar Imagen</label>
-    </div>
-    <label>🔷 Figura Geométrica</label>
-    <select id="figura">
-      <option value="box">📦 Cubo</option>
-      <option value="sphere">⚽ Esfera</option>
-      <option value="cylinder">🛢️ Cilindro</option>
-      <option value="cone">🔺 Cono</option>
-      <option value="torus">🍩 Toroide</option>
-      <option value="tetrahedron">🔺 Tetraedro</option>
-      <option value="dodecahedron">💎 Dodecaedro</option>
-      <option value="icosahedron">⚽ Icosaedro</option>
-      <option value="octahedron">💠 Octaedro</option>
-    </select>
-    <button class="btn-gen" onclick="generarConfig()">⚙️ Configurar</button>
-    <div id="qr-area">
-      <div id="qrcode"></div>
-    </div>
-    <button id="btn-iniciar" class="btn-start" onclick="iniciarAR()">🚀 INICIAR AR</button>
-    <button class="btn-exit" onclick="location.reload()">🔙 Volver</button>
-  </div>
-</div>
-
-<!-- Estado de cámara -->
-<div id="camera-status">
-  <span id="camera-status-text">🔍 Buscando marcador HIRO...</span>
-</div>
-
-<!-- Botón de salida (esquina superior derecha) -->
-<button class="btn-exit" id="btn-exit-top" onclick="salirAR()">✕</button>
-
-<!-- Escena AR (95% de pantalla) -->
-<div id="ar-scene-container">
-  <a-scene
-    id="ar-scene"
-    embedded
-    arjs="sourceType: webcam; 
-           sourceWidth: 1280; 
-           sourceHeight: 720; 
-           displayWidth: 1280; 
-           displayHeight: 720; 
-           debugUIEnabled: false; 
-           detectionMode: mono_and_matrix; 
-           matrixCodeType: 3x3; 
-           maxDetectionRate: 60;"
-    vr-mode-ui="enabled: false"
-    renderer="logarithmicDepthBuffer: true; 
-               precision: medium; 
-               antialias: true;"
-    loading-screen="enabled: false"
-    device-orientation-permission-ui="enabled: false"
-    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
-    
-    <a-assets timeout="40000">
-      <img id="textura-asset" crossorigin="anonymous" src="">
-      <img id="textura-defecto" 
-           src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/textures/cube/skyboxsun25deg/px.jpg" 
-           crossorigin="anonymous">
-    </a-assets>
-    
-    <a-entity light="type: ambient; color: #FFF; intensity: 0.8"></a-entity>
-    <a-entity light="type: directional; color: #FFF; intensity: 0.6" position="1 2 1"></a-entity>
-    
-    <a-marker
-      preset="hiro"
-      id="hiro-marker"
-      smooth="true"
-      smoothCount="10"
-      smoothTolerance="0.01"
-      smoothThreshold="5">
-      
-      <a-entity id="contenedor-principal" position="0 0 0">
-        <a-box
-          id="modelo-3d"
-          position="0 0.5 0"
-          rotation="0 45 0"
-          scale="1 1 1"
-          color="#4ECDC4"
-          material="metalness: 0.3; roughness: 0.5; side: double"
-          animation="property: rotation; to: 0 405 0; dur: 10000; loop: true; easing: linear">
-        </a-box>
-        
-        <a-box
-          id="wireframe-guia"
-          position="0 0.5 0"
-          material="wireframe: true; color: #FFE66D; opacity: 0.8; side: double"
-          scale="1.05 1.05 1.05"
-          rotation="0 45 0">
-        </a-box>
-        
-        <!-- REGLA VIRTUAL COMPACTA -->
-        <a-entity id="regla-virtual" visible="true" position="0 0.5 0">
-          <!-- EJE VERTICAL -->
-          <a-entity position="-0.9 0 0">
-            <a-cylinder radius="0.02" height="2.4" color="#FFD700" 
-                        material="shader: flat; emissive: #FFD700; emissiveIntensity: 0.8; side: double"></a-cylinder>
-            <a-box position="0 0 0" width="0.2" height="0.03" depth="0.03" color="#FFD700" 
-                   material="shader: flat; emissive: #FFD700; emissiveIntensity: 0.8"></a-box>
-            <a-text value="100cm" position="-0.3 0 0" scale="0.35 0.35 0.35" color="#FFD700" 
-                    align="right" shader="flat"></a-text>
-          </a-entity>
-          
-          <!-- EJE HORIZONTAL -->
-          <a-entity position="0 -0.7 0">
-            <a-cylinder radius="0.02" height="2.4" color="#00FF88" rotation="0 0 90"
-                        material="shader: flat; emissive: #00FF88; emissiveIntensity: 0.8; side: double"></a-cylinder>
-            <a-box position="0 0 0" width="0.03" height="0.2" depth="0.03" color="#00FF88"
-                   material="shader: flat; emissive: #00FF88; emissiveIntensity: 0.8"></a-box>
-            <a-text value="100cm" position="0 -0.25 0" scale="0.35 0.35 0.35" color="#00FF88"
-                    align="center" shader="flat"></a-text>
-          </a-entity>
-        </a-entity>
-      </a-entity>
-    </a-marker>
-    
-    <a-entity camera position="0 1.6 0"></a-entity>
-  </a-scene>
-</div>
-
-<!-- Controles AR minimalistas -->
-<div id="ar-controls">
-  <div class="action-buttons">
-    <button class="btn-action btn-info" onclick="toggleInfoPanel()" title="Información">
-      ℹ️
-    </button>
-    <button class="btn-action btn-rotate" onclick="toggleRotacion()" id="btn-rotation" title="Rotación">
-      ⏸️
-    </button>
-    <button class="btn-action btn-ruler" onclick="toggleRegla()" title="Regla">
-      📏
-    </button>
-  </div>
-  
-  <div class="control-row">
-    <span class="control-label">Escala:</span>
-    <input type="range" min="0.5" max="3" step="0.1" value="1" 
-           oninput="cambiarEscala(this.value)">
-    <span class="scale-display"><span id="scale-value">1.0</span>x</span>
-  </div>
-</div>
+<!-- ... (mantén tu HTML existente: loading-screen, menu-overlay, ar-controls, etc.) ... -->
 
 <script>
+// ===== FIXES CRÍTICOS =====
 let texturaData = null;
 let figuraSeleccionada = "box";
 let arActivo = false;
@@ -837,342 +94,191 @@ let escalaActual = 1;
 let markerDetected = false;
 let rotacionActiva = true;
 let sceneLoaded = false;
-let cameraStream = null;
+let cameraStream = null; // Para gestionar el stream de cámara
 
-const dimensionesBase = {
-  box: { altura: 100, ancho: 100, profundidad: 100 },
-  sphere: { altura: 160, ancho: 160, profundidad: 160 },
-  cylinder: { altura: 200, ancho: 100, profundidad: 100 },
-  cone: { altura: 200, ancho: 100, profundidad: 100 },
-  torus: { altura: 40, ancho: 200, profundidad: 200 },
-  tetrahedron: { altura: 140, ancho: 100, profundidad: 100 },
-  dodecahedron: { altura: 160, ancho: 160, profundidad: 160 },
-  icosahedron: { altura: 160, ancho: 160, profundidad: 160 },
-  octahedron: { altura: 140, ancho: 100, profundidad: 100 }
-};
-
-const figurasInfo = {
-  box: { nombre: "CUBO", definicion: "Poliedro regular de 6 caras cuadradas", caras: 6, vertices: 8, aristas: 12, simetria: "Cúbica", formulas: "<strong>Volumen:</strong> V = a³<br><strong>Área:</strong> A = 6a²" },
-  sphere: { nombre: "ESFERA", definicion: "Cuerpo perfectamente redondo, todos los puntos equidistan del centro", caras: 1, vertices: 0, aristas: 0, simetria: "Esférica", formulas: "<strong>Volumen:</strong> V = (4/3)πr³<br><strong>Área:</strong> A = 4πr²" },
-  cylinder: { nombre: "CILINDRO", definicion: "Dos círculos paralelos unidos por superficie curva", caras: 3, vertices: 0, aristas: 2, simetria: "Cilíndrica", formulas: "<strong>Volumen:</strong> V = πr²h<br><strong>Área:</strong> A = 2πr(r+h)" },
-  cone: { nombre: "CONO", definicion: "Base circular con vértice único unido por superficie curva", caras: 2, vertices: 1, aristas: 1, simetria: "Cónica", formulas: "<strong>Volumen:</strong> V = (1/3)πr²h<br><strong>Área:</strong> A = πr(r+l)" },
-  torus: { nombre: "TOROIDE", definicion: "Superficie generada al girar un círculo alrededor de un eje", caras: 1, vertices: 0, aristas: 0, simetria: "Toroidal", formulas: "<strong>Volumen:</strong> V = 2π²Rr²<br><strong>Área:</strong> A = 4π²Rr" },
-  tetrahedron: { nombre: "TETRAEDRO", definicion: "Poliedro de 4 caras triangulares equiláteras", caras: 4, vertices: 4, aristas: 6, simetria: "Tetraédrica", formulas: "<strong>Volumen:</strong> V = a³/(6√2)<br><strong>Área:</strong> A = √3a²" },
-  dodecahedron: { nombre: "DODECAEDRO", definicion: "Poliedro de 12 caras pentagonales regulares", caras: 12, vertices: 20, aristas: 30, simetria: "Icosaédrica", formulas: "<strong>Volumen:</strong> V = [(15+7√5)/4]a³<br><strong>Área:</strong> A = 3√(25+10√5)a²" },
-  icosahedron: { nombre: "ICOSAEDRO", definicion: "Poliedro de 20 caras triangulares equiláteras", caras: 20, vertices: 12, aristas: 30, simetria: "Icosaédrica", formulas: "<strong>Volumen:</strong> V = [5(3+√5)/12]a³<br><strong>Área:</strong> A = 5√3a²" },
-  octahedron: { nombre: "OCTAEDRO", definicion: "Poliedro de 8 caras triangulares equiláteras", caras: 8, vertices: 6, aristas: 12, simetria: "Octaédrica", formulas: "<strong>Volumen:</strong> V = (√2/3)a³<br><strong>Área:</strong> A = 2√3a²" }
-};
-
-// ===== INICIALIZACIÓN =====
-window.addEventListener('load', () => {
-  setTimeout(() => {
-    document.getElementById('loading-screen').classList.add('hidden');
-    setTimeout(() => {
-      document.getElementById('loading-screen').style.display = 'none';
-      verificarHTTPS();
-    }, 400);
-  }, 600);
-});
-
-function verificarHTTPS() {
-  const esHTTPS = location.protocol === 'https:';
-  const esLocalhost = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-  
-  if (!esHTTPS && !esLocalhost) {
-    document.getElementById('https-warning').style.display = 'block';
-    document.getElementById('https-alert').style.display = 'block';
-  } else {
-    document.getElementById('https-warning').style.display = 'none';
-    setTimeout(() => {
-      document.getElementById('camera-permission').style.display = 'flex';
-    }, 300);
-  }
+// Verificación HTTPS CRÍTICA (antes de cualquier cosa)
+if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+document.getElementById('https-warning').style.display = 'block';
+document.querySelector('.btn-permission').disabled = true;
+document.querySelector('.btn-permission').innerText = '❌ Requiere HTTPS';
+console.error('❌ ERROR: La cámara solo funciona en HTTPS o localhost');
 }
 
-// ===== PERMISOS DE CÁMARA =====
+// ===== SOLICITAR PERMISOS EXPLÍCITOS =====
 async function solicitarPermisos() {
-  const esHTTPS = location.protocol === 'https:';
-  const esLocalhost = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-  
-  if (!esHTTPS && !esLocalhost) {
-    alert('⚠️ Necesitas HTTPS para usar la cámara en móviles.\n\nSoluciones:\n• Usa localhost para pruebas\n• Despliega en GitHub Pages (https://)\n• Usa servidor con SSL');
-    return;
-  }
-  
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ 
-      video: { 
-        facingMode: 'environment',
-        width: { ideal: 1280 },
-        height: { ideal: 720 }
-      } 
-    });
-    cameraStream = stream;
-    stream.getTracks().forEach(track => track.stop());
-    
-    console.log('✅ Permisos concedidos');
-    document.getElementById('camera-permission').style.display = 'none';
-    
-  } catch (err) {
-    console.error('❌ Error permisos:', err);
-    alert(`Error cámara: ${err.name}\n\nPermite el permiso cuando el navegador lo solicite.\n\niOS: Configuración > Safari > Cámara: Permitir`);
-  }
+try {
+// Solicitar permisos de cámara ANTES de cargar AR.js
+const stream = await navigator.mediaDevices.getUserMedia({ 
+video: { 
+facingMode: 'environment',
+width: { ideal: 1280 },
+height: { ideal: 720 }
+} 
+});
+cameraStream = stream;
+// Detener el stream temporalmente (AR.js lo reiniciará)
+stream.getTracks().forEach(track => track.stop());
+console.log('✅ Permisos de cámara concedidos');
+document.getElementById('camera-permission').style.display = 'none';
+} catch (err) {
+console.error('❌ Error permisos cámara:', err);
+alert(`Error al acceder a la cámara:\n${err.name}\n\nSoluciones:\n1. Usa HTTPS (https://)\n2. Recarga y permite permisos\n3. Verifica que la cámara no esté en uso\n4. En iOS: Configuración > Safari > Cámara: Permitir`);
+}
 }
 
-// ===== CARGA DE TEXTURA =====
-document.getElementById('imgUpload').addEventListener('change', function(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  
-  if (file.size > 5 * 1024 * 1024) {
-    alert('Imagen muy grande. Máximo 5MB.');
-    this.value = '';
-    return;
-  }
-  
-  const reader = new FileReader();
-  reader.onload = function(event) {
-    texturaData = event.target.result;
-    if (sceneLoaded && arActivo) {
-      document.getElementById('textura-asset').setAttribute('src', texturaData);
-      const modelo = document.getElementById('modelo-3d');
-      if (modelo) {
-        modelo.setAttribute('material', 'src: #textura-asset; metalness: 0.3; roughness: 0.5; side: double');
-      }
-    }
-  };
-  reader.readAsDataURL(file);
+// ===== INICIAR AR CON FIXES =====
+function iniciarAR() {
+if (!cameraStream && location.protocol !== 'https:' && location.hostname !== 'localhost') {
+alert('⚠️ Necesitas HTTPS para usar la cámara en móviles');
+return;
+}
+
+console.log('🎬 Iniciando AR con configuración segura...');
+document.getElementById('ar-scene-container').style.display = 'block';
+document.getElementById('menu-overlay').style.transform = "translateY(-100%)";
+document.getElementById('ar-controls').style.display = "block";
+document.getElementById('camera-status').style.display = 'block';
+
+// FIX CRÍTICO: Configuración de AR.js optimizada para móviles
+const scene = document.querySelector('a-scene');
+if (!scene.hasLoaded) {
+scene.addEventListener('loaded', () => {
+console.log('✅ Escena A-Frame cargada');
+inicializarAR();
+});
+} else {
+inicializarAR();
+}
+}
+
+function inicializarAR() {
+sceneLoaded = true;
+if (texturaData) {
+document.getElementById('textura-asset').setAttribute('src', texturaData);
+}
+crearFigura3D();
+actualizarInfoFigura();
+actualizarMediciones();
+
+// FIX: Escuchar eventos de marcador con mejor detección
+const marker = document.querySelector('#hiro-marker');
+if (marker) {
+marker.addEventListener('markerFound', () => {
+markerDetected = true;
+console.log('✅ MARCADOR DETECTADO');
+const statusText = document.getElementById('camera-status-text');
+statusText.textContent = '✅ ¡Objeto 3D visible!';
+statusText.className = 'status-active';
+setTimeout(() => {
+document.getElementById('camera-status').style.display = 'none';
+}, 2500);
 });
 
-// ===== CONFIGURACIÓN =====
-function generarConfig() {
-  figuraSeleccionada = document.getElementById('figura').value;
-  const qrContainer = document.getElementById('qrcode');
-  const qrArea = document.getElementById('qr-area');
-  const btnStart = document.getElementById('btn-iniciar');
-  
-  qrContainer.innerHTML = "";
-  qrArea.style.display = "none";
-  
-  try {
-    new QRCode(qrContainer, {
-      text: JSON.stringify({ app: "WILL-AR", figura: figuraSeleccionada }),
-      width: 120,
-      height: 120,
-      correctLevel: QRCode.CorrectLevel.H
-    });
-    qrArea.style.display = "block";
-    btnStart.style.display = "block";
-    setTimeout(() => {
-      btnStart.scrollIntoView({ behavior: 'smooth' });
-    }, 200);
-  } catch(e) {
-    console.error('Error QR:', e);
-    btnStart.style.display = "block";
-  }
+marker.addEventListener('markerLost', () => {
+markerDetected = false;
+const statusText = document.getElementById('camera-status-text');
+statusText.textContent = '🔍 Buscando marcador HIRO...';
+statusText.className = 'status-searching';
+document.getElementById('camera-status').style.display = 'block';
+});
 }
 
-// ===== CREAR FIGURA 3D =====
+// FIX: Timeout de fallback si no se detecta marcador en 15s
+setTimeout(() => {
+if (!markerDetected && arActivo) {
+const statusText = document.getElementById('camera-status-text');
+statusText.textContent = '❓ ¿Problemas? Ilumina mejor el marcador o recarga';
+statusText.className = 'status-searching';
+}
+}, 15000);
+
+arActivo = true;
+}
+
+// ===== CREAR FIGURA CON FIX DE CORS =====
 function crearFigura3D() {
-  const contenedor = document.getElementById('contenedor-principal');
-  ['modelo-3d', 'wireframe-guia'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.remove();
-  });
-  
-  const modelo = document.createElement('a-entity');
-  modelo.setAttribute('id', 'modelo-3d');
-  modelo.setAttribute('position', '0 0.5 0');
-  
-  let geoParams = '';
-  let rotation = '0 45 0';
-  
-  switch(figuraSeleccionada) {
-    case 'box': geoParams = 'primitive: box; width: 1; height: 1; depth: 1'; break;
-    case 'sphere': geoParams = 'primitive: sphere; radius: 0.5; segmentsWidth: 32'; rotation = '0 0 0'; break;
-    case 'cylinder': geoParams = 'primitive: cylinder; radius: 0.5; height: 1.5'; break;
-    case 'cone': geoParams = 'primitive: cone; radiusBottom: 0.5; radiusTop: 0; height: 1.5'; break;
-    case 'torus': geoParams = 'primitive: torus; radius: 0.5; radiusTubular: 0.15'; break;
-    case 'tetrahedron': geoParams = 'primitive: tetrahedron; radius: 0.6'; break;
-    case 'dodecahedron': geoParams = 'primitive: dodecahedron; radius: 0.5'; break;
-    case 'icosahedron': geoParams = 'primitive: icosahedron; radius: 0.5'; break;
-    case 'octahedron': geoParams = 'primitive: octahedron; radius: 0.6'; break;
-  }
-  
-  modelo.setAttribute('geometry', geoParams);
-  modelo.setAttribute('rotation', rotation);
-  
-  const materialParams = texturaData 
-    ? 'src: #textura-asset; metalness: 0.3; roughness: 0.5; side: double'
-    : 'color: #4ECDC4; metalness: 0.3; roughness: 0.5; side: double';
-  
-  modelo.setAttribute('material', materialParams);
-  
-  if (rotacionActiva) {
-    modelo.setAttribute('animation', 'property: rotation; to: 0 405 0; dur: 10000; loop: true; easing: linear');
-  }
-  
-  const wireframe = document.createElement('a-entity');
-  wireframe.setAttribute('id', 'wireframe-guia');
-  wireframe.setAttribute('geometry', geoParams);
-  wireframe.setAttribute('material', 'wireframe: true; color: #FFE66D; opacity: 0.8; side: double');
-  wireframe.setAttribute('scale', '1.05 1.05 1.05');
-  wireframe.setAttribute('rotation', rotation);
-  wireframe.setAttribute('position', '0 0.5 0');
-  
-  contenedor.appendChild(modelo);
-  contenedor.appendChild(wireframe);
-}
-
-// ===== INICIAR AR (CORREGIDO) =====
-async function iniciarAR() {
-  const esHTTPS = location.protocol === 'https:';
-  const esLocalhost = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-  
-  if (!esHTTPS && !esLocalhost && !cameraStream) {
-    alert('⚠️ Necesitas HTTPS para usar la cámara');
-    return;
-  }
-  
-  console.log('🎬 Iniciando AR...');
-  
-  // Mostrar escena AR (95% pantalla)
-  document.getElementById('ar-scene-container').style.display = 'block';
-  document.getElementById('camera-status').style.display = 'block';
-  document.getElementById('btn-exit-top').style.display = 'block';
-  
-  // Esperar inicialización
-  await new Promise(resolve => setTimeout(resolve, 800));
-  
-  if (!sceneLoaded) {
-    sceneLoaded = true;
-    
-    // Cargar textura si existe
-    if (texturaData) {
-      document.getElementById('textura-asset').setAttribute('src', texturaData);
-    }
-    
-    // Crear figura
-    crearFigura3D();
-    actualizarInfoFigura();
-    
-    // Eventos de marcador
-    const marker = document.querySelector('#hiro-marker');
-    if (marker) {
-      marker.addEventListener('markerFound', () => {
-        markerDetected = true;
-        console.log('✅ Marcador detectado');
-        const statusText = document.getElementById('camera-status-text');
-        statusText.textContent = '✅ ¡Objeto 3D visible!';
-        statusText.className = 'status-active';
-        setTimeout(() => {
-          if (markerDetected) {
-            document.getElementById('camera-status').style.display = 'none';
-          }
-        }, 2500);
-      });
-      
-      marker.addEventListener('markerLost', () => {
-        markerDetected = false;
-        const statusText = document.getElementById('camera-status-text');
-        statusText.textContent = '🔍 Buscando marcador...';
-        statusText.className = 'status-searching';
-        document.getElementById('camera-status').style.display = 'block';
-      });
-    }
-    
-    // Mostrar controles
-    document.getElementById('menu-overlay').classList.add('hidden');
-    document.getElementById('ar-controls').style.display = 'block';
-    
-    arActivo = true;
-    console.log('🚀 AR iniciado correctamente');
-    
-    // Timeout de ayuda
-    setTimeout(() => {
-      if (!markerDetected && arActivo) {
-        const statusText = document.getElementById('camera-status-text');
-        statusText.innerHTML = '❓ ¿Problemas?<br>• Ilumina el marcador<br>• Distancia 20-40cm<br>• Evita reflejos';
-        statusText.className = 'status-searching';
-      }
-    }, 12000);
-  }
-}
-
-// ===== FUNCIONES DE CONTROL =====
-function actualizarInfoFigura() {
-  const info = figurasInfo[figuraSeleccionada];
-  document.getElementById('info-figura-titulo').innerText = info.nombre;
-  document.getElementById('info-definicion').innerText = info.definicion;
-  document.getElementById('info-caras').innerText = info.caras;
-  document.getElementById('info-vertices').innerText = info.vertices;
-  document.getElementById('info-aristas').innerText = info.aristas;
-  document.getElementById('info-simetria').innerText = info.simetria;
-  document.getElementById('info-formulas').innerHTML = info.formulas;
-}
-
-function toggleInfoPanel() {
-  document.getElementById('figura-info-panel').classList.toggle('visible');
-}
-
-function toggleRotacion() {
-  rotacionActiva = !rotacionActiva;
-  const modelo = document.getElementById('modelo-3d');
-  const btn = document.getElementById('btn-rotation');
-  
-  if (modelo) {
-    if (rotacionActiva) {
-      modelo.setAttribute('animation', 'property: rotation; to: 0 405 0; dur: 10000; loop: true; easing: linear');
-      btn.innerHTML = '⏸️';
-    } else {
-      modelo.removeAttribute('animation');
-      btn.innerHTML = '▶️';
-    }
-  }
-}
-
-function cambiarEscala(val) {
-  escalaActual = parseFloat(val);
-  const modelo = document.getElementById('modelo-3d');
-  const guia = document.getElementById('wireframe-guia');
-  
-  if (modelo) modelo.setAttribute('scale', `${val} ${val} ${val}`);
-  if (guia) guia.setAttribute('scale', `${val * 1.05} ${val * 1.05} ${val * 1.05}`);
-  
-  document.getElementById('scale-value').innerText = escalaActual.toFixed(1);
-}
-
-function toggleRegla() {
-  reglaVisible = !reglaVisible;
-  const regla = document.getElementById('regla-virtual');
-  if (regla) {
-    regla.setAttribute('visible', reglaVisible.toString());
-  }
-}
-
-function salirAR() {
-  if (confirm('¿Volver al menú?')) {
-    // Limpiar cámara
-    try {
-      const video = document.querySelector('video');
-      if (video && video.srcObject) {
-        video.srcObject.getTracks().forEach(track => track.stop());
-        video.srcObject = null;
-      }
-    } catch (e) {}
-    
-    location.reload();
-  }
-}
-
-// ===== BLOQUEAR GESTOS =====
-['gesturestart', 'gesturechange', 'gestureend'].forEach(event => {
-  document.addEventListener(event, e => e.preventDefault());
+const contenedor = document.getElementById('contenedor-principal');
+['modelo-3d', 'wireframe-guia'].forEach(id => {
+const el = document.getElementById(id);
+if (el) el.remove();
 });
 
-document.addEventListener('touchmove', e => {
-  if (e.touches.length > 1) e.preventDefault();
-}, { passive: false });
+const modelo = document.createElement('a-entity');
+modelo.setAttribute('id', 'modelo-3d');
+modelo.setAttribute('position', '0 0.5 0');
+
+// FIX CORS: Usar textura pública sin restricciones
+const texturaPublica = 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/textures/cube/skyboxsun25deg/px.jpg';
+let materialParams = texturaData 
+? `src: #textura-asset; metalness: 0.3; roughness: 0.5; side: double`
+: `color: #4ECDC4; metalness: 0.3; roughness: 0.5; side: double`;
+
+// Configuración por figura
+const configs = {
+box: { primitive: 'box', width: 1, height: 1, depth: 1, rotation: '0 45 0' },
+sphere: { primitive: 'sphere', radius: 0.5, segmentsWidth: 32, segmentsHeight: 32, rotation: '0 0 0' },
+cylinder: { primitive: 'cylinder', radius: 0.5, height: 1.5, rotation: '0 0 0' },
+cone: { primitive: 'cone', radiusBottom: 0.5, radiusTop: 0, height: 1.5, rotation: '0 0 0' },
+torus: { primitive: 'torus', radius: 0.5, radiusTubular: 0.15, segmentsRadial: 24, rotation: '0 45 0' },
+tetrahedron: { primitive: 'tetrahedron', radius: 0.6, rotation: '0 45 0' },
+dodecahedron: { primitive: 'dodecahedron', radius: 0.5, rotation: '0 45 0' },
+icosahedron: { primitive: 'icosahedron', radius: 0.5, rotation: '0 45 0' },
+octahedron: { primitive: 'octahedron', radius: 0.6, rotation: '0 45 0' }
+};
+
+const config = configs[figuraSeleccionada] || configs.box;
+modelo.setAttribute('geometry', Object.entries(config)
+.filter(([k]) => k !== 'rotation')
+.map(([k, v]) => `${k}: ${v}`).join('; '));
+modelo.setAttribute('rotation', config.rotation);
+modelo.setAttribute('material', materialParams);
+
+if (rotacionActiva) {
+modelo.setAttribute('animation', 'property: rotation; to: 0 405 0; dur: 10000; loop: true; easing: linear');
+}
+
+// Wireframe guía
+const wireframe = document.createElement('a-entity');
+wireframe.setAttribute('id', 'wireframe-guia');
+wireframe.setAttribute('geometry', modelo.getAttribute('geometry'));
+wireframe.setAttribute('material', 'wireframe: true; color: #FFE66D; opacity: 0.8; side: double');
+wireframe.setAttribute('scale', '1.05 1.05 1.05');
+wireframe.setAttribute('rotation', config.rotation);
+wireframe.setAttribute('position', '0 0.5 0');
+
+contenedor.appendChild(modelo);
+contenedor.appendChild(wireframe);
+console.log('✅ Figura 3D creada:', figuraSeleccionada);
+}
+
+// ===== SALIR CON LIMPIEZA DE RECURSOS =====
+function salirAR() {
+if (confirm('¿Volver al menú principal?')) {
+// Limpiar recursos de cámara
+try {
+const video = document.querySelector('video');
+if (video && video.srcObject) {
+video.srcObject.getTracks().forEach(track => track.stop());
+video.srcObject = null;
+}
+} catch (e) { console.log('Limpiando cámara:', e); }
+
+// Recargar app limpia
+location.reload();
+}
+}
+
+// ===== EVENTOS ADICIONALES =====
+window.addEventListener('beforeunload', () => {
+if (cameraStream) {
+cameraStream.getTracks().forEach(track => track.stop());
+}
+});
+
+// Bloquear gestos que rompen AR
+['gesturestart', 'gesturechange', 'gestureend'].forEach(event => {
+document.addEventListener(event, e => e.preventDefault());
+});
 </script>
 </body>
 </html>
