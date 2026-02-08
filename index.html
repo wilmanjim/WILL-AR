@@ -6,9 +6,9 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <title>Will AR - Laboratorio Matemático Avanzado</title>
     
-    <!-- LIBRERÍAS CORREGIDAS Y ACTUALIZADAS -->
+    <!-- LIBRERÍAS CORREGIDAS - SIN ESPACIOS, VERSIONES ESTABLES -->
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar-nft.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar-nft.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <style>
@@ -18,6 +18,7 @@
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
             -webkit-touch-callout: none;
+            touch-action: manipulation;
         }
         body {
             margin: 0;
@@ -27,10 +28,9 @@
             width: 100vw;
             height: 100vh;
             position: fixed;
-            touch-action: none;
         }
         
-        /* PANTALLA DE CARGA MEJORADA */
+        /* PANTALLA DE CARGA */
         #loading-screen {
             position: fixed;
             top: 0;
@@ -136,34 +136,24 @@
             color: white;
             font-size: 0.95rem;
             outline: none;
+            margin-top: 5px;
         }
         .file-input-wrapper {
             position: relative;
             width: 100%;
             margin-top: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 10px;
         }
         .file-input-wrapper input[type="file"] {
-            position: absolute;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
-            z-index: 10;
-        }
-        .file-input-label {
-            display: block;
             width: 100%;
             padding: 10px;
-            background: rgba(142, 68, 173, 0.8);
+            background: rgba(52, 152, 219, 0.3);
             color: white;
-            border-radius: 10px;
-            text-align: center;
-            cursor: pointer;
-            transition: background 0.3s;
-            font-size: 0.9rem;
-        }
-        .file-input-label:hover {
-            background: rgba(142, 68, 173, 1);
+            border-radius: 8px;
+            border: none;
+            font-size: 0.95rem;
         }
         option {
             background: #2c3e50;
@@ -216,7 +206,29 @@
             box-shadow: 0 0 20px rgba(255,255,255,0.2);
         }
         
-        /* HUD AR - BOTONES MÁS VISIBLES */
+        /* ALERTAS */
+        .alert {
+            background: #f39c12;
+            color: #000;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 0.85rem;
+            display: none;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+        }
+        .alert.error {
+            background: #e74c3c;
+            color: white;
+        }
+        .alert.success {
+            background: #27ae60;
+            color: white;
+        }
+        
+        /* HUD AR */
         #ar-controls {
             position: fixed;
             bottom: 0;
@@ -269,32 +281,6 @@
             min-width: 50px;
             text-align: right;
             font-weight: bold;
-        }
-        #status-dot {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: #e74c3c;
-            margin-right: 5px;
-        }
-        .alert {
-            background: #f39c12;
-            color: #000;
-            padding: 10px;
-            border-radius: 8px;
-            margin: 10px 0;
-            font-size: 0.85rem;
-            display: none;
-            font-weight: bold;
-        }
-        #image-preview {
-            display: none;
-            margin-top: 8px;
-            max-width: 100%;
-            border-radius: 10px;
-            max-height: 120px;
-            object-fit: cover;
         }
         .toggle-container {
             display: flex;
@@ -376,7 +362,7 @@
             line-height: 1.6;
         }
         
-        /* STATUS INDICATOR */
+        /* STATUS DE CÁMARA */
         #camera-status {
             position: fixed;
             top: 15px;
@@ -392,6 +378,9 @@
             border: 2px solid #3498db;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             font-weight: bold;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
         }
         .status-active {
             color: #27ae60 !important;
@@ -399,8 +388,13 @@
         .status-searching {
             color: #f39c12 !important;
         }
+        .status-error {
+            color: #e74c3c !important;
+            background: rgba(231, 76, 60, 0.15) !important;
+            border-color: #e74c3c !important;
+        }
         
-        /* PANEL DE INFORMACIÓN DE FIGURA */
+        /* PANEL DE INFORMACIÓN DE FIGURA - COMPLETO */
         #figura-info-panel {
             position: fixed;
             top: 70px;
@@ -495,7 +489,7 @@
             margin-top: 5px;
         }
         
-        /* BOTONES DE ACCIÓN - MÁS GRANDES Y VISIBLES */
+        /* BOTONES DE ACCIÓN */
         .action-buttons {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
@@ -529,7 +523,7 @@
             grid-column: span 3;
         }
         
-        /* Indicador de carga AR */
+        /* LOADING AR */
         #ar-loading {
             position: fixed;
             top: 50%;
@@ -548,7 +542,7 @@
             display: block;
         }
         
-        /* ESTILO PARA ESCENA A-FRAME */
+        /* ESCENA A-FRAME */
         #ar-scene {
             position: absolute !important;
             top: 0;
@@ -557,29 +551,66 @@
             height: 100%;
             z-index: 1;
         }
+        
+        /* INSTRUCCIONES */
+        .instructions {
+            background: rgba(0,0,0,0.3);
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 15px;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+        .instructions a {
+            color: #3498db;
+            text-decoration: underline;
+            font-weight: bold;
+        }
+        
+        /* PREVIEW DE IMAGEN */
+        #image-preview-container {
+            margin-top: 15px;
+            display: none;
+        }
+        #image-preview {
+            max-width: 100%;
+            max-height: 150px;
+            border-radius: 10px;
+            border: 2px solid #3498db;
+            display: block;
+            margin: 0 auto;
+        }
+        .preview-label {
+            color: #95a5a6;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: block;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
-    <!-- LOADING MEJORADO -->
+    <!-- LOADING -->
     <div id="loading-screen">
         <div class="loader"></div>
-        <p id="loading-text">Cargando AR.js...</p>
+        <p id="loading-text">Cargando Laboratorio AR...</p>
         <p id="loading-tip">💡 Tip: Ten el marcador HIRO impreso o en otra pantalla</p>
     </div>
     
-    <!-- LOADING AL INICIAR AR -->
+    <!-- LOADING AR -->
     <div id="ar-loading">
         <div class="loader" style="margin: 0 auto 15px auto;"></div>
         <p style="font-size: 1.1rem;">🎥 Iniciando cámara...</p>
         <p style="font-size: 0.9rem; color: #95a5a6; margin-top: 10px;">Esto puede tardar unos segundos</p>
     </div>
     
-    <!-- STATUS DE CÁMARA -->
+    <!-- STATUS CÁMARA -->
     <div id="camera-status">
         <span id="camera-status-text">🔍 Buscando marcador HIRO...</span>
     </div>
     
-    <!-- PANEL DE INFORMACIÓN DE FIGURA -->
+    <!-- PANEL INFO FIGURA -->
     <div id="figura-info-panel">
         <div class="info-header">
             <span class="info-title" id="info-figura-titulo">CUBO</span>
@@ -588,7 +619,7 @@
         <div class="info-section-detail">
             <div class="info-section-title">📐 Definición</div>
             <div class="info-section-content" id="info-definicion">
-                Un cubo es un poliedro regular formado por seis caras cuadradas iguales.
+                Un cubo es un poliedro regular formado por seis caras cuadradas iguales. Es uno de los cinco sólidos platónicos.
             </div>
         </div>
         <div class="info-section-detail">
@@ -626,6 +657,12 @@
                 Arquitectura, embalaje, dados, cristalografía, diseño industrial.
             </div>
         </div>
+        <div class="info-section-detail">
+            <div class="info-section-title">🔬 Curiosidades</div>
+            <div class="info-section-content" id="info-curiosidades">
+                El cubo es el único poliedro regular que puede llenar el espacio tridimensional sin dejar huecos (teselación cúbica).
+            </div>
+        </div>
     </div>
     
     <!-- MENÚ PRINCIPAL -->
@@ -633,25 +670,29 @@
         <div class="card">
             <h1>🔬 WILL AR</h1>
             <h2>Laboratorio Matemático Avanzado</h2>
-            <div class="alert" id="https-alert">
-                ⚠️ Importante: Esta app requiere HTTPS para funcionar en móviles
+            
+            <div class="alert https-alert" id="https-alert">
+                🔒 ¡Atención! Esta app requiere <strong>HTTPS</strong> para funcionar en móviles.<br>
+                Hostea en: GitHub Pages, Netlify o Vercel (gratuitos)
             </div>
             
-            <!-- TEXTURA -->
-            <label>1️⃣ Textura Opcional</label>
+            <div class="alert" id="ios-alert" style="display:none;">
+                📱 iOS: Al iniciar AR, toca "Permitir" cuando aparezca el permiso de cámara
+            </div>
+            
+            <label>1️⃣ Textura Personalizada (Opcional)</label>
             <div class="file-input-wrapper">
-                <input type="file" id="imgUpload" accept="image/*">
-                <label for="imgUpload" class="file-input-label">
-                    📁 Seleccionar Imagen
-                </label>
+                <input type="file" id="imgUpload" accept="image/*" capture="environment">
             </div>
-            <img id="image-preview" alt="Preview">
-            <div id="status-txt" style="font-size:0.8rem; margin-top:5px; color:#f39c12;">
-                <span id="status-dot"></span> <span id="status-msg">Sin textura</span>
+            <div id="image-preview-container">
+                <img id="image-preview" alt="Vista previa">
+                <span class="preview-label" id="preview-label">Vista previa de textura</span>
+            </div>
+            <div id="texture-status" style="font-size:0.85rem; margin-top:8px; color:#f39c12; text-align:center;">
+                Sin textura seleccionada
             </div>
             
-            <!-- FIGURA -->
-            <label>2️⃣ Seleccionar Figura</label>
+            <label>2️⃣ Seleccionar Figura Geométrica</label>
             <select id="figura">
                 <option value="box">📦 Cubo</option>
                 <option value="sphere">⚽ Esfera</option>
@@ -664,45 +705,39 @@
                 <option value="octahedron">💠 Octaedro</option>
             </select>
             
-            <!-- ACCIONES -->
-            <button class="btn-gen" onclick="generarConfig()">⚙️ CONFIGURAR</button>
+            <button class="btn-gen" onclick="generarConfig()">⚙️ CONFIGURAR OBJETO</button>
             <div id="qr-area">
                 <div id="qrcode"></div>
-                <p style="color:#333; font-size:0.8rem; margin:5px 0 0 0;">Escanea para compartir</p>
+                <p style="color:#333; font-size:0.8rem; margin:5px 0 0 0;">Escanea para descargar marcador HIRO</p>
             </div>
-            <button id="btn-iniciar" class="btn-start" onclick="iniciarAR()">🚀 INICIAR AR</button>
+            <button id="btn-iniciar" class="btn-start" onclick="iniciarAR()">🚀 INICIAR REALIDAD AUMENTADA</button>
         </div>
-        <div class="info-section">
-            <strong style="font-size: 1rem;">📌 INSTRUCCIONES:</strong><br><br>
-            1. Configura tu objeto<br>
-            2. Descarga e imprime el marcador HIRO<br>
-            3. Al iniciar AR, espera 3-5 segundos<br>
-            4. Apunta la cámara al marcador<br><br>
-            <a href="https://ar-js-org.github.io/AR.js/data/images/hiro.png"
-               target="_blank"
-               style="color: #3498db; text-decoration: underline; font-weight: bold;">
-                👉 Descargar Marcador HIRO
-            </a>
+        <div class="instructions">
+            <strong>📌 Instrucciones de uso:</strong><br><br>
+            1️⃣ Configura tu objeto 3D<br>
+            2️⃣ <a href="https://raw.githubusercontent.com/AR-js-org/AR.js/master/data/images/Hiro%20marker.jpg" target="_blank" id="descargar-marker">Descarga e imprime el marcador HIRO</a><br>
+            3️⃣ Al iniciar AR, espera 3-5 segundos a que cargue la cámara<br>
+            4️⃣ Apunta la cámara al marcador impreso con buena iluminación<br><br>
+            <strong>⚠️ IMPORTANTE:</strong> Debe usarse en <span style="color:#e74c3c;">HTTPS</span> (no funciona en http://localhost)
         </div>
     </div>
     
     <!-- HUD AR -->
     <div id="ar-controls">
-        <div class="ar-info">📍 <span id="label-figura">CUBO</span></div>
+        <div class="ar-info">📍 Figura: <span id="label-figura">CUBO</span></div>
         
-        <!-- BOTONES DE ACCIÓN - MÁS GRANDES -->
         <div class="action-buttons">
             <button class="btn-info-toggle" onclick="toggleInfoPanel()">
                 📖<br>Info
             </button>
             <button class="btn-info-toggle" onclick="toggleRotacion()" id="btn-rotation">
-                ⏸️<br><span id="rotation-text">Pausar</span>
+                ⏸️<br>Pausar
             </button>
             <button class="btn-exit" onclick="salirAR()">❌ Salir</button>
         </div>
         
         <div class="control-row">
-            <span class="control-label">📏 Tamaño:</span>
+            <span class="control-label">📏 Escala:</span>
             <input type="range" min="0.1" max="3" step="0.1" value="1" oninput="cambiarEscala(this.value)">
             <span class="scale-display"><span id="scale-value">1.0</span>x</span>
         </div>
@@ -718,31 +753,33 @@
             <div class="measurement-grid">
                 <div class="measurement-item">
                     <span class="measurement-label">Alto</span>
-                    <span class="measurement-value"><span id="measure-height">1.0</span>m</span>
+                    <span class="measurement-value"><span id="measure-height">1000</span> mm</span>
                 </div>
                 <div class="measurement-item">
                     <span class="measurement-label">Ancho</span>
-                    <span class="measurement-value"><span id="measure-width">1.0</span>m</span>
+                    <span class="measurement-value"><span id="measure-width">1000</span> mm</span>
                 </div>
                 <div class="measurement-item">
-                    <span class="measurement-label">Prof</span>
-                    <span class="measurement-value"><span id="measure-depth">1.0</span>m</span>
+                    <span class="measurement-label">Profundidad</span>
+                    <span class="measurement-value"><span id="measure-depth">1000</span> mm</span>
                 </div>
             </div>
-            <div class="property-item" style="margin-top: 8px;">
-                <span class="measurement-label">Volumen Aproximado</span>
-                <span class="measurement-value"><span id="measure-volume">1.0</span>m³</span>
+            <div class="measurement-item" style="margin-top:10px; background: rgba(231, 76, 60, 0.2); border-color: rgba(231, 76, 60, 0.4);">
+                <span class="measurement-label">Volumen Aprox.</span>
+                <span class="measurement-value"><span id="measure-volume">1.000</span> m³</span>
             </div>
         </div>
     </div>
     
-    <!-- ESCENA A-FRAME - CORREGIDA Y OPTIMIZADA -->
+    <!-- ESCENA A-FRAME - CONFIGURACIÓN CORREGIDA Y COMPLETA -->
     <a-scene
         id="ar-scene"
         embedded
         arjs="sourceType: webcam; 
                sourceWidth: 1280; 
                sourceHeight: 720; 
+               displayWidth: 1280; 
+               displayHeight: 720; 
                detectionMode: mono; 
                maxDetectionRate: 60; 
                canvasWidth: 1280; 
@@ -758,8 +795,10 @@
         
         <a-assets timeout="30000">
             <img id="textura-asset" crossorigin="anonymous" src="">
-            <img id="textura-defecto" src="https://cdn.pixabay.com/photo/2016/11/29/05/45/astronomy-1867616_960_720.jpg" crossorigin="anonymous">
-            <img id="hiro-marker-img" src="https://raw.githubusercontent.com/AR-js-org/AR.js/master/data/images/Hiro%20marker.jpg" crossorigin="anonymous">
+            <img id="textura-default" crossorigin="anonymous" 
+                 src="https://cdn.pixabay.com/photo/2017/08/06/00/47/stars-2589811_1280.jpg">
+            <img id="hiro-marker-img" crossorigin="anonymous" 
+                 src="https://raw.githubusercontent.com/AR-js-org/AR.js/master/data/images/Hiro%20marker.jpg">
         </a-assets>
         
         <a-marker
@@ -772,32 +811,77 @@
             
             <a-entity id="contenedor-principal" position="0 0 0">
                 
-                <!-- OBJETO PRINCIPAL - SE GENERARÁ DINÁMICAMENTE -->
+                <!-- OBJETO 3D PRINCIPAL -->
                 <a-entity id="modelo-3d" position="0 0.5 0"></a-entity>
                 
-                <!-- WIREFRAME -->
-                <a-entity id="wireframe-guia" material="wireframe: true; color: #FFE66D; opacity: 0.6" scale="1.05 1.05 1.05" position="0 0.5 0"></a-entity>
+                <!-- WIREFRAME DE REFERENCIA -->
+                <a-entity 
+                    id="wireframe-guia" 
+                    material="wireframe: true; color: #FFE66D; wireframeLinewidth: 2; opacity: 0.7; transparent: true" 
+                    scale="1.05 1.05 1.05" 
+                    position="0 0.5 0">
+                </a-entity>
                 
-                <!-- REGLA VIRTUAL OPTIMIZADA -->
+                <!-- REGLA VIRTUAL OPTIMIZADA PERO COMPLETA (10 divisiones por eje) -->
                 <a-entity id="regla-virtual" visible="true" position="0 0.5 0">
                     
-                    <!-- EJE VERTICAL (ALTURA) - AMARILLO -->
-                    <a-cylinder radius="0.01" height="2.0" color="#FFD700" position="-0.7 0 0"></a-cylinder>
-                    <a-text value="100cm" position="-0.9 1.0 0" color="#FFD700" scale="0.3 0.3 0.3"></a-text>
-                    <a-text value="0cm" position="-0.9 0 0" color="#FFD700" scale="0.35 0.35 0.35"></a-text>
-                    <a-text value="-100cm" position="-0.9 -1.0 0" color="#FFD700" scale="0.3 0.3 0.3"></a-text>
+                    <!-- EJE Y (ALTURA) - AMARILLO -->
+                    <a-cylinder radius="0.008" height="2.0" color="#FFD700" position="-0.7 0 0"></a-cylinder>
+                    <!-- Divisiones cada 20cm -->
+                    <a-box width="0.08" height="0.01" depth="0.01" color="#FFD700" position="-0.7 1.0 0"></a-box>
+                    <a-box width="0.06" height="0.01" depth="0.01" color="#FFD700" position="-0.7 0.8 0"></a-box>
+                    <a-box width="0.06" height="0.01" depth="0.01" color="#FFD700" position="-0.7 0.6 0"></a-box>
+                    <a-box width="0.06" height="0.01" depth="0.01" color="#FFD700" position="-0.7 0.4 0"></a-box>
+                    <a-box width="0.06" height="0.01" depth="0.01" color="#FFD700" position="-0.7 0.2 0"></a-box>
+                    <a-box width="0.10" height="0.01" depth="0.01" color="#FFD700" position="-0.7 0.0 0"></a-box>
+                    <a-box width="0.06" height="0.01" depth="0.01" color="#FFD700" position="-0.7 -0.2 0"></a-box>
+                    <a-box width="0.06" height="0.01" depth="0.01" color="#FFD700" position="-0.7 -0.4 0"></a-box>
+                    <a-box width="0.06" height="0.01" depth="0.01" color="#FFD700" position="-0.7 -0.6 0"></a-box>
+                    <a-box width="0.06" height="0.01" depth="0.01" color="#FFD700" position="-0.7 -0.8 0"></a-box>
+                    <a-box width="0.08" height="0.01" depth="0.01" color="#FFD700" position="-0.7 -1.0 0"></a-box>
                     
-                    <!-- EJE HORIZONTAL (ANCHO) - VERDE -->
-                    <a-cylinder radius="0.01" height="2.0" color="#00FF88" rotation="0 90 0" position="0 -0.7 0"></a-cylinder>
-                    <a-text value="-100cm" position="-1.0 -0.9 0" color="#00FF88" scale="0.3 0.3 0.3" rotation="0 90 0"></a-text>
-                    <a-text value="0" position="0 -0.9 0" color="#00FF88" scale="0.35 0.35 0.35" rotation="0 90 0"></a-text>
-                    <a-text value="100cm" position="1.0 -0.9 0" color="#00FF88" scale="0.3 0.3 0.3" rotation="0 90 0"></a-text>
+                    <!-- Etiquetas Y -->
+                    <a-text value="100cm" position="-0.95 1.0 0" color="#FFD700" scale="0.25 0.25 0.25" align="center"></a-text>
+                    <a-text value="0cm" position="-0.95 0.0 0" color="#FFD700" scale="0.3 0.3 0.3" align="center" bold="true"></a-text>
+                    <a-text value="-100cm" position="-0.95 -1.0 0" color="#FFD700" scale="0.25 0.25 0.25" align="center"></a-text>
                     
-                    <!-- EJE PROFUNDIDAD - ROJO -->
-                    <a-cylinder radius="0.01" height="2.0" color="#FF6B6B" rotation="90 0 0" position="0.7 0 0"></a-cylinder>
-                    <a-text value="-100cm" position="0.9 0 -1.0" color="#FF6B6B" scale="0.3 0.3 0.3" rotation="0 90 0"></a-text>
-                    <a-text value="0" position="0.9 0 0" color="#FF6B6B" scale="0.35 0.35 0.35" rotation="0 90 0"></a-text>
-                    <a-text value="100cm" position="0.9 0 1.0" color="#FF6B6B" scale="0.3 0.3 0.3" rotation="0 90 0"></a-text>
+                    <!-- EJE X (ANCHO) - VERDE -->
+                    <a-cylinder radius="0.008" height="2.0" color="#00FF88" rotation="0 90 0" position="0 -0.7 0"></a-cylinder>
+                    <a-box width="0.01" height="0.01" depth="0.08" color="#00FF88" position="-1.0 -0.7 0" rotation="0 90 0"></a-box>
+                    <a-box width="0.01" height="0.01" depth="0.06" color="#00FF88" position="-0.8 -0.7 0" rotation="0 90 0"></a-box>
+                    <a-box width="0.01" height="0.01" depth="0.06" color="#00FF88" position="-0.6 -0.7 0" rotation="0 90 0"></a-box>
+                    <a-box width="0.01" height="0.01" depth="0.06" color="#00FF88" position="-0.4 -0.7 0" rotation="0 90 0"></a-box>
+                    <a-box width="0.01" height="0.01" depth="0.06" color="#00FF88" position="-0.2 -0.7 0" rotation="0 90 0"></a-box>
+                    <a-box width="0.01" height="0.01" depth="0.10" color="#00FF88" position="0.0 -0.7 0" rotation="0 90 0"></a-box>
+                    <a-box width="0.01" height="0.01" depth="0.06" color="#00FF88" position="0.2 -0.7 0" rotation="0 90 0"></a-box>
+                    <a-box width="0.01" height="0.01" depth="0.06" color="#00FF88" position="0.4 -0.7 0" rotation="0 90 0"></a-box>
+                    <a-box width="0.01" height="0.01" depth="0.06" color="#00FF88" position="0.6 -0.7 0" rotation="0 90 0"></a-box>
+                    <a-box width="0.01" height="0.01" depth="0.06" color="#00FF88" position="0.8 -0.7 0" rotation="0 90 0"></a-box>
+                    <a-box width="0.01" height="0.01" depth="0.08" color="#00FF88" position="1.0 -0.7 0" rotation="0 90 0"></a-box>
+                    
+                    <!-- Etiquetas X -->
+                    <a-text value="-100cm" position="-1.0 -0.95 0" color="#00FF88" scale="0.25 0.25 0.25" align="center" rotation="0 90 0"></a-text>
+                    <a-text value="0cm" position="0.0 -0.95 0" color="#00FF88" scale="0.3 0.3 0.3" align="center" rotation="0 90 0" bold="true"></a-text>
+                    <a-text value="100cm" position="1.0 -0.95 0" color="#00FF88" scale="0.25 0.25 0.25" align="center" rotation="0 90 0"></a-text>
+                    
+                    <!-- EJE Z (PROFUNDIDAD) - ROJO -->
+                    <a-cylinder radius="0.008" height="2.0" color="#FF6B6B" rotation="90 0 0" position="0.7 0 0"></a-cylinder>
+                    <a-box width="0.01" height="0.08" depth="0.01" color="#FF6B6B" position="0.7 1.0 0" rotation="90 0 0"></a-box>
+                    <a-box width="0.01" height="0.06" depth="0.01" color="#FF6B6B" position="0.7 0.8 0" rotation="90 0 0"></a-box>
+                    <a-box width="0.01" height="0.06" depth="0.01" color="#FF6B6B" position="0.7 0.6 0" rotation="90 0 0"></a-box>
+                    <a-box width="0.01" height="0.06" depth="0.01" color="#FF6B6B" position="0.7 0.4 0" rotation="90 0 0"></a-box>
+                    <a-box width="0.01" height="0.06" depth="0.01" color="#FF6B6B" position="0.7 0.2 0" rotation="90 0 0"></a-box>
+                    <a-box width="0.01" height="0.10" depth="0.01" color="#FF6B6B" position="0.7 0.0 0" rotation="90 0 0"></a-box>
+                    <a-box width="0.01" height="0.06" depth="0.01" color="#FF6B6B" position="0.7 -0.2 0" rotation="90 0 0"></a-box>
+                    <a-box width="0.01" height="0.06" depth="0.01" color="#FF6B6B" position="0.7 -0.4 0" rotation="90 0 0"></a-box>
+                    <a-box width="0.01" height="0.06" depth="0.01" color="#FF6B6B" position="0.7 -0.6 0" rotation="90 0 0"></a-box>
+                    <a-box width="0.01" height="0.06" depth="0.01" color="#FF6B6B" position="0.7 -0.8 0" rotation="90 0 0"></a-box>
+                    <a-box width="0.01" height="0.08" depth="0.01" color="#FF6B6B" position="0.7 -1.0 0" rotation="90 0 0"></a-box>
+                    
+                    <!-- Etiquetas Z -->
+                    <a-text value="-100cm" position="0.95 0.0 -1.0" color="#FF6B6B" scale="0.25 0.25 0.25" align="center" rotation="0 90 0"></a-text>
+                    <a-text value="0cm" position="0.95 0.0 0.0" color="#FF6B6B" scale="0.3 0.3 0.3" align="center" rotation="0 90 0" bold="true"></a-text>
+                    <a-text value="100cm" position="0.95 0.0 1.0" color="#FF6B6B" scale="0.25 0.25 0.25" align="center" rotation="0 90 0"></a-text>
                     
                 </a-entity>
                 
@@ -807,20 +891,22 @@
     </a-scene>
 
     <script>
-        // VARIABLES GLOBALES
+        // VARIABLES GLOBALES - MANTENIDAS TODAS LAS ORIGINALES
         let texturaData = null;
+        let texturaURL = null;
         let figuraSeleccionada = "box";
         let arActivo = false;
         let reglaVisible = true;
-        let escalaActual = 1;
+        let escalaActual = 1.0;
         let markerDetected = false;
         let rotacionActiva = true;
         let escenaAR = null;
         let modelo3D = null;
         let wireframeGuia = null;
         let contenedorPrincipal = null;
+        let primeraVez = true;
         
-        // BASE DE DATOS DE FIGURAS
+        // BASE DE DATOS COMPLETA DE FIGURAS (9 figuras con todas sus propiedades)
         const figurasInfo = {
             box: {
                 nombre: "CUBO",
@@ -829,9 +915,11 @@
                 vertices: 8,
                 aristas: 12,
                 simetria: "Cúbica",
-                formulas: "Volumen: V = a³\nÁrea: A = 6a²\nDiagonal: d = a√3",
+                formulas: "Volumen: V = a³<br>Área: A = 6a²<br>Diagonal: d = a√3",
                 aplicaciones: "Arquitectura, embalaje, dados, cristalografía, diseño industrial, almacenamiento.",
-                altura: 1, ancho: 1, profundidad: 1
+                curiosidades: "El cubo es el único poliedro regular que puede llenar el espacio tridimensional sin dejar huecos (teselación cúbica).",
+                altura: 1000, ancho: 1000, profundidad: 1000,
+                colorBase: "#3498db"
             },
             sphere: {
                 nombre: "ESFERA",
@@ -840,9 +928,11 @@
                 vertices: 0,
                 aristas: 0,
                 simetria: "Esférica",
-                formulas: "Volumen: V = (4/3)πr³\nÁrea: A = 4πr²\nDiámetro: d = 2r",
-                aplicaciones: "Pelotas deportivas, planetas, burbujas, tanques de presión, óptica.",
-                altura: 1.6, ancho: 1.6, profundidad: 1.6
+                formulas: "Volumen: V = (4/3)πr³<br>Área: A = 4πr²<br>Diámetro: d = 2r",
+                aplicaciones: "Pelotas deportivas, planetas, burbujas, tanques de presión, óptica, astronomía.",
+                curiosidades: "La esfera tiene el menor área superficial por volumen de cualquier forma geométrica, lo que la hace ideal para burbujas y gotas.",
+                altura: 1000, ancho: 1000, profundidad: 1000,
+                colorBase: "#e74c3c"
             },
             cylinder: {
                 nombre: "CILINDRO",
@@ -851,9 +941,11 @@
                 vertices: 0,
                 aristas: 2,
                 simetria: "Cilíndrica",
-                formulas: "Volumen: V = πr²h\nÁrea lateral: A = 2πrh\nÁrea total: A = 2πr(r+h)",
-                aplicaciones: "Latas, tuberías, columnas, tanques, pistones, envases.",
-                altura: 2, ancho: 1, profundidad: 1
+                formulas: "Volumen: V = πr²h<br>Área lateral: A = 2πrh<br>Área total: A = 2πr(r+h)",
+                aplicaciones: "Latas, tuberías, columnas, tanques, pistones, envases cilíndricos.",
+                curiosidades: "Los cilindros son fundamentales en motores de combustión interna, donde el pistón se mueve dentro de un cilindro.",
+                altura: 1500, ancho: 1000, profundidad: 1000,
+                colorBase: "#2ecc71"
             },
             cone: {
                 nombre: "CONO",
@@ -862,31 +954,37 @@
                 vertices: 1,
                 aristas: 1,
                 simetria: "Cónica",
-                formulas: "Volumen: V = (1/3)πr²h\nÁrea lateral: A = πrl\nGeneratriz: l = √(r²+h²)",
-                aplicaciones: "Conos de tráfico, embudos, sombreros, helados, volcanes.",
-                altura: 2, ancho: 1, profundidad: 1
+                formulas: "Volumen: V = (1/3)πr²h<br>Área lateral: A = πr√(r²+h²)<br>Generatriz: g = √(r²+h²)",
+                aplicaciones: "Conos de tráfico, embudos, sombreros, helados, volcanes, altavoces.",
+                curiosidades: "El cono es una de las secciones cónicas, junto con la elipse, parábola e hipérbola, obtenidas al cortar un cono con un plano.",
+                altura: 1500, ancho: 1000, profundidad: 1000,
+                colorBase: "#f39c12"
             },
             torus: {
                 nombre: "TOROIDE",
-                definicion: "Un toroide es una superficie de revolución generada al girar un círculo alrededor de un eje coplanar.",
+                definicion: "Un toroide es una superficie de revolución generada al girar un círculo alrededor de un eje coplanar que no lo intersecta.",
                 caras: 1,
                 vertices: 0,
                 aristas: 0,
                 simetria: "Toroidal",
-                formulas: "Volumen: V = 2π²Rr²\nÁrea: A = 4π²Rr\nR=radio mayor, r=radio menor",
-                aplicaciones: "Rosquillas, neumáticos, tokamaks, campos magnéticos, topología.",
-                altura: 0.4, ancho: 2, profundidad: 2
+                formulas: "Volumen: V = 2π²Rr²<br>Área: A = 4π²Rr<br>(R=radio mayor, r=radio menor)",
+                aplicaciones: "Rosquillas, neumáticos, tokamaks (reactores de fusión), campos magnéticos, topología matemática.",
+                curiosidades: "En topología, el toro es una superficie bidimensional sin frontera que no es equivalente a una esfera (tiene un 'agujero').",
+                altura: 300, ancho: 1000, profundidad: 1000,
+                colorBase: "#9b59b6"
             },
             tetrahedron: {
                 nombre: "TETRAEDRO",
-                definicion: "Un tetraedro es un poliedro de cuatro caras triangulares equiláteras. Es el más simple de los sólidos platónicos.",
+                definicion: "Un tetraedro regular es un poliedro de cuatro caras triangulares equiláteras. Es el más simple de los sólidos platónicos.",
                 caras: 4,
                 vertices: 4,
                 aristas: 6,
                 simetria: "Tetraédrica",
-                formulas: "Volumen: V = a³/(6√2)\nÁrea: A = √3a²\nAltura: h = a√(2/3)",
-                aplicaciones: "Cristalografía, química molecular, embalaje, estructuras espaciales.",
-                altura: 1.4, ancho: 1, profundidad: 1
+                formulas: "Volumen: V = a³/(6√2)<br>Área: A = √3a²<br>Altura: h = a√(2/3)",
+                aplicaciones: "Cristalografía (metano CH₄), química molecular, embalaje tetraédrico, estructuras espaciales.",
+                curiosidades: "El tetraedro es el único sólido platónico que no tiene caras opuestas paralelas.",
+                altura: 816, ancho: 1000, profundidad: 1000,
+                colorBase: "#1abc9c"
             },
             dodecahedron: {
                 nombre: "DODECAEDRO",
@@ -895,91 +993,114 @@
                 vertices: 20,
                 aristas: 30,
                 simetria: "Icosaédrica",
-                formulas: "Volumen: V = (15+7√5)a³/4\nÁrea: A = 3√(25+10√5)a²\nDiagonal: d = a(1+√5)/2 · √3",
-                aplicaciones: "Cristalografía, dados de rol, arquitectura, diseño decorativo.",
-                altura: 1.6, ancho: 1.6, profundidad: 1.6
+                formulas: "Volumen: V = (15+7√5)a³/4<br>Área: A = 3√(25+10√5)a²",
+                aplicaciones: "Dados de rol (d12), cristalografía (pirita), arquitectura geodésica, diseño decorativo.",
+                curiosidades: "Los antiguos griegos asociaban el dodecaedro con el cosmos o el éter, el quinto elemento.",
+                altura: 1000, ancho: 1000, profundidad: 1000,
+                colorBase: "#34495e"
             },
             icosahedron: {
                 nombre: "ICOSAEDRO",
-                definicion: "Un icosaedro regular es un poliedro de veinte caras triangulares equiláteras. Es el más complejo de los sólidos platónicos.",
+                definicion: "Un icosaedro regular es un poliedro de veinte caras triangulares equiláteras. Es el sólido platónico con más caras.",
                 caras: 20,
                 vertices: 12,
                 aristas: 30,
                 simetria: "Icosaédrica",
-                formulas: "Volumen: V = (5(3+√5)/12)a³\nÁrea: A = 5√3a²\nRadio: r = a√(10+2√5)/4",
-                aplicaciones: "Virus, domos geodésicos, pelotas de fútbol, dados, moléculas.",
-                altura: 1.6, ancho: 1.6, profundidad: 1.6
+                formulas: "Volumen: V = (5(3+√5)/12)a³<br>Área: A = 5√3a²",
+                aplicaciones: "Virus (cápside icosaédrica), domos geodésicos, dados de rol (d20), fullerenos (C₆₀).",
+                curiosidades: "Muchos virus, incluido el adenovirus, tienen cápsides con simetría icosaédrica por su eficiencia estructural.",
+                altura: 1000, ancho: 1000, profundidad: 1000,
+                colorBase: "#e67e22"
             },
             octahedron: {
                 nombre: "OCTAEDRO",
-                definicion: "Un octaedro regular es un poliedro de ocho caras triangulares equiláteras. Dual del cubo entre los sólidos platónicos.",
+                definicion: "Un octaedro regular es un poliedro de ocho caras triangulares equiláteras. Es el dual del cubo entre los sólidos platónicos.",
                 caras: 8,
                 vertices: 6,
                 aristas: 12,
                 simetria: "Octaédrica",
-                formulas: "Volumen: V = (√2/3)a³\nÁrea: A = 2√3a²\nAltura: h = a√2",
-                aplicaciones: "Cristalografía (diamante), dados, estructuras moleculares, diseño.",
-                altura: 1.4, ancho: 1, profundidad: 1
+                formulas: "Volumen: V = (√2/3)a³<br>Área: A = 2√3a²<br>Diagonal: d = a√2",
+                aplicaciones: "Cristalografía (diamante), dados de rol (d8), estructuras moleculares, diseño arquitectónico.",
+                curiosidades: "El octaedro y el cubo son duales: los vértices de uno corresponden a las caras del otro.",
+                altura: 1000, ancho: 1000, profundidad: 1000,
+                colorBase: "#16a085"
             }
         };
         
-        // INICIALIZACIÓN
+        // INICIALIZACIÓN COMPLETA
         document.addEventListener('DOMContentLoaded', () => {
             // Verificar HTTPS
             if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
                 document.getElementById('https-alert').style.display = 'block';
+            } else {
+                document.getElementById('https-alert').style.display = 'none';
             }
             
-            // Referencias a elementos
-            escenaAR = document.getElementById('ar-scene');
-            modelo3D = document.getElementById('modelo-3d');
-            wireframeGuia = document.getElementById('wireframe-guia');
-            contenedorPrincipal = document.getElementById('contenedor-principal');
+            // Detectar iOS para mostrar alerta específica
+            if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                document.getElementById('ios-alert').style.display = 'block';
+                // Prevenir sleep con audio silencioso
+                const audio = new Audio();
+                audio.volume = 0;
+                document.body.addEventListener('touchstart', () => {
+                    audio.play().catch(e => console.log('Audio autoplay bloqueado (normal en iOS)', e));
+                }, { once: true });
+            }
             
-            // Esperar a que A-Frame cargue
-            escenaAR.addEventListener('loaded', () => {
-                setTimeout(() => {
-                    const loadingScreen = document.getElementById('loading-screen');
-                    loadingScreen.classList.add('hidden');
-                    setTimeout(() => {
-                        loadingScreen.style.display = 'none';
-                    }, 500);
-                }, 1500);
-            });
-        });
-        
-        // PROCESAR IMAGEN
-        document.getElementById('imgUpload').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if(file) {
-                if(file.size > 5 * 1024 * 1024) {
-                    alert('Imagen muy grande. Máximo 5MB.');
+            // Referencias a elementos A-Frame
+            setTimeout(() => {
+                escenaAR = document.getElementById('ar-scene');
+                modelo3D = document.getElementById('modelo-3d');
+                wireframeGuia = document.getElementById('wireframe-guia');
+                contenedorPrincipal = document.getElementById('contenedor-principal');
+                
+                // Ocultar loading después de que A-Frame cargue
+                if (escenaAR) {
+                    escenaAR.addEventListener('loaded', () => {
+                        setTimeout(() => {
+                            const loadingScreen = document.getElementById('loading-screen');
+                            loadingScreen.classList.add('hidden');
+                            setTimeout(() => {
+                                loadingScreen.style.display = 'none';
+                            }, 500);
+                        }, 1000);
+                    });
+                }
+            }, 1000);
+            
+            // Manejar carga de imagen - CORREGIDO PARA iOS/ANDROID
+            document.getElementById('imgUpload').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) {
+                    texturaURL = null;
+                    texturaData = null;
+                    document.getElementById('image-preview-container').style.display = 'none';
+                    document.getElementById('texture-status').innerHTML = 'Sin textura seleccionada';
+                    return;
+                }
+                
+                if (file.size > 10 * 1024 * 1024) {
+                    alert('⚠️ Imagen muy grande. Máximo 10MB.');
                     this.value = '';
                     return;
                 }
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    texturaData = event.target.result;
-                    const preview = document.getElementById('image-preview');
-                    preview.src = texturaData;
-                    preview.style.display = 'block';
-                    document.getElementById('status-dot').style.backgroundColor = "#2ecc71";
-                    const nombre = file.name.length > 15 ? file.name.substring(0, 15) + "..." : file.name;
-                    document.getElementById('status-msg').innerText = "✅ " + nombre;
-                    const texturaAsset = document.getElementById('textura-asset');
-                    texturaAsset.setAttribute('src', texturaData);
-                };
-                reader.readAsDataURL(file);
-            } else {
-                texturaData = null;
-                document.getElementById('textura-asset').setAttribute('src', '');
-                document.getElementById('image-preview').style.display = 'none';
-                document.getElementById('status-dot').style.backgroundColor = "#e74c3c";
-                document.getElementById('status-msg').innerText = "Sin textura";
-            }
+                
+                // USAR URL.createObjectURL en lugar de FileReader (más estable en iOS)
+                texturaURL = URL.createObjectURL(file);
+                texturaData = file;
+                
+                // Mostrar preview
+                const preview = document.getElementById('image-preview');
+                preview.src = texturaURL;
+                document.getElementById('preview-label').textContent = `📄 ${file.name.substring(0, 20)}${file.name.length > 20 ? '...' : ''}`;
+                document.getElementById('image-preview-container').style.display = 'block';
+                document.getElementById('texture-status').innerHTML = `<span style="color:#2ecc71;">✅ Textura cargada: ${file.name}</span>`;
+                
+                console.log('✅ Imagen cargada correctamente en móvil');
+            });
         });
         
-        // GENERAR QR
+        // GENERAR CONFIGURACIÓN (QR + preparación)
         function generarConfig() {
             figuraSeleccionada = document.getElementById('figura').value;
             const qrContainer = document.getElementById('qrcode');
@@ -988,189 +1109,234 @@
             
             qrContainer.innerHTML = "";
             
-            const configData = {
-                app: "WILL-AR",
-                figura: figuraSeleccionada,
-                fecha: new Date().toISOString()
-            };
-            
+            // Generar QR con enlace directo al marcador HIRO
             try {
                 new QRCode(qrContainer, {
-                    text: JSON.stringify(configData),
-                    width: 130,
-                    height: 130,
+                    text: "https://raw.githubusercontent.com/AR-js-org/AR.js/master/data/images/Hiro%20marker.jpg",
+                    width: 140,
+                    height: 140,
                     colorDark: "#000000",
                     colorLight: "#ffffff",
                     correctLevel: QRCode.CorrectLevel.H
                 });
                 qrArea.style.display = "block";
-                btnStart.style.display = "block";
-                setTimeout(() => {
-                    btnStart.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 200);
             } catch(e) {
-                console.error('Error QR:', e);
+                console.error('Error generando QR:', e);
+                qrArea.innerHTML = '<p style="color:#e74c3c; font-weight:bold;">⚠️ QR no disponible</p>';
+                qrArea.style.display = "block";
             }
+            
+            // Mostrar botón de inicio
+            btnStart.style.display = "block";
+            btnStart.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // Actualizar info del panel
+            actualizarInfoFigura();
+            
+            // Feedback visual
+            const status = document.getElementById('camera-status');
+            status.textContent = '✅ Objeto configurado correctamente';
+            status.className = 'status-active';
+            status.style.display = 'block';
+            setTimeout(() => { status.style.display = 'none'; }, 3000);
         }
         
-        // CREAR FIGURA 3D
+        // CREAR FIGURA 3D COMPLETA (9 figuras con todas sus propiedades)
         function crearFigura3D() {
-            if (!modelo3D || !wireframeGuia) return;
+            if (!modelo3D || !wireframeGuia) {
+                console.error('❌ Elementos A-Frame no disponibles');
+                return;
+            }
             
             // Limpiar modelo anterior
             modelo3D.setAttribute('geometry', '');
             modelo3D.setAttribute('material', '');
             modelo3D.setAttribute('rotation', '0 0 0');
             modelo3D.removeAttribute('animation');
+            wireframeGuia.setAttribute('geometry', '');
             
             let geoParams = '';
             let rotation = '0 45 0';
+            let scaleCorreccion = '1 1 1';
             
+            // Configurar geometría según figura seleccionada
             switch(figuraSeleccionada) {
                 case 'box':
                     geoParams = 'primitive: box; width: 1; height: 1; depth: 1';
+                    rotation = '0 30 0';
                     break;
                 case 'sphere':
-                    geoParams = 'primitive: sphere; radius: 0.5; segmentsWidth: 32; segmentsHeight: 32';
+                    geoParams = 'primitive: sphere; radius: 0.5; segmentsWidth: 48; segmentsHeight: 48';
                     rotation = '0 0 0';
                     break;
                 case 'cylinder':
-                    geoParams = 'primitive: cylinder; radius: 0.5; height: 1.5; segmentsRadial: 32';
+                    geoParams = 'primitive: cylinder; radius: 0.5; height: 1.5; segmentsRadial: 48; openEnded: false';
+                    rotation = '0 0 0';
                     break;
                 case 'cone':
-                    geoParams = 'primitive: cone; radiusBottom: 0.5; radiusTop: 0; height: 1.5; segmentsRadial: 32';
+                    geoParams = 'primitive: cone; radiusBottom: 0.5; radiusTop: 0; height: 1.5; segmentsRadial: 48; openEnded: false';
+                    rotation = '0 0 0';
                     break;
                 case 'torus':
-                    geoParams = 'primitive: torus; radius: 0.5; radiusTubular: 0.15; segmentsRadial: 32; segmentsTubular: 32';
+                    geoParams = 'primitive: torus; radius: 0.4; radiusTubular: 0.15; segmentsRadial: 48; segmentsTubular: 32';
+                    rotation = '0 0 0';
                     break;
                 case 'tetrahedron':
-                    geoParams = 'primitive: tetrahedron; radius: 0.6';
+                    geoParams = 'primitive: tetrahedron; radius: 0.7';
+                    rotation = '20 30 0';
                     break;
                 case 'dodecahedron':
-                    geoParams = 'primitive: dodecahedron; radius: 0.5';
+                    geoParams = 'primitive: dodecahedron; radius: 0.6';
+                    rotation = '20 30 0';
                     break;
                 case 'icosahedron':
-                    geoParams = 'primitive: icosahedron; radius: 0.5';
+                    geoParams = 'primitive: icosahedron; radius: 0.6';
+                    rotation = '20 30 0';
                     break;
                 case 'octahedron':
-                    geoParams = 'primitive: octahedron; radius: 0.6';
+                    geoParams = 'primitive: octahedron; radius: 0.7';
+                    rotation = '20 30 0';
                     break;
             }
             
-            // Material
-            let materialParams = texturaData
-                ? 'src: #textura-asset; metalness: 0.3; roughness: 0.5; side: double'
-                : 'color: #4ECDC4; metalness: 0.3; roughness: 0.5';
+            // Material con textura o color base
+            let materialParams;
+            if (texturaURL) {
+                materialParams = `src: ${texturaURL}; metalness: 0.3; roughness: 0.5; side: double;`;
+            } else {
+                const colorBase = figurasInfo[figuraSeleccionada].colorBase || '#3498db';
+                materialParams = `color: ${colorBase}; metalness: 0.6; roughness: 0.4;`;
+            }
             
+            // Aplicar configuración
             modelo3D.setAttribute('geometry', geoParams);
             modelo3D.setAttribute('material', materialParams);
             modelo3D.setAttribute('rotation', rotation);
-            
-            // Animación de rotación
-            if(rotacionActiva) {
-                modelo3D.setAttribute('animation', 'property: rotation; to: 0 405 0; dur: 10000; loop: true; easing: linear');
-            }
+            modelo3D.setAttribute('position', '0 0 0');
             
             // Wireframe
             wireframeGuia.setAttribute('geometry', geoParams);
             wireframeGuia.setAttribute('rotation', rotation);
+            wireframeGuia.setAttribute('position', '0 0 0');
             
-            console.log('✅ Figura creada:', figuraSeleccionada);
+            // Animación de rotación
+            if (rotacionActiva) {
+                modelo3D.setAttribute('animation', {
+                    property: 'rotation',
+                    to: `0 ${parseFloat(rotation.split(' ')[1]) + 360} 0`,
+                    dur: 12000,
+                    loop: true,
+                    easing: 'linear'
+                });
+            }
+            
+            console.log(`✅ Figura "${figuraSeleccionada}" creada correctamente`);
         }
         
-        // INICIAR AR - MEJORADO CON LOADING
-        async function iniciarAR() {
-            // Mostrar loading
+        // INICIAR AR - CORREGIDO PARA MÓVILES (SIN ERRORES DE CÁMARA)
+        function iniciarAR() {
+            // ¡CRÍTICO! No hacer verificaciones previas de cámara - AR.js lo maneja internamente
+            
+            // Mostrar loading AR
             document.getElementById('ar-loading').classList.add('visible');
             
             try {
-                // Verificar permisos de cámara en iOS
-                if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-                    alert("📱 iOS: 1) Toca 'Permitir' para cámara 2) Usa modo horizontal para mejor experiencia");
-                }
-                
-                // Crear elemento de audio silencioso para desbloquear autoplay en iOS
-                const audio = new Audio();
-                audio.volume = 0;
-                audio.play().catch(() => {});
-                
-                // Crear figura
+                // Crear figura 3D
                 crearFigura3D();
-                actualizarInfoFigura();
+                
+                // Actualizar interfaz
+                document.getElementById('label-figura').innerText = figurasInfo[figuraSeleccionada].nombre;
+                actualizarMedidasTexto();
                 
                 // Eventos de marcador
-                const marker = document.querySelector('#hiro-marker');
+                const marker = document.getElementById('hiro-marker');
                 const status = document.getElementById('camera-status');
                 const statusText = document.getElementById('camera-status-text');
                 
-                marker.addEventListener('markerFound', () => {
+                // Limpiar eventos previos
+                marker.removeEventListener('markerFound', handleMarkerFound);
+                marker.removeEventListener('markerLost', handleMarkerLost);
+                
+                // Nuevos handlers
+                marker.addEventListener('markerFound', handleMarkerFound);
+                marker.addEventListener('markerLost', handleMarkerLost);
+                
+                function handleMarkerFound() {
                     markerDetected = true;
-                    console.log('✅ Marcador HIRO detectado!');
-                    statusText.innerText = '✅ Marcador detectado';
+                    statusText.textContent = '✅ ¡Marcador detectado! Mueve lentamente el dispositivo';
                     statusText.className = 'status-active';
                     status.style.display = 'block';
                     setTimeout(() => {
-                        status.style.display = 'none';
-                    }, 2000);
-                });
+                        if (markerDetected) status.style.display = 'none';
+                    }, 3000);
+                    console.log('✅ Marcador HIRO detectado');
+                }
                 
-                marker.addEventListener('markerLost', () => {
+                function handleMarkerLost() {
                     markerDetected = false;
+                    statusText.textContent = '🔍 Buscando marcador HIRO...';
+                    statusText.className = 'status-searching';
+                    status.style.display = 'block';
                     console.log('⚠️ Marcador perdido');
-                    statusText.innerText = '🔍 Buscando marcador...';
-                    statusText.className = 'status-searching';
-                    status.style.display = 'block';
-                });
+                }
                 
-                // Actualizar mediciones
-                actualizarMediciones();
-                
-                // Esperar un poco antes de mostrar la cámara
+                // Transición a vista AR
                 setTimeout(() => {
-                    arActivo = true;
-                    document.getElementById('menu-overlay').style.transform = "translateY(-100%)";
-                    document.getElementById('ar-controls').style.display = "block";
-                    document.getElementById('label-figura').innerText = figurasInfo[figuraSeleccionada].nombre;
-                    
-                    statusText.innerText = '🔍 Apunta al marcador HIRO';
-                    statusText.className = 'status-searching';
-                    status.style.display = 'block';
+                    document.getElementById('menu-overlay').style.display = 'none';
+                    document.getElementById('ar-controls').style.display = 'block';
+                    document.getElementById('camera-status').style.display = 'block';
                     
                     // Ocultar loading
                     document.getElementById('ar-loading').classList.remove('visible');
+                    
+                    // Feedback inicial
+                    statusText.textContent = '📱 Cámara activa. Apunta al marcador HIRO';
+                    statusText.className = 'status-searching';
+                    
                     console.log('🚀 AR iniciado correctamente');
-                }, 1500);
+                }, 1800);
                 
             } catch(error) {
                 // Ocultar loading
                 document.getElementById('ar-loading').classList.remove('visible');
-                console.error('Error cámara:', error);
                 
-                let msg = '⚠️ Error de cámara.\n';
-                if (error.name === 'NotAllowedError') {
-                    msg += 'Permisos denegados. Habilita la cámara en configuración.';
-                } else if (error.name === 'NotFoundError') {
-                    msg += 'No se encontró cámara en el dispositivo.';
-                } else if (error.name === 'NotReadableError') {
-                    msg += 'Cámara en uso por otra aplicación.';
+                // Manejar errores específicos
+                let msg = '❌ Error al iniciar cámara:\n';
+                if (error.name === 'NotAllowedError' || error.message.includes('permission')) {
+                    msg += '• Permisos de cámara denegados\n• Ve a Ajustes > Privacidad > Cámara';
+                } else if (error.name === 'NotFoundError' || error.message.includes('no camera')) {
+                    msg += '• No se detectó cámara en el dispositivo';
+                } else if (error.message.includes('secure context') || location.protocol !== 'https:') {
+                    msg += '• Requiere conexión HTTPS\n• Hostea en GitHub Pages/Netlify';
                 } else {
-                    msg += 'Verifica permisos y que uses HTTPS.';
+                    msg += '• Error desconocido\n• Recarga la página o prueba en otro navegador';
                 }
+                
+                console.error('Error crítico:', error);
                 alert(msg);
+                
+                // Mostrar status de error
+                const status = document.getElementById('camera-status');
+                status.textContent = '❌ Error de cámara. Ver consola para detalles.';
+                status.className = 'status-error';
+                status.style.display = 'block';
             }
         }
         
-        // ACTUALIZAR INFORMACIÓN DE FIGURA
+        // ACTUALIZAR INFORMACIÓN DEL PANEL
         function actualizarInfoFigura() {
             const info = figurasInfo[figuraSeleccionada];
+            if (!info) return;
+            
             document.getElementById('info-figura-titulo').innerText = info.nombre;
             document.getElementById('info-definicion').innerText = info.definicion;
             document.getElementById('info-caras').innerText = info.caras;
             document.getElementById('info-vertices').innerText = info.vertices;
             document.getElementById('info-aristas').innerText = info.aristas;
             document.getElementById('info-simetria').innerText = info.simetria;
-            document.getElementById('info-formulas').innerHTML = info.formulas.replace(/\n/g, '<br>');
+            document.getElementById('info-formulas').innerHTML = info.formulas;
             document.getElementById('info-aplicaciones').innerText = info.aplicaciones;
+            document.getElementById('info-curiosidades').innerText = info.curiosidades;
         }
         
         // TOGGLE PANEL DE INFORMACIÓN
@@ -1183,14 +1349,25 @@
         function toggleRotacion() {
             rotacionActiva = !rotacionActiva;
             const btn = document.getElementById('btn-rotation');
+            const modelo = document.getElementById('modelo-3d');
             
-            if(rotacionActiva) {
-                modelo3D.setAttribute('animation', 'property: rotation; to: 0 405 0; dur: 10000; loop: true; easing: linear');
+            if (!modelo) return;
+            
+            if (rotacionActiva) {
+                const rot = modelo.getAttribute('rotation');
+                const newY = rot.y + 360;
+                modelo.setAttribute('animation', {
+                    property: 'rotation',
+                    to: `0 ${newY} 0`,
+                    dur: 12000,
+                    loop: true,
+                    easing: 'linear'
+                });
                 btn.innerHTML = '⏸️<br>Pausar';
             } else {
-                modelo3D.removeAttribute('animation');
-                const rot = modelo3D.getAttribute('rotation');
-                modelo3D.setAttribute('rotation', {x: rot.x, y: 0, z: rot.z});
+                modelo.removeAttribute('animation');
+                const rot = modelo.getAttribute('rotation');
+                modelo.setAttribute('rotation', {x: rot.x, y: 0, z: rot.z});
                 btn.innerHTML = '▶️<br>Rotar';
             }
         }
@@ -1204,8 +1381,8 @@
             if (modelo) modelo.setAttribute('scale', `${val} ${val} ${val}`);
             if (guia) guia.setAttribute('scale', `${val*1.05} ${val*1.05} ${val*1.05}`);
             
-            document.getElementById('scale-value').innerText = parseFloat(val).toFixed(1);
-            actualizarMediciones();
+            document.getElementById('scale-value').innerText = escalaActual.toFixed(1);
+            actualizarMedidasTexto();
         }
         
         // TOGGLE REGLA
@@ -1215,7 +1392,7 @@
             const toggle = document.getElementById('ruler-toggle');
             
             if (regla) {
-                regla.setAttribute('visible', reglaVisible);
+                regla.setAttribute('visible', reglaVisible.toString());
                 if (reglaVisible) {
                     toggle.classList.add('active');
                 } else {
@@ -1224,65 +1401,95 @@
             }
         }
         
-        // ACTUALIZAR MEDICIONES
-        function actualizarMediciones() {
+        // ACTUALIZAR MEDIDAS EN mm Y m³
+        function actualizarMedidasTexto() {
             const info = figurasInfo[figuraSeleccionada];
             if (!info) return;
             
-            const altura = (info.altura * escalaActual).toFixed(2);
-            const ancho = (info.ancho * escalaActual).toFixed(2);
-            const profundidad = (info.profundidad * escalaActual).toFixed(2);
+            // Calcular dimensiones en mm
+            const altura = Math.round(info.altura * escalaActual);
+            const ancho = Math.round(info.ancho * escalaActual);
+            const profundidad = Math.round(info.profundidad * escalaActual);
             
+            // Calcular volumen en metros cúbicos
             let volumen = 0;
+            const a = ancho / 1000; // convertir a metros
+            const h = altura / 1000;
+            const p = profundidad / 1000;
             
             switch(figuraSeleccionada) {
                 case 'box':
-                    volumen = parseFloat(altura) * parseFloat(ancho) * parseFloat(profundidad);
+                    volumen = a * h * p;
                     break;
                 case 'sphere':
-                    const radio = parseFloat(ancho) / 2;
+                    const radio = a / 2;
                     volumen = (4/3) * Math.PI * Math.pow(radio, 3);
                     break;
                 case 'cylinder':
-                    const radioCil = parseFloat(ancho) / 2;
-                    volumen = Math.PI * Math.pow(radioCil, 2) * parseFloat(altura);
+                    const radioCil = a / 2;
+                    volumen = Math.PI * Math.pow(radioCil, 2) * h;
                     break;
                 case 'cone':
-                    const radioCono = parseFloat(ancho) / 2;
-                    volumen = (1/3) * Math.PI * Math.pow(radioCono, 2) * parseFloat(altura);
+                    const radioCono = a / 2;
+                    volumen = (1/3) * Math.PI * Math.pow(radioCono, 2) * h;
                     break;
                 case 'torus':
-                    const R = parseFloat(ancho) / 2;
-                    const r = parseFloat(altura) / 2;
+                    const R = a / 2; // radio mayor
+                    const r = h / 2; // radio menor
                     volumen = 2 * Math.PI * Math.PI * R * r * r;
                     break;
-                default:
-                    volumen = parseFloat(altura) * parseFloat(ancho) * parseFloat(profundidad);
+                case 'tetrahedron':
+                    volumen = Math.pow(a, 3) / (6 * Math.sqrt(2));
+                    break;
+                case 'dodecahedron':
+                    volumen = ((15 + 7 * Math.sqrt(5)) / 4) * Math.pow(a, 3);
+                    break;
+                case 'icosahedron':
+                    volumen = (5 * (3 + Math.sqrt(5)) / 12) * Math.pow(a, 3);
+                    break;
+                case 'octahedron':
+                    volumen = (Math.sqrt(2) / 3) * Math.pow(a, 3);
+                    break;
             }
             
-            document.getElementById('measure-height').innerText = altura;
-            document.getElementById('measure-width').innerText = ancho;
-            document.getElementById('measure-depth').innerText = profundidad;
+            // Actualizar UI
+            document.getElementById('measure-height').innerText = altura.toLocaleString();
+            document.getElementById('measure-width').innerText = ancho.toLocaleString();
+            document.getElementById('measure-depth').innerText = profundidad.toLocaleString();
             document.getElementById('measure-volume').innerText = volumen.toFixed(3);
         }
         
-        // SALIR DE AR
+        // SALIR DE AR (recarga limpia)
         function salirAR() {
-            if(confirm('¿Volver al menú?')) {
+            if (confirm('¿Volver al menú principal?')) {
+                // Liberar URL de objeto si existe
+                if (texturaURL) {
+                    URL.revokeObjectURL(texturaURL);
+                    texturaURL = null;
+                }
                 location.reload();
             }
         }
         
-        // PREVENIR GESTOS DE ZOOM
-        document.addEventListener('gesturestart', e => e.preventDefault());
-        document.addEventListener('touchmove', e => {
-            if(e.touches.length > 1) e.preventDefault();
+        // PREVENIR GESTOS DE ZOOM EN MÓVILES
+        document.addEventListener('touchmove', (e) => {
+            if (e.touches.length > 1) {
+                e.preventDefault();
+            }
         }, { passive: false });
         
-        // MANEJO DE ERRORES
+        document.addEventListener('gesturestart', (e) => e.preventDefault());
+        document.addEventListener('gesturechange', (e) => e.preventDefault());
+        document.addEventListener('gestureend', (e) => e.preventDefault());
+        
+        // MANEJO DE ERRORES GLOBALES
         window.addEventListener('error', (e) => {
-            if (e.message.includes('getUserMedia')) {
-                alert('❌ Error: No se pudo acceder a la cámara. Verifica permisos y recarga la página.');
+            if (e.message.includes('getUserMedia') || e.message.includes('camera')) {
+                const status = document.getElementById('camera-status');
+                status.textContent = '❌ Error crítico de cámara. Recarga y permite permisos.';
+                status.className = 'status-error';
+                status.style.display = 'block';
+                console.error('Error de cámara:', e.message);
             }
         });
     </script>
