@@ -1,1331 +1,1722 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Will AR - Laboratorio Matemático</title>
-    
-    <!-- VERSIONES OPTIMIZADAS - CARGA MÁS RÁPIDA -->
-    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/3.4.3/aframe/build/aframe-ar.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="description" content="Laboratorio Matemático de Realidad Aumentada - WILL AR">
+  <meta name="author" content="Sistema Educativo WILL">
+  <meta name="theme-color" content="#2c3e50">
+  <title>🔬 WILL AR - Laboratorio Matemático Avanzado</title>
+  
+  <!-- Fuentes optimizadas para legibilidad -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Mono:wght@300;400&display=swap" rel="stylesheet">
+  
+  <!-- LIBRERÍAS CRÍTICAS - VERSIONES ESTABLES Y ACTUALIZADAS -->
+  <!-- A-Frame 1.4.2: Última versión estable con mejor soporte móvil -->
+  <script src="https://cdn.jsdelivr.net/npm/aframe@1.4.2/dist/aframe.min.js"></script>
+  
+  <!-- AR.js 3.4.4: Versión corregida con fixes para iOS/Android -->
+  <script src="https://cdn.jsdelivr.net/npm/ar-js-org@3.4.4/aframe/build/aframe-ar.js"></script>
+  
+  <!-- QR Code Generator -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  
+  <!-- Tone.js para feedback sonoro accesible -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+  
+  <!-- MathJax para renderizado de fórmulas matemáticas -->
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  
+  <style>
+    /* ===== VARIABLES CSS GLOBALES ===== */
+    :root {
+      --primary: #3498db;
+      --primary-dark: #2980b9;
+      --secondary: #e74c3c;
+      --secondary-dark: #c0392b;
+      --success: #27ae60;
+      --success-dark: #219653;
+      --warning: #f39c12;
+      --warning-dark: #d35400;
+      --info: #9b59b6;
+      --info-dark: #8e44ad;
+      --light: #ecf0f1;
+      --dark: #2c3e50;
+      --gray: #95a5a6;
+      --black: #0a0a0f;
+      --white: #ffffff;
+      --transition-fast: 0.2s ease-in-out;
+      --transition-normal: 0.3s ease-in-out;
+      --transition-slow: 0.5s ease-in-out;
+      --shadow-sm: 0 2px 8px rgba(0,0,0,0.15);
+      --shadow-md: 0 4px 15px rgba(0,0,0,0.25);
+      --shadow-lg: 0 10px 30px rgba(0,0,0,0.4);
+      --border-radius-sm: 8px;
+      --border-radius-md: 15px;
+      --border-radius-lg: 25px;
+      --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'Roboto Mono', monospace;
+    }
 
-    <style>
-        * { 
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-        body { 
-            margin: 0; 
-            overflow: hidden; 
-            font-family: 'Segoe UI', sans-serif; 
-            background-color: #000;
-            width: 100vw;
-            height: 100vh;
-            position: fixed;
-        }
-        
-        #loading-screen {
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%;
-            background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1e 100%); 
-            z-index: 9999; 
-            display: flex; 
-            flex-direction: column;
-            align-items: center; 
-            justify-content: center; 
-            color: white;
-            transition: opacity 0.5s;
-        }
+    /* ===== RESET Y BASE ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
 
-        #loading-screen.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
+    html {
+      font-size: 16px;
+      height: 100%;
+      touch-action: manipulation;
+    }
 
-        .loader {
-            border: 8px solid rgba(52, 152, 219, 0.2); 
-            border-top: 8px solid #3498db;
-            border-radius: 50%; 
-            width: 80px; 
-            height: 80px;
-            animation: spin 1s linear infinite; 
-            margin-bottom: 20px;
-        }
-        @keyframes spin { 
-            0% { transform: rotate(0deg); } 
-            100% { transform: rotate(360deg); } 
-        }
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: var(--font-main);
+      background-color: var(--black);
+      width: 100vw;
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      color: var(--light);
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+      overscroll-behavior: none;
+    }
 
-        #loading-text {
-            font-size: 1.2rem;
-            color: #3498db;
-            margin-bottom: 10px;
-        }
+    /* ===== PANTALLA DE CARGA ===== */
+    #loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1e 100%);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      transition: opacity var(--transition-normal);
+      padding: 20px;
+    }
 
-        #loading-tip {
-            font-size: 0.9rem;
-            color: #95a5a6;
-            text-align: center;
-            max-width: 80%;
-            margin-top: 20px;
-        }
+    #loading-screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
 
-        #menu-overlay {
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%;
-            background: linear-gradient(135deg, #2c3e50 0%, #000000 100%); 
-            z-index: 2000;
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: flex-start;
-            overflow-y: auto; 
-            padding: 20px; 
-            color: white; 
-            transition: transform 0.5s ease-in-out;
-        }
+    .loader-container {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      margin-bottom: 25px;
+    }
 
-        .card {
-            background: rgba(255,255,255,0.1); 
-            padding: 20px; 
-            border-radius: 20px;
-            width: 95%; 
-            max-width: 450px; 
-            text-align: center; 
-            border: 1px solid rgba(255,255,255,0.1);
-            margin-bottom: 20px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            backdrop-filter: blur(10px);
-        }
+    .loader {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border: 6px solid rgba(52, 152, 219, 0.2);
+      border-top: 6px solid var(--primary);
+      border-radius: 50%;
+      width: 80px;
+      height: 80px;
+      animation: spin 1.2s linear infinite;
+    }
 
-        h1 { 
-            margin: 0 0 5px 0; 
-            color: #3498db; 
-            font-size: 2rem; 
-            letter-spacing: 2px; 
-        }
-        h2 { 
-            margin: 0; 
-            font-size: 1rem; 
-            font-weight: 300; 
-            color: #bdc3c7; 
-            margin-bottom: 15px;
-        }
-        
-        label { 
-            display: block; 
-            text-align: left; 
-            margin-top: 12px; 
-            margin-bottom: 5px; 
-            color: #ecf0f1; 
-            font-size: 0.85rem; 
-        }
-        
-        select {
-            width: 100%; 
-            padding: 10px; 
-            border-radius: 10px; 
-            border: none;
-            background: rgba(255,255,255,0.15); 
-            color: white; 
-            font-size: 0.95rem; 
-            outline: none;
-        }
-        
-        .file-input-wrapper {
-            position: relative;
-            width: 100%;
-            margin-top: 8px;
-        }
-        
-        .file-input-wrapper input[type="file"] {
-            position: absolute;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
-            z-index: 10;
-        }
-        
-        .file-input-label {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            background: rgba(142, 68, 173, 0.8);
-            color: white;
-            border-radius: 10px;
-            text-align: center;
-            cursor: pointer;
-            transition: background 0.3s;
-            font-size: 0.9rem;
-        }
-        
-        .file-input-label:hover {
-            background: rgba(142, 68, 173, 1);
-        }
-        
-        option { 
-            background: #2c3e50; 
-            color: white; 
-        }
-        
-        button {
-            width: 100%; 
-            padding: 14px; 
-            margin-top: 12px; 
-            border-radius: 10px; 
-            border: none; 
-            font-size: 1rem; 
-            font-weight: bold; 
-            cursor: pointer; 
-            transition: all 0.2s;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            position: relative;
-            z-index: 10;
-        }
-        button:active { 
-            transform: scale(0.98); 
-        }
+    .loader-ring {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100px;
+      height: 100px;
+      border: 3px solid transparent;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      animation: pulse 2s ease-in-out infinite;
+    }
 
-        .btn-gen { 
-            background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
-            color: white; 
-        }
-        .btn-start { 
-            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
-            color: white; 
-            font-size: 1.2rem; 
-            display: none; 
-            margin-top: 15px;
-        }
-        .btn-exit { 
-            background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
-            color: white; 
-            padding: 10px 20px; 
-            font-size: 0.9rem;
-            width: auto;
-            display: inline-block;
-            min-width: 100px;
-        }
+    @keyframes spin {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
 
-        #qr-area {
-            background: white; 
-            padding: 12px; 
-            border-radius: 10px;
-            display: none; 
-            margin: 15px auto; 
-            width: fit-content;
-            box-shadow: 0 0 20px rgba(255,255,255,0.2);
-        }
+    @keyframes pulse {
+      0%, 100% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.3; }
+      50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.7; }
+    }
 
-        #ar-controls {
-            position: fixed; 
-            bottom: 0; 
-            left: 0; 
-            width: 100%;
-            background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.85) 100%);
-            padding: 12px; 
-            box-sizing: border-box;
-            display: none; 
-            z-index: 1000; 
-            text-align: center; 
-            color: white;
-            border-top: 3px solid #3498db; 
-            backdrop-filter: blur(15px);
-            max-height: 50vh;
-            overflow-y: auto;
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
-        }
+    #loading-text {
+      font-size: 1.5rem;
+      color: var(--primary);
+      margin-bottom: 10px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
 
-        .ar-info { 
-            font-size: 1rem; 
-            margin: 5px 0 10px 0; 
-            color: #ecf0f1;
-            font-weight: bold;
-        }
-        
-        .control-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin: 10px 0;
-            gap: 10px;
-            background: rgba(52, 152, 219, 0.15);
-            padding: 12px;
-            border-radius: 8px;
-        }
+    #loading-subtext {
+      font-size: 1rem;
+      color: var(--gray);
+      margin-bottom: 5px;
+    }
 
-        .control-label {
-            font-size: 0.95rem;
-            white-space: nowrap;
-            min-width: 90px;
-            color: #ecf0f1;
-            font-weight: bold;
-        }
+    #loading-progress {
+      width: 80%;
+      max-width: 300px;
+      height: 8px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 20px;
+    }
 
-        input[type=range] { 
-            flex: 1;
-            accent-color: #3498db; 
-            margin: 0;
-            height: 35px;
-        }
+    #loading-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--info));
+      width: 0%;
+      transition: width 0.4s ease;
+      border-radius: 4px;
+    }
 
-        .scale-display {
-            font-size: 0.9rem;
-            color: #3498db;
-            min-width: 50px;
-            text-align: right;
-            font-weight: bold;
-        }
-        
-        #status-dot {
-            display: inline-block; 
-            width: 8px; 
-            height: 8px; 
-            border-radius: 50%;
-            background-color: #e74c3c; 
-            margin-right: 5px;
-        }
+    #loading-tip {
+      font-size: 0.95rem;
+      color: #95a5a6;
+      text-align: center;
+      max-width: 85%;
+      margin-top: 25px;
+      line-height: 1.6;
+      font-style: italic;
+      padding: 10px;
+      background: rgba(0,0,0,0.3);
+      border-radius: var(--border-radius-sm);
+      min-height: 40px;
+    }
 
-        .alert {
-            background: #f39c12;
-            color: #000;
-            padding: 10px;
-            border-radius: 8px;
-            margin: 10px 0;
-            font-size: 0.85rem;
-            display: none;
-            font-weight: bold;
-        }
+    /* ===== PANTALLA DE PERMISOS DE CÁMARA ===== */
+    #camera-permission {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1e 100%);
+      z-index: 9998;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      transition: opacity var(--transition-normal);
+    }
 
-        #image-preview {
-            display: none;
-            margin-top: 8px;
-            max-width: 100%;
-            border-radius: 10px;
-            max-height: 120px;
-            object-fit: cover;
-        }
+    .permission-icon {
+      font-size: 4.5rem;
+      margin-bottom: 25px;
+      background: linear-gradient(135deg, var(--primary), var(--info));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
 
-        .toggle-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 10px 0;
-            gap: 12px;
-            background: rgba(52, 152, 219, 0.15);
-            padding: 12px;
-            border-radius: 8px;
-        }
+    .permission-title {
+      font-size: 2rem;
+      margin-bottom: 15px;
+      color: var(--light);
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
 
-        .toggle-switch {
-            position: relative;
-            width: 60px;
-            height: 30px;
-            background: #555;
-            border-radius: 15px;
-            cursor: pointer;
-            transition: background 0.3s;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
-        }
+    .permission-subtitle {
+      font-size: 1.3rem;
+      color: var(--primary);
+      margin-bottom: 25px;
+      font-weight: 500;
+    }
 
-        .toggle-switch.active {
-            background: #27ae60;
-        }
+    .permission-text {
+      font-size: 1.1rem;
+      color: #bdc3c7;
+      max-width: 85%;
+      line-height: 1.7;
+      margin-bottom: 30px;
+      padding: 20px;
+      background: rgba(0,0,0,0.3);
+      border-radius: var(--border-radius-md);
+      border-left: 4px solid var(--primary);
+    }
 
-        .toggle-slider {
-            position: absolute;
-            top: 3px;
-            left: 3px;
-            width: 24px;
-            height: 24px;
-            background: white;
-            border-radius: 50%;
-            transition: transform 0.3s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-        }
+    .permission-steps {
+      text-align: left;
+      max-width: 80%;
+      margin: 25px auto 0;
+      background: rgba(52, 152, 219, 0.1);
+      padding: 20px;
+      border-radius: var(--border-radius-md);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
 
-        .toggle-switch.active .toggle-slider {
-            transform: translateX(30px);
-        }
+    .permission-steps ol {
+      padding-left: 20px;
+      margin-top: 10px;
+      color: var(--light);
+      font-size: 1.05rem;
+      line-height: 1.8;
+    }
 
-        .measurements {
-            background: rgba(52, 152, 219, 0.2);
-            padding: 15px;
-            border-radius: 10px;
-            margin: 10px 0;
-            font-size: 0.9rem;
-            border: 2px solid rgba(52, 152, 219, 0.4);
-        }
+    .permission-steps li {
+      margin-bottom: 8px;
+    }
 
-        .measurements-title {
-            text-align: center;
-            margin-bottom: 10px;
-            font-size: 0.95rem;
-            color: #3498db;
-            font-weight: bold;
-        }
+    .btn-permission {
+      background: linear-gradient(135deg, var(--success-dark) 0%, var(--success) 100%);
+      color: white;
+      border: none;
+      padding: 18px 45px;
+      font-size: 1.25rem;
+      border-radius: var(--border-radius-md);
+      cursor: pointer;
+      font-weight: 700;
+      box-shadow: 0 8px 25px rgba(46, 204, 113, 0.45);
+      transition: all var(--transition-normal);
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 280px;
+      letter-spacing: 0.5px;
+    }
 
-        .measurement-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
+    .btn-permission:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(46, 204, 113, 0.6);
+    }
 
-        .measurement-item {
-            background: rgba(0,0,0,0.5);
-            padding: 10px;
-            border-radius: 8px;
-            text-align: center;
-            border: 2px solid rgba(52, 152, 219, 0.4);
-        }
+    .btn-permission:active {
+      transform: scale(0.97) translateY(1px);
+      box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
+    }
 
-        .measurement-label {
-            display: block;
-            font-size: 0.8rem;
-            color: #95a5a6;
-            margin-bottom: 5px;
-        }
+    .btn-permission:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
 
-        .measurement-value {
-            display: block;
-            font-size: 1.1rem;
-            color: #3498db;
-            font-weight: bold;
-        }
+    #https-warning {
+      background: rgba(231, 76, 60, 0.15);
+      color: #e74c3c;
+      padding: 20px;
+      text-align: center;
+      font-weight: 600;
+      border-radius: var(--border-radius-md);
+      margin: 25px 0;
+      border: 2px solid rgba(231, 76, 60, 0.3);
+      max-width: 90%;
+      font-size: 1.1rem;
+      line-height: 1.5;
+      box-shadow: 0 4px 15px rgba(231, 76, 60, 0.15);
+    }
 
-        .info-section {
-            background: rgba(255,255,255,0.1); 
-            padding: 15px; 
-            border-radius: 10px; 
-            margin: 10px; 
-            max-width: 450px; 
-            font-size: 0.85rem;
-            line-height: 1.6;
-        }
+    .https-solution {
+      background: rgba(0,0,0,0.4);
+      padding: 15px;
+      border-radius: var(--border-radius-sm);
+      margin-top: 15px;
+      font-size: 0.95rem;
+      text-align: left;
+      border-left: 3px solid var(--warning);
+    }
 
-        #camera-status {
-            position: fixed;
-            top: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.9);
-            color: #fff;
-            padding: 12px 25px;
-            border-radius: 25px;
-            font-size: 1rem;
-            z-index: 1001;
-            display: none;
-            border: 2px solid #3498db;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            font-weight: bold;
-        }
+    /* ===== MENÚ PRINCIPAL ===== */
+    #menu-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #2c3e50 0%, #0a0a15 100%);
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      overflow-y: auto;
+      padding: 25px 20px 30px;
+      color: white;
+      transition: transform var(--transition-slow) cubic-bezier(0.23, 1, 0.32, 1);
+      will-change: transform;
+    }
 
-        .status-active {
-            color: #27ae60 !important;
-        }
+    #menu-overlay.hidden {
+      transform: translateY(-100%);
+    }
 
-        .status-searching {
-            color: #f39c12 !important;
-        }
+    .header-section {
+      text-align: center;
+      margin-bottom: 25px;
+      width: 100%;
+      padding: 0 10px;
+    }
 
-        #figura-info-panel {
-            position: fixed;
-            top: 70px;
-            right: -420px;
-            width: 400px;
-            max-height: 80vh;
-            background: linear-gradient(135deg, rgba(0,0,0,0.98) 0%, rgba(20,20,40,0.98) 100%);
-            border: 3px solid #3498db;
-            border-radius: 20px;
-            padding: 20px;
-            color: white;
-            z-index: 1002;
-            transition: right 0.4s ease-in-out;
-            overflow-y: auto;
-            box-shadow: -10px 0 30px rgba(0,0,0,0.7);
-        }
+    .app-logo {
+      font-size: 2.8rem;
+      background: linear-gradient(135deg, var(--primary), #1abc9c);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 8px;
+      text-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+    }
 
-        #figura-info-panel.visible {
-            right: 10px;
-        }
+    .app-subtitle {
+      font-size: 1.3rem;
+      color: #3498db;
+      font-weight: 300;
+      letter-spacing: 1px;
+      margin-bottom: 5px;
+    }
 
-        .info-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 3px solid #3498db;
-        }
+    .app-tagline {
+      font-size: 1.1rem;
+      color: #95a5a6;
+      font-style: italic;
+      max-width: 90%;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
 
-        .info-title {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #3498db;
-        }
+    .card {
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(12px);
+      padding: 28px;
+      border-radius: var(--border-radius-lg);
+      width: 96%;
+      max-width: 480px;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,0.12);
+      margin-bottom: 25px;
+      box-shadow: var(--shadow-lg);
+      transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+    }
 
-        .close-info {
-            background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
-            border: none;
-            color: white;
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1.4rem;
-            line-height: 1;
-            padding: 0;
-            margin: 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-            transition: transform 0.2s;
-        }
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+      border-color: rgba(52, 152, 219, 0.3);
+    }
 
-        .close-info:active {
-            transform: scale(0.9);
-        }
+    .section-title {
+      font-size: 1.4rem;
+      color: var(--primary);
+      margin-bottom: 20px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
 
-        .info-section-detail {
-            margin: 15px 0;
-            background: rgba(52, 152, 219, 0.1);
-            padding: 15px;
-            border-radius: 10px;
-            border-left: 4px solid #3498db;
-        }
+    .section-title::before,
+    .section-title::after {
+      content: "";
+      display: block;
+      height: 2px;
+      flex: 1;
+      background: linear-gradient(to right, transparent, rgba(52, 152, 219, 0.5));
+    }
 
-        .info-section-title {
-            color: #3498db;
-            font-weight: bold;
-            font-size: 1.1rem;
-            margin-bottom: 10px;
-        }
+    label {
+      display: block;
+      text-align: left;
+      margin: 18px 0 10px;
+      color: var(--light);
+      font-size: 1.05rem;
+      font-weight: 500;
+      position: relative;
+      padding-left: 28px;
+    }
 
-        .info-section-content {
-            color: #ecf0f1;
-            font-size: 0.95rem;
-            line-height: 1.7;
-        }
+    label::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      top: 0;
+      font-size: 1.8rem;
+      color: var(--primary);
+      line-height: 1;
+    }
 
-        .properties-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-top: 10px;
-        }
+    select {
+      width: 100%;
+      padding: 14px 18px;
+      border-radius: var(--border-radius-md);
+      border: 2px solid rgba(255,255,255,0.15);
+      background: rgba(0,0,0,0.35);
+      color: white;
+      font-size: 1.05rem;
+      outline: none;
+      transition: all var(--transition-fast);
+      font-family: var(--font-main);
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%233498db' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 15px center;
+      background-size: 20px;
+    }
 
-        .property-item {
-            background: rgba(52, 152, 219, 0.25);
-            padding: 12px;
-            border-radius: 8px;
-            text-align: center;
-            border: 1px solid rgba(52, 152, 219, 0.4);
-        }
+    select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.25);
+    }
 
-        .property-label {
-            font-size: 0.8rem;
-            color: #95a5a6;
-            display: block;
-            margin-bottom: 5px;
-        }
+    .file-input-wrapper {
+      position: relative;
+      width: 100%;
+      margin-top: 12px;
+    }
 
-        .property-value {
-            font-size: 1.2rem;
-            color: #3498db;
-            font-weight: bold;
-            display: block;
-        }
+    .file-input-wrapper input[type="file"] {
+      position: absolute;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+      z-index: 10;
+    }
 
-        .action-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 10px;
-            margin: 15px 0;
-        }
+    .file-input-label {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, rgba(142, 68, 173, 0.85) 0%, rgba(155, 89, 182, 0.9) 100%);
+      color: white;
+      border-radius: var(--border-radius-md);
+      text-align: center;
+      cursor: pointer;
+      transition: all var(--transition-normal);
+      font-size: 1.05rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 15px rgba(142, 68, 173, 0.35);
+      border: 2px solid transparent;
+    }
 
-        .btn-info-toggle {
-            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-            color: white;
-            padding: 12px 10px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            border-radius: 10px;
-            border: none;
-            cursor: pointer;
-            box-shadow: 0 3px 10px rgba(52, 152, 219, 0.4);
-            transition: all 0.2s;
-            min-height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+    .file-input-label:hover {
+      background: linear-gradient(135deg, rgba(142, 68, 173, 0.95) 0%, rgba(155, 89, 182, 1) 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(142, 68, 173, 0.5);
+    }
 
-        .btn-info-toggle:active {
-            transform: scale(0.95);
-        }
+    .file-input-label:active {
+      transform: translateY(1px);
+    }
 
-        #btn-rotation {
-            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
-            box-shadow: 0 3px 10px rgba(155, 89, 182, 0.4);
-        }
+    .file-input-label:focus {
+      outline: none;
+      border-color: var(--info);
+      box-shadow: 0 0 0 3px rgba(155, 89, 182, 0.3);
+    }
 
-        .btn-exit {
-            grid-column: span 3;
-        }
+    option {
+      background: #2c3e50;
+      color: white;
+      padding: 8px;
+    }
 
-        .exercise-hint {
-            background: rgba(241, 196, 15, 0.2);
-            border-left: 4px solid #f1c40f;
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 10px;
-            font-size: 0.9rem;
-            color: #f1c40f;
-        }
-    </style>
+    button {
+      width: 100%;
+      padding: 16px;
+      margin-top: 18px;
+      border-radius: var(--border-radius-md);
+      border: none;
+      font-size: 1.15rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all var(--transition-normal);
+      box-shadow: var(--shadow-md);
+      position: relative;
+      z-index: 10;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    button:active {
+      transform: scale(0.97);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+    }
+
+    button:focus {
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(255,255,255,0.3);
+    }
+
+    .btn-gen {
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+      color: white;
+      box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+    }
+
+    .btn-gen:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(52, 152, 219, 0.55);
+    }
+
+    .btn-start {
+      background: linear-gradient(135deg, var(--success-dark) 0%, var(--success) 100%);
+      color: white;
+      font-size: 1.35rem;
+      display: none;
+      margin-top: 25px;
+      padding: 18px;
+      box-shadow: 0 8px 25px rgba(46, 204, 113, 0.45);
+    }
+
+    .btn-start:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(46, 204, 113, 0.6);
+    }
+
+    .btn-exit {
+      background: linear-gradient(135deg, var(--secondary-dark) 0%, var(--secondary) 100%);
+      color: white;
+      padding: 14px 25px;
+      font-size: 1.05rem;
+      width: auto;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 140px;
+      box-shadow: 0 5px 18px rgba(231, 76, 60, 0.4);
+      margin-top: 15px;
+    }
+
+    .btn-exit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 7px 22px rgba(231, 76, 60, 0.55);
+    }
+
+    #qr-area {
+      background: rgba(255,255,255,0.92);
+      padding: 20px;
+      border-radius: var(--border-radius-md);
+      display: none;
+      margin: 25px auto 20px;
+      width: fit-content;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      border: 3px solid var(--primary);
+      position: relative;
+    }
+
+    #qr-area::after {
+      content: "QR Config";
+      position: absolute;
+      bottom: -28px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--primary);
+      color: white;
+      font-size: 0.8rem;
+      padding: 3px 12px;
+      border-radius: 15px;
+      font-weight: 600;
+    }
+
+    #qr-instructions {
+      color: #2c3e50;
+      font-size: 0.95rem;
+      margin-top: 12px;
+      line-height: 1.6;
+      max-width: 280px;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .alert {
+      background: rgba(243, 156, 18, 0.15);
+      color: #f39c12;
+      padding: 16px;
+      border-radius: var(--border-radius-sm);
+      margin: 20px 0;
+      font-size: 1.05rem;
+      display: none;
+      font-weight: 600;
+      border-left: 4px solid #f39c12;
+      text-align: left;
+      line-height: 1.5;
+    }
+
+    .alert strong {
+      color: #f1c40f;
+    }
+
+    #image-preview-container {
+      margin-top: 15px;
+      border-radius: var(--border-radius-md);
+      overflow: hidden;
+      border: 2px solid rgba(255,255,255,0.15);
+      background: rgba(0,0,0,0.4);
+      padding: 8px;
+      display: none;
+    }
+
+    #image-preview {
+      width: 100%;
+      max-height: 180px;
+      object-fit: contain;
+      border-radius: var(--border-radius-sm);
+      display: block;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .preview-label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--gray);
+      font-size: 0.95rem;
+      text-align: left;
+      font-weight: 500;
+    }
+
+    #status-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 12px;
+      padding: 10px;
+      background: rgba(0,0,0,0.3);
+      border-radius: var(--border-radius-sm);
+      font-size: 0.95rem;
+    }
+
+    #status-dot {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background-color: #e74c3c;
+      flex-shrink: 0;
+      box-shadow: 0 0 8px rgba(231, 76, 60, 0.7);
+    }
+
+    #status-dot.active {
+      background-color: #27ae60;
+      box-shadow: 0 0 8px rgba(39, 174, 96, 0.7);
+    }
+
+    /* ===== CONTROLES AR ===== */
+    #camera-status {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(10, 10, 20, 0.92);
+      color: #fff;
+      padding: 14px 30px;
+      border-radius: 50px;
+      font-size: 1.15rem;
+      z-index: 1001;
+      display: none;
+      border: 3px solid var(--primary);
+      box-shadow: 0 6px 25px rgba(0,0,0,0.6);
+      font-weight: 700;
+      backdrop-filter: blur(10px);
+      transition: all var(--transition-normal);
+      max-width: 90%;
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    .status-active {
+      color: var(--success) !important;
+      border-color: var(--success);
+      box-shadow: 0 6px 25px rgba(39, 174, 96, 0.4);
+    }
+
+    .status-searching {
+      color: var(--warning) !important;
+      border-color: var(--warning);
+      animation: pulse-warning 2s infinite;
+    }
+
+    @keyframes pulse-warning {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(243, 156, 18, 0.4); }
+      50% { box-shadow: 0 0 0 8px rgba(243, 156, 18, 0); }
+    }
+
+    #ar-controls {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: linear-gradient(to top, rgba(10,10,20,0.98) 0%, rgba(20,20,40,0.92) 100%);
+      padding: 20px 15px 25px;
+      box-sizing: border-box;
+      display: none;
+      z-index: 1000;
+      text-align: center;
+      color: white;
+      border-top: 4px solid var(--primary);
+      backdrop-filter: blur(20px);
+      max-height: 65vh;
+      overflow-y: auto;
+      box-shadow: 0 -8px 40px rgba(0,0,0,0.7);
+      will-change: transform;
+      transition: transform var(--transition-normal);
+    }
+
+    .ar-info {
+      font-size: 1.35rem;
+      margin: 8px 0 18px 0;
+      color: var(--light);
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      text-shadow: 0 2px 10px rgba(52, 152, 219, 0.3);
+    }
+
+    .control-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 15px 0;
+      gap: 15px;
+      background: rgba(52, 152, 219, 0.12);
+      padding: 16px;
+      border-radius: var(--border-radius-md);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .control-label {
+      font-size: 1.1rem;
+      white-space: nowrap;
+      min-width: 100px;
+      color: var(--light);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    input[type=range] {
+      flex: 1;
+      accent-color: var(--primary);
+      margin: 0;
+      height: 40px;
+      -webkit-appearance: none;
+      background: transparent;
+    }
+
+    input[type=range]::-webkit-slider-runnable-track {
+      width: 100%;
+      height: 8px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--primary);
+      cursor: pointer;
+      margin-top: -10px;
+      box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+      border: 3px solid white;
+      transition: transform var(--transition-fast);
+    }
+
+    input[type=range]::-webkit-slider-thumb:active {
+      transform: scale(1.2);
+    }
+
+    .scale-display {
+      font-size: 1.25rem;
+      color: var(--primary);
+      min-width: 65px;
+      text-align: right;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .toggle-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 18px 0;
+      gap: 15px;
+      background: rgba(52, 152, 219, 0.15);
+      padding: 16px;
+      border-radius: var(--border-radius-md);
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .toggle-label {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--light);
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 70px;
+      height: 36px;
+      background: #444;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all var(--transition-normal);
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.6);
+      border: 2px solid #555;
+    }
+
+    .toggle-switch.active {
+      background: linear-gradient(135deg, var(--success-dark), var(--success));
+      border-color: var(--success);
+      box-shadow: 0 0 12px rgba(39, 174, 96, 0.4);
+    }
+
+    .toggle-slider {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 30px;
+      height: 30px;
+      background: white;
+      border-radius: 50%;
+      transition: transform var(--transition-normal), background var(--transition-normal);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .toggle-switch.active .toggle-slider {
+      transform: translateX(34px);
+      background: #2ecc71;
+    }
+
+    .toggle-slider::after {
+      content: "❌";
+      font-size: 14px;
+      color: #777;
+    }
+
+    .toggle-switch.active .toggle-slider::after {
+      content: "✅";
+      color: white;
+    }
+
+    .measurements {
+      background: rgba(20, 30, 50, 0.75);
+      padding: 22px;
+      border-radius: var(--border-radius-lg);
+      margin: 20px 0 15px;
+      font-size: 0.95rem;
+      border: 3px solid rgba(52, 152, 219, 0.5);
+      backdrop-filter: blur(10px);
+    }
+
+    .measurements-title {
+      text-align: center;
+      margin-bottom: 18px;
+      font-size: 1.4rem;
+      color: var(--primary);
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      text-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+      position: relative;
+      padding-bottom: 10px;
+    }
+
+    .measurements-title::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 3px;
+      background: var(--primary);
+      border-radius: 3px;
+    }
+
+    .measurement-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .measurement-item {
+      background: rgba(30, 40, 70, 0.85);
+      padding: 18px 10px;
+      border-radius: var(--border-radius-md);
+      text-align: center;
+      border: 2px solid rgba(52, 152, 219, 0.4);
+      transition: transform var(--transition-fast);
+    }
+
+    .measurement-item:hover {
+      transform: scale(1.03);
+      border-color: var(--primary);
+      background: rgba(40, 60, 100, 0.9);
+    }
+
+    .measurement-label {
+      display: block;
+      font-size: 0.95rem;
+      color: var(--gray);
+      margin-bottom: 8px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+
+    .measurement-value {
+      display: block;
+      font-size: 1.65rem;
+      color: var(--primary);
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      font-family: var(--font-mono);
+      text-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+    }
+
+    .measurement-unit {
+      font-size: 0.9rem;
+      color: var(--gray);
+      display: block;
+      margin-top: 3px;
+      font-weight: 400;
+    }
+
+    .volume-item {
+      grid-column: span 3;
+      margin-top: 10px;
+      background: rgba(26, 82, 118, 0.8);
+      border-color: rgba(46, 204, 113, 0.5);
+    }
+
+    .volume-item .measurement-label {
+      color: #27ae60;
+      font-size: 1.05rem;
+    }
+
+    .volume-item .measurement-value {
+      color: #2ecc71;
+      font-size: 1.8rem;
+    }
+
+    .info-section {
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(10px);
+      padding: 25px;
+      border-radius: var(--border-radius-lg);
+      margin: 25px 15px;
+      max-width: 480px;
+      font-size: 0.95rem;
+      line-height: 1.7;
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: var(--shadow-md);
+    }
+
+    .info-section h3 {
+      color: var(--primary);
+      margin-bottom: 15px;
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .info-section ul {
+      padding-left: 25px;
+      margin: 15px 0;
+      color: var(--light);
+    }
+
+    .info-section li {
+      margin-bottom: 10px;
+      position: relative;
+    }
+
+    .info-section li::before {
+      content: "✓";
+      color: var(--success);
+      position: absolute;
+      left: -25px;
+      font-weight: bold;
+    }
+
+    .download-marker {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      color: white;
+      text-decoration: none;
+      padding: 12px 25px;
+      border-radius: var(--border-radius-md);
+      margin-top: 15px;
+      font-weight: 600;
+      transition: all var(--transition-normal);
+      box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .download-marker:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(52, 152, 219, 0.6);
+      background: linear-gradient(135deg, var(--primary), #1abc9c);
+    }
+
+    .download-marker:active {
+      transform: translateY(1px);
+    }
+
+    /* ===== PANEL DE INFORMACIÓN ===== */
+    #figura-info-panel {
+      position: fixed;
+      top: 80px;
+      right: -450px;
+      width: 420px;
+      max-height: 78vh;
+      background: linear-gradient(135deg, rgba(15,15,30,0.99) 0%, rgba(30,20,60,0.99) 100%);
+      border: 4px solid var(--primary);
+      border-radius: var(--border-radius-lg);
+      padding: 28px;
+      color: white;
+      z-index: 1002;
+      transition: right var(--transition-slow) cubic-bezier(0.23, 1, 0.32, 1);
+      overflow-y: auto;
+      box-shadow: -15px 0 50px rgba(0,0,0,0.8);
+      backdrop-filter: blur(15px);
+    }
+
+    #figura-info-panel.visible {
+      right: 20px;
+    }
+
+    .info-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      padding-bottom: 18px;
+      border-bottom: 4px solid var(--primary);
+      position: sticky;
+      top: 0;
+      background: rgba(15,15,30,0.98);
+      z-index: 10;
+      padding-top: 5px;
+    }
+
+    .info-title {
+      font-size: 2.1rem;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: -1px;
+      text-shadow: 0 3px 15px rgba(52, 152, 219, 0.4);
+    }
+
+    .close-info {
+      background: linear-gradient(135deg, var(--secondary-dark) 0%, var(--secondary) 100%);
+      border: none;
+      color: white;
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.8rem;
+      line-height: 1;
+      padding: 0;
+      margin: 0;
+      box-shadow: 0 5px 20px rgba(231, 76, 60, 0.5);
+      transition: all var(--transition-fast);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .close-info:hover {
+      transform: scale(1.08);
+      box-shadow: 0 7px 25px rgba(231, 76, 60, 0.7);
+    }
+
+    .close-info:active {
+      transform: scale(0.95);
+    }
+
+    .info-section-detail {
+      margin: 22px 0;
+      background: rgba(30, 40, 70, 0.7);
+      padding: 24px;
+      border-radius: var(--border-radius-md);
+      border-left: 5px solid var(--primary);
+      transition: transform var(--transition-fast);
+    }
+
+    .info-section-detail:hover {
+      transform: translateX(5px);
+      background: rgba(40, 60, 100, 0.8);
+    }
+
+    .info-section-title {
+      color: var(--primary);
+      font-weight: 800;
+      font-size: 1.4rem;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: relative;
+      padding-left: 10px;
+    }
+
+    .info-section-title::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 4px;
+      height: 24px;
+      background: var(--primary);
+      border-radius: 2px;
+    }
+
+    .info-section-content {
+      color: var(--light);
+      font-size: 1.05rem;
+      line-height: 1.8;
+      font-weight: 300;
+    }
+
+    .info-section-content strong {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .properties-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+      margin-top: 15px;
+    }
+
+    .property-item {
+      background: rgba(26, 82, 118, 0.75);
+      padding: 20px;
+      border-radius: var(--border-radius-md);
+      text-align: center;
+      border: 2px solid rgba(52, 152, 219, 0.5);
+      transition: all var(--transition-fast);
+    }
+
+    .property-item:hover {
+      transform: scale(1.05);
+      border-color: var(--primary);
+      background: rgba(36, 102, 148, 0.85);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    .property-label {
+      font-size: 0.95rem;
+      color: #a3b1c2;
+      display: block;
+      margin-bottom: 10px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+
+    .property-value {
+      font-size: 1.75rem;
+      color: white;
+      font-weight: 800;
+      display: block;
+      font-family: var(--font-mono);
+      text-shadow: 0 2px 10px rgba(0,0,0,0.4);
+    }
+
+    .action-buttons {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin: 25px 0;
+    }
+
+    .btn-info-toggle {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      padding: 18px 10px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      border-radius: var(--border-radius-md);
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(52, 152, 219, 0.45);
+      transition: all var(--transition-normal);
+      min-height: 70px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    .btn-info-toggle:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 9px 25px rgba(52, 152, 219, 0.65);
+    }
+
+    .btn-info-toggle:active {
+      transform: scale(0.96) translateY(1px);
+    }
+
+    #btn-rotation {
+      background: linear-gradient(135deg, var(--info) 0%, var(--info-dark) 100%);
+      box-shadow: 0 6px 20px rgba(155, 89, 182, 0.45);
+    }
+
+    #btn-rotation:hover {
+      box-shadow: 0 9px 25px rgba(155, 89, 182, 0.65);
+    }
+
+    #btn-calculator {
+      background: linear-gradient(135deg, #f39c12 0%, #d35400 100%);
+      box-shadow: 0 6px 20px rgba(243, 156, 18, 0.4);
+    }
+
+    #btn-calculator:hover {
+      box-shadow: 0 9px 25px rgba(243, 156, 18, 0.6);
+    }
+
+    .btn-exit {
+      grid-column: span 3;
+      background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-dark) 100%);
+      box-shadow: 0 6px 20px rgba(231, 76, 60, 0.45);
+      font-size: 1.2rem;
+      padding: 18px;
+      margin-top: 10px;
+    }
+
+    .btn-exit:hover {
+      box-shadow: 0 9px 25px rgba(231, 76, 60, 0.65);
+    }
+
+    .exercise-hint {
+      background: rgba(241, 196, 15, 0.15);
+      border-left: 5px solid #f1c40f;
+      padding: 22px;
+      border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0;
+      margin-top: 25px;
+      font-size: 1.1rem;
+      color: #f1c40f;
+      line-height: 1.7;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .exercise-hint::before {
+      content: "💡";
+      position: absolute;
+      top: -15px;
+      right: -15px;
+      font-size: 4rem;
+      opacity: 0.1;
+      transform: rotate(15deg);
+    }
+
+    .exercise-hint strong {
+      color: #f39c12;
+      display: block;
+      margin-bottom: 8px;
+      font-size: 1.25rem;
+    }
+
+    /* ===== ACCESIBILIDAD ===== */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .skip-link {
+      position: fixed;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-100%);
+      background: var(--primary);
+      color: white;
+      padding: 12px 25px;
+      border-radius: var(--border-radius-md);
+      z-index: 10000;
+      font-weight: 600;
+      transition: transform var(--transition-normal);
+    }
+
+    .skip-link:focus {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    [aria-live] {
+      position: fixed;
+      top: -100%;
+      left: 0;
+      width: 100%;
+      background: rgba(0,0,0,0.85);
+      color: white;
+      text-align: center;
+      padding: 12px;
+      z-index: 9999;
+      transition: top var(--transition-normal);
+    }
+
+    [aria-live].visible {
+      top: 0;
+    }
+
+    /* ===== ANIMACIONES ADICIONALES ===== */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-fade {
+      animation: fadeIn 0.6s ease-out forwards;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .animate-float {
+      animation: float 3s ease-in-out infinite;
+    }
+
+    /* ===== MEDIA QUERIES ===== */
+    @media (max-width: 480px) {
+      :root {
+        font-size: 15px;
+      }
+      
+      .app-logo {
+        font-size: 2.3rem;
+      }
+      
+      .permission-title {
+        font-size: 1.7rem;
+      }
+      
+      #figura-info-panel {
+        width: 95%;
+        max-width: 400px;
+        right: -100%;
+        top: 70px;
+        max-height: 80vh;
+        padding: 22px;
+      }
+      
+      #figura-info-panel.visible {
+        right: 2.5%;
+      }
+      
+      .action-buttons {
+        grid-template-columns: 1fr;
+      }
+      
+      .btn-exit {
+        grid-column: span 1;
+      }
+      
+      .measurement-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .volume-item {
+        grid-column: span 2;
+      }
+      
+      .btn-permission {
+        min-width: 240px;
+        padding: 16px 35px;
+        font-size: 1.15rem;
+      }
+      
+      .control-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+      
+      .scale-display {
+        align-self: flex-end;
+        margin-top: 8px;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .card {
+        max-width: 520px;
+      }
+      
+      #figura-info-panel {
+        width: 450px;
+      }
+    }
+  </style>
 </head>
-<body>
-
-    <div id="loading-screen">
-        <div class="loader"></div>
-        <p id="loading-text">Cargando...</p>
-        <p id="loading-tip">Preparando la experiencia AR</p>
+<body aria-live="polite">
+  <!-- Enlace de salto para accesibilidad -->
+  <a href="#main-content" class="skip-link">Ir al contenido principal</a>
+  
+  <!-- Pantalla de permisos de cámara (CRÍTICO PARA MÓVILES) -->
+  <div id="camera-permission" aria-labelledby="permission-heading" aria-modal="true" role="dialog">
+    <div class="permission-icon" aria-hidden="true">📸</div>
+    <h1 id="permission-heading" class="permission-title">Permiso de Cámara Requerido</h1>
+    <div class="permission-subtitle">Para experiencia de Realidad Aumentada</div>
+    <p class="permission-text">
+      Esta aplicación educativa necesita acceso a tu cámara para mostrar objetos 3D en Realidad Aumentada. 
+      <strong>Tu privacidad es fundamental:</strong> La cámara solo se procesa localmente en tu dispositivo. 
+      <em>Ninguna imagen se almacena, transmite ni envía a servidores externos.</em>
+    </p>
+    
+    <div id="https-warning" role="alert" aria-live="assertive">
+      ⚠️ <strong>REQUISITO DE SEGURIDAD:</strong> Los navegadores modernos (Chrome, Safari) solo permiten acceso a la cámara en conexiones seguras (HTTPS).<br><br>
+      <span class="https-solution">
+        ✅ Soluciones:<br>
+        • Usa <strong>localhost</strong> para pruebas locales<br>
+        • Despliega en GitHub Pages (https://tunombre.github.io)<br>
+        • Usa ngrok para túnel HTTPS temporal<br>
+        • Servidor con certificado SSL válido
+      </span>
     </div>
-
-    <div id="camera-status">
-        <span id="camera-status-text">🔍 Buscando marcador HIRO...</span>
+    
+    <button class="btn-permission" id="btn-request-camera" aria-label="Permitir acceso a la cámara para Realidad Aumentada">
+      ✅ Permitir Acceso a Cámara
+    </button>
+    
+    <div class="permission-steps">
+      <strong>¿Problemas con los permisos?</strong>
+      <ol>
+        <li>En Android: Configuración → Aplicaciones → Chrome → Permisos → Cámara: Permitir</li>
+        <li>En iOS: Configuración → Safari → Cámara: Permitir</li>
+        <li>Recarga la página y permite el permiso emergente</li>
+        <li>Asegúrate de que otra app no esté usando la cámara</li>
+      </ol>
     </div>
+  </div>
 
-    <div id="figura-info-panel">
-        <div class="info-header">
-            <span class="info-title" id="info-figura-titulo">CUBO</span>
-            <button class="close-info" onclick="toggleInfoPanel()">×</button>
-        </div>
-        
-        <div class="info-section-detail">
-            <div class="info-section-title">📐 Definición</div>
-            <div class="info-section-content" id="info-definicion">
-                Un cubo es un poliedro regular formado por seis caras cuadradas iguales.
-            </div>
-        </div>
-
-        <div class="info-section-detail">
-            <div class="info-section-title">📊 Propiedades Geométricas</div>
-            <div class="properties-grid">
-                <div class="property-item">
-                    <span class="property-label">Caras</span>
-                    <span class="property-value" id="info-caras">6</span>
-                </div>
-                <div class="property-item">
-                    <span class="property-label">Vértices</span>
-                    <span class="property-value" id="info-vertices">8</span>
-                </div>
-                <div class="property-item">
-                    <span class="property-label">Aristas</span>
-                    <span class="property-value" id="info-aristas">12</span>
-                </div>
-                <div class="property-item">
-                    <span class="property-label">Simetría</span>
-                    <span class="property-value" id="info-simetria">Cúbica</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="info-section-detail">
-            <div class="info-section-title">📏 Fórmulas Matemáticas</div>
-            <div class="info-section-content" id="info-formulas">
-                <strong>Volumen:</strong> V = a³<br>
-                <strong>Área:</strong> A = 6a²<br>
-                <strong>Diagonal:</strong> d = a√3
-            </div>
-        </div>
-
-        <div class="info-section-detail">
-            <div class="info-section-title">🎯 Aplicaciones</div>
-            <div class="info-section-content" id="info-aplicaciones">
-                Arquitectura, embalaje, dados, cristalografía, diseño industrial.
-            </div>
-        </div>
-
-        <div class="exercise-hint">
-            💡 <strong>Reto de Aprendizaje:</strong><br>
-            Usa las medidas de la regla para calcular el perímetro, área y volumen de esta figura. ¡Pausa la rotación para medir mejor!
-        </div>
+  <!-- Pantalla de carga optimizada -->
+  <div id="loading-screen" aria-busy="true" aria-label="Cargando aplicación educativa">
+    <div class="loader-container">
+      <div class="loader-ring"></div>
+      <div class="loader"></div>
     </div>
-
-    <div id="menu-overlay">
-        <div class="card">
-            <h1>🔬 WILL AR</h1>
-            <h2>Laboratorio Matemático Avanzado</h2>
-            
-            <div class="alert" id="https-alert">
-                ⚠️ Importante: Esta app requiere HTTPS para funcionar en móviles
-            </div>
-
-            <label>1️⃣ Textura Opcional</label>
-            <div class="file-input-wrapper">
-                <input type="file" id="imgUpload" accept="image/*">
-                <label for="imgUpload" class="file-input-label">
-                    📁 Seleccionar Imagen
-                </label>
-            </div>
-            <img id="image-preview" alt="Preview">
-            <div id="status-txt" style="font-size:0.8rem; margin-top:5px; color:#f39c12;">
-                <span id="status-dot"></span> <span id="status-msg">Sin textura</span>
-            </div>
-
-            <label>2️⃣ Seleccionar Figura Geométrica</label>
-            <select id="figura">
-                <option value="box">📦 Cubo</option>
-                <option value="sphere">⚽ Esfera</option>
-                <option value="cylinder">🛢️ Cilindro</option>
-                <option value="cone">🔺 Cono</option>
-                <option value="torus">🍩 Toroide</option>
-                <option value="tetrahedron">🔺 Tetraedro</option>
-                <option value="dodecahedron">💎 Dodecaedro</option>
-                <option value="icosahedron">⚽ Icosaedro</option>
-                <option value="octahedron">💠 Octaedro</option>
-            </select>
-
-            <button class="btn-gen" onclick="generarConfig()">⚙️ CONFIGURAR OBJETO</button>
-
-            <div id="qr-area">
-                <div id="qrcode"></div>
-                <p style="color:#333; font-size:0.8rem; margin:5px 0 0 0;">Escanea para compartir</p>
-            </div>
-
-            <button id="btn-iniciar" class="btn-start" onclick="iniciarAR()">🚀 INICIAR AR</button>
-        </div>
-        
-        <div class="info-section">
-            <strong style="font-size: 1rem;">📌 INSTRUCCIONES:</strong><br><br>
-            1. Configura tu objeto 3D<br>
-            2. Descarga e imprime el marcador HIRO<br>
-            3. Presiona "INICIAR AR"<br>
-            4. Apunta la cámara al marcador<br>
-            5. Usa la regla para medir las dimensiones<br>
-            6. Calcula perímetro, área y volumen<br><br>
-            <a href="https://ar-js-org.github.io/AR.js/data/images/hiro.png" 
-               target="_blank" 
-               style="color: #3498db; text-decoration: underline; font-weight: bold;">
-               👉 Descargar Marcador HIRO
-            </a>
-        </div>
+    <div id="loading-text">Cargando WILL AR...</div>
+    <div id="loading-subtext">Laboratorio Matemático Avanzado</div>
+    <div id="loading-progress">
+      <div id="loading-bar"></div>
     </div>
-
-    <div id="ar-controls">
-        <div class="ar-info">📍 <span id="label-figura">CUBO</span></div>
-        
-        <div class="action-buttons">
-            <button class="btn-info-toggle" onclick="toggleInfoPanel()">
-                📖<br>Info
-            </button>
-            <button class="btn-info-toggle" onclick="toggleRotacion()" id="btn-rotation">
-                ⏸️<br><span id="rotation-text">Pausar</span>
-            </button>
-            <button class="btn-exit" onclick="salirAR()">❌ Salir</button>
-        </div>
-
-        <div class="control-row">
-            <span class="control-label">📏 Escala:</span>
-            <input type="range" min="0.5" max="3" step="0.1" value="1" oninput="cambiarEscala(this.value)">
-            <span class="scale-display"><span id="scale-value">1.0</span>x</span>
-        </div>
-
-        <div class="toggle-container">
-            <span style="font-size: 1rem; font-weight: bold;">📐 Mostrar Regla:</span>
-            <div class="toggle-switch active" id="ruler-toggle" onclick="toggleRegla()">
-                <div class="toggle-slider"></div>
-            </div>
-        </div>
-
-        <div class="measurements">
-            <div class="measurements-title">📏 Medidas en Centímetros (cm)</div>
-            <div class="measurement-grid">
-                <div class="measurement-item">
-                    <span class="measurement-label">Alto</span>
-                    <span class="measurement-value"><span id="measure-height">100</span> cm</span>
-                </div>
-                <div class="measurement-item">
-                    <span class="measurement-label">Ancho</span>
-                    <span class="measurement-value"><span id="measure-width">100</span> cm</span>
-                </div>
-                <div class="measurement-item">
-                    <span class="measurement-label">Profund.</span>
-                    <span class="measurement-value"><span id="measure-depth">100</span> cm</span>
-                </div>
-            </div>
-            <div class="property-item" style="margin-top: 8px;">
-                <span class="measurement-label">Volumen Aproximado</span>
-                <span class="measurement-value"><span id="measure-volume">1,000,000</span> cm³</span>
-            </div>
-        </div>
+    <div id="loading-tip" aria-live="polite">
+      Preparando entorno de Realidad Aumentada educativa...
     </div>
+  </div>
 
-    <!-- ESCENA A-FRAME - NO SE CARGA HASTA QUE EL USUARIO PRESIONE INICIAR -->
-    <div id="ar-scene-container" style="display: none;">
-        <a-scene 
-            id="ar-scene"
-            embedded 
-            arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
-            vr-mode-ui="enabled: false"
-            renderer="logarithmicDepthBuffer: true; precision: medium;"
-            loading-screen="enabled: false"
-            device-orientation-permission-ui="enabled: false">
-            
-            <a-assets timeout="30000">
-                <img id="textura-asset" crossorigin="anonymous" src=""> 
-                <img id="textura-defecto" src="https://cdn.pixabay.com/photo/2016/11/29/05/45/astronomy-1867616_960_720.jpg" crossorigin="anonymous">
-            </a-assets>
+  <!-- Estado de cámara (feedback en tiempo real) -->
+  <div id="camera-status" aria-live="assertive" aria-atomic="true">
+    <span id="camera-status-text">🔍 Buscando marcador HIRO...</span>
+  </div>
 
-            <a-marker 
-                preset="hiro" 
-                id="hiro-marker"
-                smooth="true" 
-                smoothCount="10" 
-                smoothTolerance="0.01" 
-                smoothThreshold="5">
-                
-                <a-entity id="contenedor-principal" position="0 0 0">
-                    
-                    <a-box
-                        id="modelo-3d"
-                        position="0 0.5 0"
-                        rotation="0 45 0"
-                        scale="1 1 1"
-                        color="#4ECDC4"
-                        material="metalness: 0.3; roughness: 0.5"
-                        animation="property: rotation; to: 0 405 0; dur: 10000; loop: true; easing: linear">
-                    </a-box>
-
-                    <a-box
-                        id="wireframe-guia" 
-                        position="0 0.5 0"
-                        material="wireframe: true; color: #FFE66D; opacity: 0.8" 
-                        scale="1.05 1.05 1.05"
-                        rotation="0 45 0">
-                    </a-box>
-
-                    <!-- REGLA VIRTUAL ULTRA VISIBLE -->
-                    <a-entity id="regla-virtual" visible="true" position="0 0.5 0">
-                        
-                        <!-- EJE VERTICAL (ALTURA) -->
-                        <a-entity position="-0.9 0 0">
-                            <a-cylinder 
-                                radius="0.025" 
-                                height="2.4" 
-                                color="#FFD700"
-                                material="shader: flat; emissive: #FFD700; emissiveIntensity: 0.8; side: double">
-                            </a-cylinder>
-                            
-                            <!-- Marcas -->
-                            <a-box position="0 -1.0 0" width="0.18" height="0.03" depth="0.03" color="#FFD700" material="shader: flat; emissive: #FFD700; emissiveIntensity: 0.5"></a-box>
-                            <a-box position="0 -0.5 0" width="0.18" height="0.03" depth="0.03" color="#FFD700" material="shader: flat; emissive: #FFD700; emissiveIntensity: 0.5"></a-box>
-                            <a-box position="0 0.0 0" width="0.22" height="0.035" depth="0.035" color="#FFD700" material="shader: flat; emissive: #FFD700; emissiveIntensity: 0.8"></a-box>
-                            <a-box position="0 0.5 0" width="0.18" height="0.03" depth="0.03" color="#FFD700" material="shader: flat; emissive: #FFD700; emissiveIntensity: 0.5"></a-box>
-                            <a-box position="0 1.0 0" width="0.18" height="0.03" depth="0.03" color="#FFD700" material="shader: flat; emissive: #FFD700; emissiveIntensity: 0.5"></a-box>
-                            
-                            <a-text value="0cm" position="-0.30 0.0 0" scale="0.4 0.4 0.4" color="#FFD700" align="right" shader="flat"></a-text>
-                            <a-text value="50cm" position="-0.30 0.5 0" scale="0.35 0.35 0.35" color="#FFD700" align="right" shader="flat"></a-text>
-                            <a-text value="100cm" position="-0.30 1.0 0" scale="0.35 0.35 0.35" color="#FFD700" align="right" shader="flat"></a-text>
-                            
-                            <a-text value="ALTURA (cm)" position="-0.30 -1.3 0" align="right" color="#FFD700" scale="0.32 0.32 0.32" shader="flat"></a-text>
-                        </a-entity>
-
-                        <!-- EJE HORIZONTAL (ANCHO) -->
-                        <a-entity position="0 -0.7 0">
-                            <a-cylinder 
-                                radius="0.025" 
-                                height="2.4" 
-                                color="#00FF88"
-                                rotation="0 0 90"
-                                material="shader: flat; emissive: #00FF88; emissiveIntensity: 0.8; side: double">
-                            </a-cylinder>
-                            
-                            <a-box position="-0.5 0 0" width="0.03" height="0.22" depth="0.03" color="#00FF88" material="shader: flat; emissive: #00FF88; emissiveIntensity: 0.8"></a-box>
-                            <a-box position="0.0 0 0" width="0.035" height="0.22" depth="0.035" color="#00FF88" material="shader: flat; emissive: #00FF88; emissiveIntensity: 0.8"></a-box>
-                            <a-box position="0.5 0 0" width="0.03" height="0.22" depth="0.03" color="#00FF88" material="shader: flat; emissive: #00FF88; emissiveIntensity: 0.8"></a-box>
-                            
-                            <a-text value="0cm" position="0.0 -0.28 0" scale="0.4 0.4 0.4" color="#00FF88" align="center" shader="flat"></a-text>
-                            <a-text value="50cm" position="0.5 -0.28 0" scale="0.35 0.35 0.35" color="#00FF88" align="center" shader="flat"></a-text>
-                            
-                            <a-text value="ANCHO (cm)" position="0 -0.4 0" align="center" color="#00FF88" scale="0.32 0.32 0.32" shader="flat"></a-text>
-                        </a-entity>
-
-                        <!-- EJE PROFUNDIDAD -->
-                        <a-entity position="0.9 0 0">
-                            <a-cylinder 
-                                radius="0.025" 
-                                height="2.4" 
-                                color="#FF6B6B"
-                                rotation="0 90 90"
-                                material="shader: flat; emissive: #FF6B6B; emissiveIntensity: 0.8; side: double">
-                            </a-cylinder>
-                            
-                            <a-box position="0 0 -0.5" width="0.03" height="0.22" depth="0.03" color="#FF6B6B" material="shader: flat; emissive: #FF6B6B; emissiveIntensity: 0.8"></a-box>
-                            <a-box position="0 0 0.0" width="0.035" height="0.22" depth="0.035" color="#FF6B6B" material="shader: flat; emissive: #FF6B6B; emissiveIntensity: 0.8"></a-box>
-                            <a-box position="0 0 0.5" width="0.03" height="0.22" depth="0.03" color="#FF6B6B" material="shader: flat; emissive: #FF6B6B; emissiveIntensity: 0.8"></a-box>
-                            
-                            <a-text value="0cm" position="0 -0.28 0.0" scale="0.4 0.4 0.4" color="#FF6B6B" align="center" shader="flat"></a-text>
-                            <a-text value="50cm" position="0 -0.28 0.5" scale="0.35 0.35 0.35" color="#FF6B6B" align="center" shader="flat"></a-text>
-                            
-                            <a-text value="PROF (cm)" position="0 -0.4 0" align="center" color="#FF6B6B" scale="0.32 0.32 0.32" shader="flat"></a-text>
-                        </a-entity>
-                        
-                    </a-entity>
-
-                    <a-text 
-                        value="WILL-AR" 
-                        position="0 2.0 0" 
-                        align="center" 
-                        color="#4ECDC4" 
-                        scale="1 1 1"
-                        shader="flat">
-                    </a-text>
-
-                </a-entity>
-            </a-marker>
-            
-            <a-entity camera></a-entity>
-        </a-scene>
+  <!-- Panel de información educativa (lado derecho) -->
+  <div id="figura-info-panel" aria-labelledby="info-figura-titulo" role="region">
+    <div class="info-header">
+      <span class="info-title" id="info-figura-titulo">CUBO</span>
+      <button class="close-info" onclick="toggleInfoPanel()" aria-label="Cerrar panel de información">
+        <span aria-hidden="true">×</span>
+      </button>
     </div>
+    
+    <div class="info-section-detail">
+      <div class="info-section-title">📐 Definición Geométrica</div>
+      <div class="info-section-content" id="info-definicion">
+        Un cubo (o hexaedro regular) es un poliedro regular formado por seis caras cuadradas iguales. Es uno de los cinco sólidos platónicos y representa la máxima simetría en el espacio tridimensional.
+      </div>
+    </div>
+    
+    <div class="info-section-detail">
+      <div class="info-section-title">📊 Propiedades Geométricas</div>
+      <div class="properties-grid">
+        <div class="property-item">
+          <span class="property-label">Caras</span>
+          <span class="property-value" id="info-caras">6</span>
+        </div>
+        <div class="property-item">
+          <span class="property-label">Vértices</span>
+          <span class="property-value" id="info-vertices">8</span>
+        </div>
+        <div class="property-item">
+          <span class="property-label">Aristas</span>
+          <span class="property-value" id="info-aristas">12</span>
+        </div>
+        <div class="property-item">
+          <span class="property-label">Simetría</span>
+          <span class="property-value" id="info-simetria">Cúbica Oh</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="info-section-detail">
+      <div class="info-section-title">📏 Fórmulas Matemáticas</div>
+      <div class="info-section-content" id="info-formulas">
+        <strong>Volumen:</strong> \( V = a^3 \)<br>
+        <strong>Área Total:</strong> \( A = 6a^2 \)<br>
+        <strong>Diagonal Espacial:</strong> \( d = a\sqrt{3} \)
+      </div>
+    </div>
+    
+    <div class="info-section-detail">
+      <div class="info-section-title">🌍 Aplicaciones Reales</div>
+      <div class="info-section-content" id="info-aplicaciones">
+        Construcción (cubos de hormigón), embalaje industrial, dados de juego, cristalografía (estructura de sales), almacenamiento en 3D, diseño arquitectónico modular.
+      </div>
+    </div>
+    
+    <div class="info-section-detail">
+      <div class="info-section-title">🧠 Curiosidades Matemáticas</div>
+      <div class="info-section-content" id="info-curiosidades">
+        El cubo es el único poliedro regular que puede teselar el espacio tridimensional sin dejar huecos. Su dual es el octaedro, y juntos forman la base de la simetría cristalina cúbica.
+      </div>
+    </div>
+    
+    <div class="exercise-hint">
+      <strong>Reto de Aprendizaje:</strong><br>
+      Usa las medidas de la regla virtual para calcular:<br>
+      • Perímetro de una cara<br>
+      • Área total<br>
+      • Volumen<br>
+      ¡Pausa la rotación para medir con mayor precisión!
+    </div>
+  </div>
 
-    <script>
-        let texturaData = null; 
-        let figuraSeleccionada = "box";
-        let arActivo = false;
-        let reglaVisible = true;
-        let escalaActual = 1;
-        let markerDetected = false;
-        let rotacionActiva = true;
-        let sceneLoaded = false;
+  <!-- Menú principal overlay -->
+  <div id="menu-overlay" aria-labelledby="main-menu-title">
+    <div class="header-section">
+      <div class="app-logo" id="main-menu-title">WILL AR</div>
+      <div class="app-subtitle">Laboratorio Matemático Avanzado</div>
+      <div class="app-tagline">Explora geometría en 3D con Realidad Aumentada educativa</div>
+    </div>
+    
+    <div class="card">
+      <div class="section-title">🎨 1. Textura Personalizada</div>
+      <div class="file-input-wrapper">
+        <input type="file" id="imgUpload" accept="image/*" aria-label="Seleccionar imagen para textura del objeto 3D">
+        <label for="imgUpload" class="file-input-label" id="file-label">
+          📁 Seleccionar Imagen (máx. 5MB)
+        </label>
+      </div>
+      
+      <div id="image-preview-container">
+        <span class="preview-label">Vista previa:</span>
+        <img id="image-preview" alt="Vista previa de textura seleccionada" aria-hidden="true">
+      </div>
+      
+      <div id="status-container" aria-live="polite">
+        <span id="status-dot"></span>
+        <span id="status-msg">Sin textura seleccionada</span>
+      </div>
+      
+      <div class="alert" id="https-alert" role="alert">
+        🔒 <strong>Atención:</strong> Esta aplicación requiere conexión HTTPS para funcionar en dispositivos móviles. Los navegadores bloquean el acceso a la cámara en HTTP por seguridad.
+      </div>
+      
+      <div class="section-title" style="margin-top: 25px;">🔷 2. Figura Geométrica</div>
+      <select id="figura" aria-label="Seleccionar figura geométrica para visualizar en Realidad Aumentada">
+        <option value="box">📦 Cubo (Hexaedro)</option>
+        <option value="sphere">⚽ Esfera</option>
+        <option value="cylinder">🛢️ Cilindro</option>
+        <option value="cone">🔺 Cono</option>
+        <option value="torus">🍩 Toroide</option>
+        <option value="tetrahedron">🔺 Tetraedro</option>
+        <option value="dodecahedron">💎 Dodecaedro</option>
+        <option value="icosahedron">⚽ Icosaedro</option>
+        <option value="octahedron">💠 Octaedro</option>
+      </select>
+      
+      <button class="btn-gen" onclick="generarConfig()" aria-label="Generar configuración del objeto 3D">
+        ⚙️ CONFIGURAR OBJETO 3D
+      </button>
+      
+      <div id="qr-area" aria-hidden="true">
+        <div id="qrcode"></div>
+        <div id="qr-instructions">
+          Escanea para guardar configuración o compartir con compañeros
+        </div>
+      </div>
+      
+      <button id="btn-iniciar" class="btn-start" onclick="iniciarAR()" aria-label="Iniciar experiencia de Realidad Aumentada">
+        🚀 INICIAR REALIDAD AUMENTADA
+      </button>
+    </div>
+    
+    <div class="info-section">
+      <h3>📌 Instrucciones de Uso</h3>
+      <ul>
+        <li>1. Configura tu objeto 3D con textura opcional</li>
+        <li>2. <strong>Descarga e imprime el marcador HIRO</strong> (enlace abajo)</li>
+        <li>3. Presiona "INICIAR REALIDAD AUMENTADA"</li>
+        <li>4. Apunta la cámara de tu dispositivo al marcador impreso</li>
+        <li>5. Usa la regla virtual para medir dimensiones reales</li>
+        <li>6. Calcula perímetro, área y volumen con las medidas</li>
+      </ul>
+      
+      <a href="https://ar-js-org.github.io/AR.js/data/images/hiro.png" 
+         target="_blank" 
+         class="download-marker"
+         aria-label="Descargar marcador HIRO para impresión - se abre en nueva pestaña">
+        👉 Descargar Marcador HIRO (PDF para imprimir)
+      </a>
+      
+      <p style="margin-top: 20px; font-style: italic; color: #95a5a6; font-size: 0.95rem;">
+        💡 <strong>Consejo:</strong> Imprime el marcador en tamaño A4 (100% sin ajustes) y colócalo sobre una superficie plana con buena iluminación.
+      </p>
+    </div>
+  </div>
 
-        const dimensionesBase = {
-            box: { altura: 100, ancho: 100, profundidad: 100 },
-            sphere: { altura: 160, ancho: 160, profundidad: 160 },
-            cylinder: { altura: 200, ancho: 100, profundidad: 100 },
-            cone: { altura: 200, ancho: 100, profundidad: 100 },
-            torus: { altura: 40, ancho: 200, profundidad: 200 },
-            tetrahedron: { altura: 140, ancho: 100, profundidad: 100 },
-            dodecahedron: { altura: 160, ancho: 160, profundidad: 160 },
-            icosahedron: { altura: 160, ancho: 160, profundidad: 160 },
-            octahedron: { altura: 140, ancho: 100, profundidad: 100 }
-        };
-
-        const figurasInfo = {
-            box: {
-                nombre: "CUBO",
-                definicion: "Un cubo (o hexaedro regular) es un poliedro regular formado por seis caras cuadradas iguales. Es uno de los cinco sólidos platónicos y representa la máxima simetría en el espacio tridimensional.",
-                caras: 6, vertices: 8, aristas: 12, simetria: "Cúbica Oh",
-                formulas: "<strong>Volumen:</strong> V = a³<br><strong>Área Total:</strong> A = 6a²<br><strong>Diagonal Espacial:</strong> d = a√3",
-                aplicaciones: "Construcción, embalaje, dados, cristalografía, almacenamiento, diseño."
-            },
-            sphere: {
-                nombre: "ESFERA",
-                definicion: "Una esfera es un cuerpo geométrico tridimensional perfectamente redondo, definido como el conjunto de todos los puntos en el espacio que equidistan de un punto central.",
-                caras: 1, vertices: 0, aristas: 0, simetria: "Esférica infinita",
-                formulas: "<strong>Volumen:</strong> V = (4/3)πr³<br><strong>Área:</strong> A = 4πr²<br><strong>Diámetro:</strong> d = 2r",
-                aplicaciones: "Pelotas, planetas, burbujas, tanques, lentes, cojinetes."
-            },
-            cylinder: {
-                nombre: "CILINDRO",
-                definicion: "Un cilindro es un cuerpo geométrico formado por dos círculos paralelos e iguales unidos por una superficie curva.",
-                caras: 3, vertices: 0, aristas: 2, simetria: "Cilíndrica",
-                formulas: "<strong>Volumen:</strong> V = πr²h<br><strong>Área Lateral:</strong> A = 2πrh<br><strong>Área Total:</strong> A = 2πr(r+h)",
-                aplicaciones: "Latas, tuberías, columnas, tanques, pistones, envases."
-            },
-            cone: {
-                nombre: "CONO",
-                definicion: "Un cono es un cuerpo geométrico con una base circular y un vértice único unidos por una superficie curva.",
-                caras: 2, vertices: 1, aristas: 1, simetria: "Cónica",
-                formulas: "<strong>Volumen:</strong> V = (1/3)πr²h<br><strong>Área Lateral:</strong> A = πrl<br><strong>Generatriz:</strong> l = √(r²+h²)",
-                aplicaciones: "Conos de tráfico, embudos, helados, volcanes, altavoces."
-            },
-            torus: {
-                nombre: "TOROIDE",
-                definicion: "Un toroide es una superficie de revolución generada al girar un círculo alrededor de un eje coplanar.",
-                caras: 1, vertices: 0, aristas: 0, simetria: "Toroidal",
-                formulas: "<strong>Volumen:</strong> V = 2π²Rr²<br><strong>Área:</strong> A = 4π²Rr<br>R=mayor, r=menor",
-                aplicaciones: "Neumáticos, rosquillas, salvavidas, tokamaks, juntas."
-            },
-            tetrahedron: {
-                nombre: "TETRAEDRO",
-                definicion: "Un tetraedro regular es un poliedro de cuatro caras triangulares equiláteras. Es el más simple de los sólidos platónicos.",
-                caras: 4, vertices: 4, aristas: 6, simetria: "Tetraédrica Td",
-                formulas: "<strong>Volumen:</strong> V = a³/(6√2)<br><strong>Área:</strong> A = √3a²<br><strong>Altura:</strong> h = a√(2/3)",
-                aplicaciones: "Química molecular, cristalografía, embalaje, dados D4."
-            },
-            dodecahedron: {
-                nombre: "DODECAEDRO",
-                definicion: "Un dodecaedro regular es un poliedro formado por doce caras pentagonales regulares.",
-                caras: 12, vertices: 20, aristas: 30, simetria: "Icosaédrica Ih",
-                formulas: "<strong>Volumen:</strong> V = [(15+7√5)/4]a³<br><strong>Área:</strong> A = 3√(25+10√5)a²",
-                aplicaciones: "Cristalografía, dados D12, arquitectura decorativa."
-            },
-            icosahedron: {
-                nombre: "ICOSAEDRO",
-                definicion: "Un icosaedro regular es un poliedro de veinte caras triangulares equiláteras.",
-                caras: 20, vertices: 12, aristas: 30, simetria: "Icosaédrica Ih",
-                formulas: "<strong>Volumen:</strong> V = [5(3+√5)/12]a³<br><strong>Área:</strong> A = 5√3a²",
-                aplicaciones: "Virus, balones, domos geodésicos, dados D20."
-            },
-            octahedron: {
-                nombre: "OCTAEDRO",
-                definicion: "Un octaedro regular es un poliedro de ocho caras triangulares equiláteras. Es dual del cubo.",
-                caras: 8, vertices: 6, aristas: 12, simetria: "Octaédrica Oh",
-                formulas: "<strong>Volumen:</strong> V = (√2/3)a³<br><strong>Área:</strong> A = 2√3a²<br><strong>Altura:</strong> h = a√2",
-                aplicaciones: "Diamantes, dados D8, estructuras moleculares."
-            }
-        };
-
-        // LOADING RÁPIDO - Ocultar después de cargar librerías
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                const loadingScreen = document.getElementById('loading-screen');
-                loadingScreen.classList.add('hidden');
-                setTimeout(() => {
-                    loadingScreen.style.display = 'none';
-                }, 500);
-            }, 800);
-
-            if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
-                document.getElementById('https-alert').style.display = 'block';
-            }
-        });
-
-        document.getElementById('imgUpload').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if(file) {
-                if(file.size > 5 * 1024 * 1024) {
-                    alert('Imagen muy grande. Máximo 5MB.');
-                    this.value = '';
-                    return;
-                }
-
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    texturaData = event.target.result;
-                    
-                    const preview = document.getElementById('image-preview');
-                    preview.src = texturaData;
-                    preview.style.display = 'block';
-                    
-                    document.getElementById('status-dot').style.backgroundColor = "#2ecc71";
-                    const nombre = file.name.length > 15 ? file.name.substring(0, 15) + "..." : file.name;
-                    document.getElementById('status-msg').innerText = "✅ " + nombre;
-                    
-                    if (sceneLoaded) {
-                        const texturaAsset = document.getElementById('textura-asset');
-                        texturaAsset.setAttribute('src', texturaData);
-                    }
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
-        function generarConfig() {
-            figuraSeleccionada = document.getElementById('figura').value;
-            const qrContainer = document.getElementById('qrcode');
-            const qrArea = document.getElementById('qr-area');
-            const btnStart = document.getElementById('btn-iniciar');
-
-            qrContainer.innerHTML = "";
-            
-            const configData = {
-                app: "WILL-AR",
-                figura: figuraSeleccionada,
-                fecha: new Date().toISOString()
-            };
-            
-            try {
-                new QRCode(qrContainer, {
-                    text: JSON.stringify(configData),
-                    width: 130,
-                    height: 130,
-                    colorDark: "#000000",
-                    colorLight: "#ffffff",
-                    correctLevel: QRCode.CorrectLevel.H
-                });
-
-                qrArea.style.display = "block";
-                btnStart.style.display = "block";
-                
-                setTimeout(() => {
-                    btnStart.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 200);
-            } catch(e) {
-                console.error('Error QR:', e);
-            }
-        }
-
-        function crearFigura3D() {
-            const contenedor = document.getElementById('contenedor-principal');
-            const modeloViejo = document.getElementById('modelo-3d');
-            const wireframeViejo = document.getElementById('wireframe-guia');
-
-            if (modeloViejo) modeloViejo.remove();
-            if (wireframeViejo) wireframeViejo.remove();
-
-            const modelo = document.createElement('a-entity');
-            modelo.setAttribute('id', 'modelo-3d');
-            modelo.setAttribute('position', '0 0.5 0');
-            
-            let geoParams = '';
-            let rotation = '0 45 0';
-            
-            switch(figuraSeleccionada) {
-                case 'box':
-                    geoParams = 'primitive: box; width: 1; height: 1; depth: 1';
-                    break;
-                case 'sphere':
-                    geoParams = 'primitive: sphere; radius: 0.5; segmentsWidth: 32; segmentsHeight: 32';
-                    rotation = '0 0 0';
-                    break;
-                case 'cylinder':
-                    geoParams = 'primitive: cylinder; radius: 0.5; height: 1.5';
-                    break;
-                case 'cone':
-                    geoParams = 'primitive: cone; radiusBottom: 0.5; radiusTop: 0; height: 1.5';
-                    break;
-                case 'torus':
-                    geoParams = 'primitive: torus; radius: 0.5; radiusTubular: 0.15; segmentsRadial: 16';
-                    break;
-                case 'tetrahedron':
-                    geoParams = 'primitive: tetrahedron; radius: 0.6';
-                    break;
-                case 'dodecahedron':
-                    geoParams = 'primitive: dodecahedron; radius: 0.5';
-                    break;
-                case 'icosahedron':
-                    geoParams = 'primitive: icosahedron; radius: 0.5';
-                    break;
-                case 'octahedron':
-                    geoParams = 'primitive: octahedron; radius: 0.6';
-                    break;
-            }
-
-            modelo.setAttribute('geometry', geoParams);
-            modelo.setAttribute('rotation', rotation);
-            
-            let materialParams = texturaData 
-                ? 'src: #textura-asset; metalness: 0.3; roughness: 0.5'
-                : 'src: #textura-defecto; metalness: 0.3; roughness: 0.5';
-            
-            modelo.setAttribute('material', materialParams);
-            
-            if(rotacionActiva) {
-                modelo.setAttribute('animation', 'property: rotation; to: 0 405 0; dur: 10000; loop: true; easing: linear');
-            }
-            
-            const wireframe = document.createElement('a-entity');
-            wireframe.setAttribute('id', 'wireframe-guia');
-            wireframe.setAttribute('geometry', geoParams);
-            wireframe.setAttribute('material', 'wireframe: true; color: #FFE66D; opacity: 0.8');
-            wireframe.setAttribute('scale', '1.05 1.05 1.05');
-            wireframe.setAttribute('rotation', rotation);
-            wireframe.setAttribute('position', '0 0.5 0');
-
-            contenedor.appendChild(modelo);
-            contenedor.appendChild(wireframe);
-
-            console.log('✅ Figura creada:', figuraSeleccionada);
-        }
-
-        // INICIAR AR - SIN CONFLICTOS DE CÁMARA
-        async function iniciarAR() {
-            console.log('🎬 Iniciando AR...');
-            
-            try {
-                // NO solicitar cámara aquí - AR.js lo hará automáticamente
-                // Mostrar escena
-                document.getElementById('ar-scene-container').style.display = 'block';
-                
-                // Esperar a que A-Frame esté listo
-                setTimeout(() => {
-                    if (!sceneLoaded) {
-                        sceneLoaded = true;
-                        
-                        // Cargar textura si existe
-                        if (texturaData) {
-                            const texturaAsset = document.getElementById('textura-asset');
-                            texturaAsset.setAttribute('src', texturaData);
-                        }
-
-                        crearFigura3D();
-                        actualizarInfoFigura();
-
-                        const marker = document.querySelector('#hiro-marker');
-                        
-                        if (marker) {
-                            marker.addEventListener('markerFound', () => {
-                                markerDetected = true;
-                                console.log('✅ Marcador detectado!');
-                                const status = document.getElementById('camera-status');
-                                const statusText = document.getElementById('camera-status-text');
-                                statusText.innerText = '✅ Marcador detectado';
-                                statusText.className = 'status-active';
-                                status.style.display = 'block';
-                                
-                                setTimeout(() => {
-                                    status.style.display = 'none';
-                                }, 2000);
-                            });
-                            
-                            marker.addEventListener('markerLost', () => {
-                                markerDetected = false;
-                                const status = document.getElementById('camera-status');
-                                const statusText = document.getElementById('camera-status-text');
-                                statusText.innerText = '🔍 Buscando marcador...';
-                                statusText.className = 'status-searching';
-                                status.style.display = 'block';
-                            });
-                        }
-
-                        actualizarMediciones();
-                    }
-
-                    arActivo = true;
-                    document.getElementById('menu-overlay').style.transform = "translateY(-100%)";
-                    document.getElementById('ar-controls').style.display = "block";
-                    document.getElementById('label-figura').innerText = figurasInfo[figuraSeleccionada].nombre;
-
-                    const status = document.getElementById('camera-status');
-                    const statusText = document.getElementById('camera-status-text');
-                    statusText.innerText = '🔍 Apunta al marcador HIRO';
-                    statusText.className = 'status-searching';
-                    status.style.display = 'block';
-
-                    console.log('🚀 AR iniciado correctamente');
-                }, 1000);
-
-            } catch(error) {
-                console.error('Error:', error);
-                alert('Error al iniciar AR: ' + error.message);
-            }
-        }
-
-        function actualizarInfoFigura() {
-            const info = figurasInfo[figuraSeleccionada];
-            document.getElementById('info-figura-titulo').innerText = info.nombre;
-            document.getElementById('info-definicion').innerText = info.definicion;
-            document.getElementById('info-caras').innerText = info.caras;
-            document.getElementById('info-vertices').innerText = info.vertices;
-            document.getElementById('info-aristas').innerText = info.aristas;
-            document.getElementById('info-simetria').innerText = info.simetria;
-            document.getElementById('info-formulas').innerHTML = info.formulas;
-            document.getElementById('info-aplicaciones').innerText = info.aplicaciones;
-        }
-
-        function toggleInfoPanel() {
-            const panel = document.getElementById('figura-info-panel');
-            panel.classList.toggle('visible');
-        }
-
-        function toggleRotacion() {
-            rotacionActiva = !rotacionActiva;
-            const modelo = document.getElementById('modelo-3d');
-            const btn = document.getElementById('btn-rotation');
-            
-            if(modelo) {
-                if(rotacionActiva) {
-                    modelo.setAttribute('animation', 'property: rotation; to: 0 405 0; dur: 10000; loop: true; easing: linear');
-                    btn.innerHTML = '⏸️<br>Pausar';
-                } else {
-                    modelo.removeAttribute('animation');
-                    btn.innerHTML = '▶️<br>Rotar';
-                }
-            }
-        }
-
-        function cambiarEscala(val) {
-            escalaActual = parseFloat(val);
-            const modelo = document.getElementById('modelo-3d');
-            const guia = document.getElementById('wireframe-guia');
-            
-            if (modelo) modelo.setAttribute('scale', `${val} ${val} ${val}`);
-            if (guia) guia.setAttribute('scale', `${val*1.05} ${val*1.05} ${val*1.05}`);
-            
-            document.getElementById('scale-value').innerText = parseFloat(val).toFixed(1);
-            actualizarMediciones();
-        }
-
-        function toggleRegla() {
-            reglaVisible = !reglaVisible;
-            const regla = document.getElementById('regla-virtual');
-            const toggle = document.getElementById('ruler-toggle');
-            
-            if (regla) {
-                regla.setAttribute('visible', reglaVisible);
-                if (reglaVisible) {
-                    toggle.classList.add('active');
-                } else {
-                    toggle.classList.remove('active');
-                }
-            }
-        }
-
-        function actualizarMediciones() {
-            const dims = dimensionesBase[figuraSeleccionada];
-            if (!dims) return;
-
-            const altura = Math.round(dims.altura * escalaActual);
-            const ancho = Math.round(dims.ancho * escalaActual);
-            const profundidad = Math.round(dims.profundidad * escalaActual);
-            
-            let volumen = 0;
-            switch(figuraSeleccionada) {
-                case 'box':
-                    volumen = altura * ancho * profundidad;
-                    break;
-                case 'sphere':
-                    const radio = ancho / 2;
-                    volumen = (4/3) * Math.PI * Math.pow(radio, 3);
-                    break;
-                case 'cylinder':
-                    const radioCil = ancho / 2;
-                    volumen = Math.PI * Math.pow(radioCil, 2) * altura;
-                    break;
-                case 'cone':
-                    const radioCono = ancho / 2;
-                    volumen = (1/3) * Math.PI * Math.pow(radioCono, 2) * altura;
-                    break;
-                case 'torus':
-                    const R = ancho / 2;
-                    const r = altura / 2;
-                    volumen = 2 * Math.PI * Math.PI * R * r * r;
-                    break;
-                default:
-                    volumen = altura * ancho * profundidad;
-            }
-
-            document.getElementById('measure-height').innerText = altura;
-            document.getElementById('measure-width').innerText = ancho;
-            document.getElementById('measure-depth').innerText = profundidad;
-            
-            const volumenFormateado = Math.round(volumen).toLocaleString('es-ES');
-            document.getElementById('measure-volume').innerText = volumenFormateado;
-        }
-
-        function salirAR() {
-            if(confirm('¿Volver al menú?')) {
-                location.reload();
-            }
-        }
-
-        document.addEventListener('gesturestart', e => e.preventDefault());
-        document.addEventListener('touchmove', e => {
-            if(e.touches.length > 1) e.preventDefault();
-        }, { passive: false });
-    </script>
-</body>
-</html>
+  <!-- Controles AR (ocultos inicialmente) -->
+  <div id="ar-controls" aria-label="Controles de Realidad Aumentada" role="region">
+    <div class="ar-info" id="label-figura">CUBO</div>
+    
+    <div class="action-buttons">
+      <button class="btn-info-toggle" onclick="toggleInfoPanel()" aria-label="Mostrar/ocultar información educativa de la figura">
+        📖<br>Info Educativa
+      </button>
+      <button class="btn-info-toggle" onclick="toggleRotacion()" id="btn-rotation" aria-label="Pausar/reanudar rotación del objeto 3D">
+       
