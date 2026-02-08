@@ -1719,4 +1719,1071 @@
         📖<br>Info Educativa
       </button>
       <button class="btn-info-toggle" onclick="toggleRotacion()" id="btn-rotation" aria-label="Pausar/reanudar rotación del objeto 3D">
-       
+        ⏸️<br><span id="rotation-text">Pausar</span>
+      </button>
+      <button class="btn-info-toggle" id="btn-calculator" aria-label="Abrir calculadora educativa">
+        🧮<br>Calculadora
+      </button>
+      <button class="btn-exit" onclick="salirAR()" aria-label="Salir de Realidad Aumentada y volver al menú">
+        ❌ Salir de AR
+      </button>
+    </div>
+    
+    <div class="control-row">
+      <span class="control-label">📏 Escala:</span>
+      <input type="range" min="0.5" max="3" step="0.1" value="1" 
+             oninput="cambiarEscala(this.value)" 
+             aria-label="Ajustar escala del objeto 3D"
+             id="scale-slider">
+      <span class="scale-display"><span id="scale-value">1.0</span>x</span>
+    </div>
+    
+    <div class="toggle-container">
+      <span class="toggle-label">📐 Regla Virtual:</span>
+      <div class="toggle-switch active" id="ruler-toggle" onclick="toggleRegla()" 
+           role="switch" aria-checked="true" aria-label="Mostrar/ocultar regla virtual de medición">
+        <div class="toggle-slider"></div>
+      </div>
+    </div>
+    
+    <div class="measurements" aria-live="polite">
+      <div class="measurements-title">📏 Medidas en Centímetros (cm)</div>
+      <div class="measurement-grid">
+        <div class="measurement-item">
+          <span class="measurement-label">Alto</span>
+          <span class="measurement-value"><span id="measure-height">100</span></span>
+          <span class="measurement-unit">cm</span>
+        </div>
+        <div class="measurement-item">
+          <span class="measurement-label">Ancho</span>
+          <span class="measurement-value"><span id="measure-width">100</span></span>
+          <span class="measurement-unit">cm</span>
+        </div>
+        <div class="measurement-item">
+          <span class="measurement-label">Profundidad</span>
+          <span class="measurement-value"><span id="measure-depth">100</span></span>
+          <span class="measurement-unit">cm</span>
+        </div>
+      </div>
+      <div class="measurement-item volume-item">
+        <span class="measurement-label">Volumen Aproximado</span>
+        <span class="measurement-value"><span id="measure-volume">1,000,000</span></span>
+        <span class="measurement-unit">cm³</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Escena A-Frame (oculta hasta inicio explícito) -->
+  <div id="ar-scene-container" style="display: none; width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 10;" 
+       aria-hidden="true">
+    <a-scene
+      id="ar-scene"
+      embedded
+      arjs="sourceType: webcam; 
+             sourceWidth: 1280; 
+             sourceHeight: 720; 
+             displayWidth: 1280; 
+             displayHeight: 720; 
+             debugUIEnabled: false; 
+             detectionMode: mono_and_matrix; 
+             matrixCodeType: 3x3; 
+             maxDetectionRate: 60; 
+             canvasWidth: 1280; 
+             canvasHeight: 720;"
+      vr-mode-ui="enabled: false"
+      renderer="logarithmicDepthBuffer: true; 
+                 precision: medium; 
+                 physicallyCorrectLights: true; 
+                 antialias: true;"
+      loading-screen="enabled: false"
+      device-orientation-permission-ui="enabled: false"
+      shadow="type: pcfsoft"
+      style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+      
+      <a-assets timeout="45000">
+        <!-- Texturas con manejo CORS correcto -->
+        <img id="textura-asset" crossorigin="anonymous" src="" alt="">
+        <img id="textura-defecto" 
+             src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/textures/cube/skyboxsun25deg/px.jpg" 
+             crossorigin="anonymous" 
+             alt="Textura por defecto">
+        
+        <!-- Assets educativos -->
+        <a-asset-item id="font-roboto" src="https://cdn.aframe.io/fonts/Roboto-msdf.json"></a-asset-item>
+      </a-assets>
+      
+      <!-- Iluminación ambiental mejorada -->
+      <a-entity light="type: ambient; color: #FFF; intensity: 0.8"></a-entity>
+      <a-entity light="type: directional; color: #FFF; intensity: 0.6" 
+                position="1 2 1"></a-entity>
+      
+      <!-- Marcador HIRO con optimizaciones -->
+      <a-marker
+        preset="hiro"
+        id="hiro-marker"
+        smooth="true"
+        smoothCount="10"
+        smoothTolerance="0.01"
+        smoothThreshold="5"
+        raycaster="objects: .clickable"
+        cursor="rayOrigin: mouse">
+        
+        <a-entity id="contenedor-principal" position="0 0 0">
+          <!-- Modelo 3D principal (se genera dinámicamente) -->
+          <a-box
+            id="modelo-3d"
+            position="0 0.5 0"
+            rotation="0 45 0"
+            scale="1 1 1"
+            color="#4ECDC4"
+            material="metalness: 0.3; roughness: 0.5; side: double"
+            animation="property: rotation; to: 0 405 0; dur: 10000; loop: true; easing: linear">
+          </a-box>
+          
+          <!-- Wireframe guía -->
+          <a-box
+            id="wireframe-guia"
+            position="0 0.5 0"
+            material="wireframe: true; color: #FFE66D; opacity: 0.8; side: double"
+            scale="1.05 1.05 1.05"
+            rotation="0 45 0">
+          </a-box>
+          
+          <!-- REGLA VIRTUAL ULTRA VISIBLE CON ETIQUETAS -->
+          <a-entity id="regla-virtual" visible="true" position="0 0.5 0">
+            <!-- EJE VERTICAL (ALTURA) - Amarillo -->
+            <a-entity position="-0.9 0 0">
+              <a-cylinder
+                radius="0.025"
+                height="2.4"
+                color="#FFD700"
+                material="shader: flat; emissive: #FFD700; emissiveIntensity: 0.8; side: double">
+              </a-cylinder>
+              <!-- Marcas de medición -->
+              <a-box position="0 -1.0 0" width="0.18" height="0.03" depth="0.03" color="#FFD700" material="shader: flat; emissive: #FFD700; emissiveIntensity: 0.5"></a-box>
+              <a-box position="0 -0.5 0" width="0.18" height="0.03" depth="0.03" color="#FFD700" material="shader: flat; emissive: #FFD700; emissiveIntensity: 0.5"></a-box>
+              <a-box position="0 0.0 0" width="0.22" height="0.035" depth="0.035" color="#FFD700" material="shader: flat; emissive: #FFD700; emissiveIntensity: 0.8"></a-box>
+              <a-box position="0 0.5 0" width="0.18" height="0.03" depth="0.03" color="#FFD700" material="shader: flat; emissive: #FFD700; emissiveIntensity: 0.5"></a-box>
+              <a-box position="0 1.0 0" width="0.18" height="0.03" depth="0.03" color="#FFD700" material="shader: flat; emissive: #FFD700; emissiveIntensity: 0.5"></a-box>
+              <!-- Etiquetas -->
+              <a-text value="0cm" position="-0.30 0.0 0" scale="0.4 0.4 0.4" color="#FFD700" align="right" shader="flat"></a-text>
+              <a-text value="50cm" position="-0.30 0.5 0" scale="0.35 0.35 0.35" color="#FFD700" align="right" shader="flat"></a-text>
+              <a-text value="100cm" position="-0.30 1.0 0" scale="0.35 0.35 0.35" color="#FFD700" align="right" shader="flat"></a-text>
+              <a-text value="ALTURA" position="-0.30 -1.3 0" align="right" color="#FFD700" scale="0.32 0.32 0.32" shader="flat"></a-text>
+            </a-entity>
+            
+            <!-- EJE HORIZONTAL (ANCHO) - Verde -->
+            <a-entity position="0 -0.7 0">
+              <a-cylinder
+                radius="0.025"
+                height="2.4"
+                color="#00FF88"
+                rotation="0 0 90"
+                material="shader: flat; emissive: #00FF88; emissiveIntensity: 0.8; side: double">
+              </a-cylinder>
+              <a-box position="-0.5 0 0" width="0.03" height="0.22" depth="0.03" color="#00FF88" material="shader: flat; emissive: #00FF88; emissiveIntensity: 0.8"></a-box>
+              <a-box position="0.0 0 0" width="0.035" height="0.22" depth="0.035" color="#00FF88" material="shader: flat; emissive: #00FF88; emissiveIntensity: 0.8"></a-box>
+              <a-box position="0.5 0 0" width="0.03" height="0.22" depth="0.03" color="#00FF88" material="shader: flat; emissive: #00FF88; emissiveIntensity: 0.8"></a-box>
+              <a-text value="0cm" position="0.0 -0.28 0" scale="0.4 0.4 0.4" color="#00FF88" align="center" shader="flat"></a-text>
+              <a-text value="50cm" position="0.5 -0.28 0" scale="0.35 0.35 0.35" color="#00FF88" align="center" shader="flat"></a-text>
+              <a-text value="ANCHO" position="0 -0.4 0" align="center" color="#00FF88" scale="0.32 0.32 0.32" shader="flat"></a-text>
+            </a-entity>
+            
+            <!-- EJE PROFUNDIDAD - Rojo -->
+            <a-entity position="0.9 0 0">
+              <a-cylinder
+                radius="0.025"
+                height="2.4"
+                color="#FF6B6B"
+                rotation="0 90 90"
+                material="shader: flat; emissive: #FF6B6B; emissiveIntensity: 0.8; side: double">
+              </a-cylinder>
+              <a-box position="0 0 -0.5" width="0.03" height="0.22" depth="0.03" color="#FF6B6B" material="shader: flat; emissive: #FF6B6B; emissiveIntensity: 0.8"></a-box>
+              <a-box position="0 0 0.0" width="0.035" height="0.22" depth="0.035" color="#FF6B6B" material="shader: flat; emissive: #FF6B6B; emissiveIntensity: 0.8"></a-box>
+              <a-box position="0 0 0.5" width="0.03" height="0.22" depth="0.03" color="#FF6B6B" material="shader: flat; emissive: #FF6B6B; emissiveIntensity: 0.8"></a-box>
+              <a-text value="0cm" position="0 -0.28 0.0" scale="0.4 0.4 0.4" color="#FF6B6B" align="center" shader="flat"></a-text>
+              <a-text value="50cm" position="0 -0.28 0.5" scale="0.35 0.35 0.35" color="#FF6B6B" align="center" shader="flat"></a-text>
+              <a-text value="PROF" position="0 -0.4 0" align="center" color="#FF6B6B" scale="0.32 0.32 0.32" shader="flat"></a-text>
+            </a-entity>
+          </a-entity>
+          
+          <!-- Etiqueta educativa -->
+          <a-text
+            value="WILL-AR LAB"
+            position="0 2.0 0"
+            align="center"
+            color="#4ECDC4"
+            scale="1.2 1.2 1.2"
+            shader="flat"
+            font="#font-roboto">
+          </a-text>
+        </a-entity>
+      </a-marker>
+      
+      <!-- Cámara con configuración óptima -->
+      <a-entity camera 
+                position="0 1.6 0" 
+                look-controls="enabled: true"
+                wasd-controls="enabled: false"
+                cursor="rayOrigin: mouse">
+      </a-entity>
+    </a-scene>
+  </div>
+
+  <!-- Feedback de accesibilidad -->
+  <div id="a11y-feedback" aria-live="assertive" aria-atomic="true"></div>
+
+  <script>
+    // ===== CONFIGURACIÓN GLOBAL =====
+    let texturaData = null;
+    let figuraSeleccionada = "box";
+    let arActivo = false;
+    let reglaVisible = true;
+    let escalaActual = 1;
+    let markerDetected = false;
+    let rotacionActiva = true;
+    let sceneLoaded = false;
+    let cameraStream = null;
+    let audioContextInitialized = false;
+    let toneInitialized = false;
+    
+    // Dimensiones base para cálculos (en cm)
+    const dimensionesBase = {
+      box: { altura: 100, ancho: 100, profundidad: 100 },
+      sphere: { altura: 160, ancho: 160, profundidad: 160 },
+      cylinder: { altura: 200, ancho: 100, profundidad: 100 },
+      cone: { altura: 200, ancho: 100, profundidad: 100 },
+      torus: { altura: 40, ancho: 200, profundidad: 200 },
+      tetrahedron: { altura: 140, ancho: 100, profundidad: 100 },
+      dodecahedron: { altura: 160, ancho: 160, profundidad: 160 },
+      icosahedron: { altura: 160, ancho: 160, profundidad: 160 },
+      octahedron: { altura: 140, ancho: 100, profundidad: 100 }
+    };
+    
+    // Base de conocimiento educativo completo
+    const figurasInfo = {
+      box: {
+        nombre: "CUBO (HEXAEDRO)",
+        definicion: "Un cubo es un poliedro regular formado por seis caras cuadradas congruentes. Es uno de los cinco sólidos platónicos y posee la máxima simetría entre los poliedros convexos.",
+        caras: 6, vertices: 8, aristas: 12, simetria: "Cúbica Oh (48 simetrías)",
+        formulas: "<strong>Volumen:</strong> \\( V = a^3 \\)<br><strong>Área Total:</strong> \\( A = 6a^2 \\)<br><strong>Diagonal Cara:</strong> \\( d_c = a\\sqrt{2} \\)<br><strong>Diagonal Espacial:</strong> \\( d_e = a\\sqrt{3} \\)",
+        aplicaciones: "Construcción modular, embalaje industrial, dados de juego, cristalografía (estructura de NaCl), almacenamiento en centros de datos, diseño arquitectónico.",
+        curiosidades: "El cubo es el único poliedro regular que puede teselar el espacio euclidiano tridimensional sin dejar huecos ni superposiciones. Su dual es el octaedro."
+      },
+      sphere: {
+        nombre: "ESFERA",
+        definicion: "Una esfera es una superficie geométrica tridimensional perfectamente simétrica, definida como el conjunto de puntos en el espacio que equidistan de un punto central llamado centro.",
+        caras: 1, vertices: 0, aristas: 0, simetria: "Simetría esférica infinita (grupo SO(3))",
+        formulas: "<strong>Volumen:</strong> \\( V = \\frac{4}{3}\\pi r^3 \\)<br><strong>Área Superficial:</strong> \\( A = 4\\pi r^2 \\)<br><strong>Diámetro:</strong> \\( d = 2r \\)",
+        aplicaciones: "Planetas y cuerpos celestes, pelotas deportivas, burbujas de jabón, tanques de presión, lentes ópticas, cojinetes de bolas, gotas de líquido en ingravidez.",
+        curiosidades: "La esfera es la forma que minimiza el área superficial para un volumen dado (principio de mínima energía). En la naturaleza aparece en burbujas, planetas y gotas por esta razón."
+      },
+      cylinder: {
+        nombre: "CILINDRO",
+        definicion: "Un cilindro recto es un cuerpo geométrico formado por dos bases circulares paralelas e iguales unidas por una superficie lateral curva generada por una recta (generatriz) que se desplaza paralelamente a sí misma.",
+        caras: 3, vertices: 0, aristas: 2, simetria: "Simetría cilíndrica infinita",
+        formulas: "<strong>Volumen:</strong> \\( V = \\pi r^2 h \\)<br><strong>Área Lateral:</strong> \\( A_L = 2\\pi r h \\)<br><strong>Área Total:</strong> \\( A_T = 2\\pi r(r + h) \\)",
+        aplicaciones: "Latas de conserva, tuberías y conductos, columnas arquitectónicas, pistones de motores, rollos de papel, tanques de almacenamiento, baterías cilíndricas.",
+        curiosidades: "El cilindro es una superficie reglada (puede generarse por movimiento de una recta). En ingeniería, su forma resiste bien la presión interna, por lo que se usa en tanques y tuberías."
+      },
+      cone: {
+        nombre: "CONO",
+        definicion: "Un cono recto es un cuerpo geométrico con una base circular y un vértice único no coplanario con la base, unidos por una superficie lateral curva generada por segmentos que unen el vértice con los puntos de la circunferencia base.",
+        caras: 2, vertices: 1, aristas: 1, simetria: "Simetría cónica",
+        formulas: "<strong>Volumen:</strong> \\( V = \\frac{1}{3}\\pi r^2 h \\)<br><strong>Área Lateral:</strong> \\( A_L = \\pi r l \\)<br><strong>Generatriz:</strong> \\( l = \\sqrt{r^2 + h^2} \\)",
+        aplicaciones: "Conos de tráfico, embudos, helados, volcanes, megáfonos, reflectores de luz, puntas de lápiz, cohetes espaciales.",
+        curiosidades: "Las secciones cónicas (elipse, parábola, hipérbola) se obtienen al cortar un cono con planos en diferentes ángulos. Estas curvas son fundamentales en física y astronomía."
+      },
+      torus: {
+        nombre: "TOROIDE",
+        definicion: "Un toroide es una superficie de revolución generada al girar una circunferencia alrededor de un eje coplanario que no la intersecta. Tiene forma de rosquilla o neumático.",
+        caras: 1, vertices: 0, aristas: 0, simetria: "Simetría toroidal",
+        formulas: "<strong>Volumen:</strong> \\( V = 2\\pi^2 R r^2 \\)<br><strong>Área Superficial:</strong> \\( A = 4\\pi^2 R r \\)<br>Donde R = radio mayor, r = radio menor",
+        aplicaciones: "Neumáticos de vehículos, rosquillas y donas, salvavidas, tokamaks (reactores de fusión nuclear), juntas tóricas, estructuras arquitectónicas innovadoras.",
+        curiosidades: "El toroide es topológicamente equivalente a la superficie de una taza de café (ambas tienen un 'agujero'). En matemáticas, es un ejemplo fundamental de variedad diferenciable."
+      },
+      tetrahedron: {
+        nombre: "TETRAEDRO",
+        definicion: "Un tetraedro regular es un poliedro de cuatro caras triangulares equiláteras. Es el más simple de los sólidos platónicos y el único que es su propio dual.",
+        caras: 4, vertices: 4, aristas: 6, simetria: "Tetraédrica Td (24 simetrías)",
+        formulas: "<strong>Volumen:</strong> \\( V = \\frac{a^3}{6\\sqrt{2}} \\)<br><strong>Área Total:</strong> \\( A = \\sqrt{3}a^2 \\)<br><strong>Altura:</strong> \\( h = a\\sqrt{\\frac{2}{3}} \\)",
+        aplicaciones: "Estructuras moleculares (metano CH₄), dados de rol (D4), empaquetamiento eficiente, pirámides arquitectónicas, elementos finitos en simulación.",
+        curiosidades: "El tetraedro es el poliedro con menor número de caras. En química, representa la geometría de moléculas con cuatro átomos unidos a un átomo central (hibridación sp³)."
+      },
+      dodecahedron: {
+        nombre: "DODECAEDRO",
+        definicion: "Un dodecaedro regular es un poliedro formado por doce caras pentagonales regulares. Es uno de los cinco sólidos platónicos y está relacionado con la proporción áurea.",
+        caras: 12, vertices: 20, aristas: 30, simetria: "Icosaédrica Ih (120 simetrías)",
+        formulas: "<strong>Volumen:</strong> \\( V = \\frac{15 + 7\\sqrt{5}}{4}a^3 \\)<br><strong>Área Total:</strong> \\( A = 3\\sqrt{25 + 10\\sqrt{5}}a^2 \\)",
+        aplicaciones: "Dados de rol (D12), estructuras cristalinas (pirita), diseño de balones de fútbol clásicos, arquitectura geodésica, modelos moleculares de fullerenos.",
+        curiosidades: "Las diagonales de las caras pentagonales del dodecaedro están en proporción áurea. Platón lo asociaba con el cosmos o el éter en su teoría de los elementos."
+      },
+      icosahedron: {
+        nombre: "ICOSAEDRO",
+        definicion: "Un icosaedro regular es un poliedro de veinte caras triangulares equiláteras. Tiene el mayor número de caras entre los sólidos platónicos y es dual del dodecaedro.",
+        caras: 20, vertices: 12, aristas: 30, simetria: "Icosaédrica Ih (120 simetrías)",
+        formulas: "<strong>Volumen:</strong> \\( V = \\frac{5(3 + \\sqrt{5})}{12}a^3 \\)<br><strong>Área Total:</strong> \\( A = 5\\sqrt{3}a^2 \\)",
+        aplicaciones: "Virus con cápside icosaédrica (ej. adenovirus), dados de rol (D20), domos geodésicos, estructuras moleculares de fullerenos (C₆₀), balones de fútbol modernos.",
+        curiosidades: "Muchos virus adoptan forma icosaédrica porque es la forma más eficiente para ensamblar una cápside proteica simétrica con mínimo material genético. El fullereno C₆₀ ('buckyball') tiene esta geometría."
+      },
+      octahedron: {
+        nombre: "OCTAEDRO",
+        definicion: "Un octaedro regular es un poliedro de ocho caras triangulares equiláteras. Es dual del cubo y puede verse como dos pirámides cuadradas unidas por sus bases.",
+        caras: 8, vertices: 6, aristas: 12, simetria: "Octaédrica Oh (48 simetrías)",
+        formulas: "<strong>Volumen:</strong> \\( V = \\frac{\\sqrt{2}}{3}a^3 \\)<br><strong>Área Total:</strong> \\( A = 2\\sqrt{3}a^2 \\)<br><strong>Altura:</strong> \\( h = a\\sqrt{2} \\)",
+        aplicaciones: "Diamantes tallados (corte octaédrico natural), dados de rol (D8), estructuras cristalinas (fluorita), compuestos de coordinación en química, sensores de orientación.",
+        curiosidades: "El octaedro y el cubo son duales: los vértices de uno corresponden a las caras del otro. En cristalografía, muchos minerales forman cristales octaédricos naturales, como la magnetita."
+      }
+    };
+    
+    // ===== INICIALIZACIÓN =====
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('🔬 WILL AR - Laboratorio Matemático Iniciando...');
+      
+      // Verificación HTTPS CRÍTICA
+      verificarHTTPS();
+      
+      // Inicializar controles de accesibilidad
+      inicializarAccesibilidad();
+      
+      // Simular progreso de carga
+      simularCarga();
+      
+      // Configurar eventos de cámara
+      configurarEventosCamara();
+      
+      // Preparar MathJax para fórmulas
+      prepararMathJax();
+      
+      // Bloquear gestos que interfieren con AR
+      bloquearGestosProblematicos();
+    });
+    
+    function verificarHTTPS() {
+      const esHTTPS = location.protocol === 'https:';
+      const esLocalhost = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+      
+      if (!esHTTPS && !esLocalhost) {
+        document.getElementById('https-warning').style.display = 'block';
+        document.getElementById('https-alert').style.display = 'block';
+        document.getElementById('btn-request-camera').disabled = true;
+        document.getElementById('btn-request-camera').innerText = '❌ Requiere HTTPS para cámara';
+        console.warn('⚠️ ADVERTENCIA: La cámara solo funciona en HTTPS o localhost. Protocolo actual:', location.protocol);
+        return false;
+      }
+      
+      document.getElementById('https-warning').style.display = 'none';
+      return true;
+    }
+    
+    function inicializarAccesibilidad() {
+      // Navegación por teclado
+      document.addEventListener('keydown', (e) => {
+        if (arActivo) {
+          // Controles de escala con teclas
+          if (e.key === '+' || e.key === 'ArrowUp') {
+            e.preventDefault();
+            const nuevo = Math.min(3.0, parseFloat(escalaActual) + 0.1);
+            document.getElementById('scale-slider').value = nuevo.toFixed(1);
+            cambiarEscala(nuevo.toFixed(1));
+            anunciarA11y(`Escala aumentada a ${nuevo.toFixed(1)}x`);
+          } else if (e.key === '-' || e.key === 'ArrowDown') {
+            e.preventDefault();
+            const nuevo = Math.max(0.5, parseFloat(escalaActual) - 0.1);
+            document.getElementById('scale-slider').value = nuevo.toFixed(1);
+            cambiarEscala(nuevo.toFixed(1));
+            anunciarA11y(`Escala reducida a ${nuevo.toFixed(1)}x`);
+          } else if (e.key === 'r' || e.key === 'R') {
+            e.preventDefault();
+            toggleRegla();
+            anunciarA11y(`Regla virtual ${reglaVisible ? 'activada' : 'desactivada'}`);
+          } else if (e.key === 'p' || e.key === 'P') {
+            e.preventDefault();
+            toggleRotacion();
+            anunciarA11y(`Rotación ${rotacionActiva ? 'pausada' : 'reanudada'}`);
+          } else if (e.key === 'Escape') {
+            e.preventDefault();
+            salirAR();
+          }
+        }
+      });
+      
+      // Soporte para lectores de pantalla
+      const elementosFocusables = document.querySelectorAll('button, select, input[type="file"]');
+      elementosFocusables.forEach(el => {
+        el.setAttribute('tabindex', '0');
+      });
+    }
+    
+    function simularCarga() {
+      let progreso = 0;
+      const interval = setInterval(() => {
+        progreso += Math.random() * 15;
+        if (progreso >= 95) {
+          progreso = 95;
+          clearInterval(interval);
+          
+          // Completar después de breve retraso
+          setTimeout(() => {
+            document.getElementById('loading-bar').style.width = '100%';
+            setTimeout(() => {
+              document.getElementById('loading-screen').classList.add('hidden');
+              setTimeout(() => {
+                document.getElementById('loading-screen').style.display = 'none';
+                // Mostrar pantalla de permisos si es necesario
+                if (verificarHTTPS()) {
+                  setTimeout(() => {
+                    document.getElementById('camera-permission').style.display = 'flex';
+                  }, 300);
+                }
+              }, 500);
+            }, 400);
+          }, 800);
+        }
+        document.getElementById('loading-bar').style.width = `${progreso}%`;
+        
+        // Actualizar tips educativos
+        const tips = [
+          "💡 Sabías que el cubo es el único poliedro regular que puede teselar el espacio 3D?",
+          "📐 La esfera minimiza el área superficial para un volumen dado",
+          "🔬 WILL AR usa AR.js y A-Frame para Realidad Aumentada web",
+          "📱 Para móviles: requiere HTTPS y permisos de cámara",
+          "🎯 Apunta al marcador HIRO para ver el objeto 3D flotando",
+          "📏 Usa la regla virtual para medir dimensiones reales en cm",
+          "🧠 Los sólidos platónicos fueron estudiados por Platón en el Timeo",
+          "✨ Mantén el marcador bien iluminado para mejor detección"
+        ];
+        document.getElementById('loading-tip').textContent = tips[Math.floor(progreso / 12) % tips.length];
+      }, 200);
+    }
+    
+    function configurarEventosCamara() {
+      document.getElementById('btn-request-camera').addEventListener('click', solicitarPermisosCamara);
+      
+      // Evento para preview de imagen
+      document.getElementById('imgUpload').addEventListener('change', function(e) {
+        manejarCargaImagen(e);
+      });
+    }
+    
+    async function solicitarPermisosCamara() {
+      if (!verificarHTTPS()) {
+        alert('⚠️ Esta aplicación requiere conexión HTTPS para acceder a la cámara por seguridad.\n\nSoluciones:\n• Usa localhost para pruebas\n• Despliega en GitHub Pages (https)\n• Usa servidor con SSL');
+        return;
+      }
+      
+      try {
+        // Solicitar permisos explícitos ANTES de iniciar AR
+        const constraints = {
+          video: { 
+            facingMode: 'environment', // Cámara trasera preferida
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+            frameRate: { ideal: 30 }
+          }
+        };
+        
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        cameraStream = stream;
+        
+        // Detener tracks temporalmente (AR.js los reiniciará)
+        stream.getTracks().forEach(track => track.stop());
+        
+        console.log('✅ Permisos de cámara concedidos exitosamente');
+        document.getElementById('camera-permission').style.display = 'none';
+        anunciarA11y('Permisos de cámara concedidos. Preparado para Realidad Aumentada.');
+        
+        // Feedback sonoro suave
+        reproducirSonido('success');
+        
+      } catch (err) {
+        console.error('❌ Error al solicitar permisos de cámara:', err);
+        let msg = 'Error al acceder a la cámara:\n\n';
+        
+        switch(err.name) {
+          case 'NotAllowedError':
+            msg += '• Permiso denegado por el usuario\n';
+            msg += '• Solución: Recarga y permite el permiso emergente';
+            break;
+          case 'NotFoundError':
+            msg += '• No se encontró cámara en este dispositivo\n';
+            msg += '• Solución: Verifica conexión de cámara externa';
+            break;
+          case 'NotReadableError':
+            msg += '• Cámara en uso por otra aplicación\n';
+            msg += '• Solución: Cierra otras apps que usen cámara';
+            break;
+          case 'SecurityError':
+            msg += '• Bloqueado por seguridad del navegador\n';
+            msg += '• Solución: Usa conexión HTTPS segura';
+            break;
+          default:
+            msg += `• Error: ${err.name}\n`;
+            msg += '• Solución: Revisa configuración de privacidad del navegador';
+        }
+        
+        alert(msg + '\n\n📱 iOS: Configuración → Safari → Cámara: Permitir\n🤖 Android: Configuración → Apps → Chrome → Permisos → Cámara: Permitir');
+        reproducirSonido('error');
+      }
+    }
+    
+    function manejarCargaImagen(e) {
+      const file = e.target.files[0];
+      const statusDot = document.getElementById('status-dot');
+      const statusMsg = document.getElementById('status-msg');
+      const previewContainer = document.getElementById('image-preview-container');
+      const preview = document.getElementById('image-preview');
+      
+      if (!file) {
+        statusDot.className = '';
+        statusMsg.textContent = 'Sin textura seleccionada';
+        previewContainer.style.display = 'none';
+        texturaData = null;
+        return;
+      }
+      
+      // Validación de tamaño
+      if (file.size > 5 * 1024 * 1024) {
+        alert('⚠️ Imagen demasiado grande. Máximo permitido: 5MB');
+        this.value = '';
+        return;
+      }
+      
+      // Validación de tipo
+      if (!file.type.match('image.*')) {
+        alert('⚠️ Solo se permiten archivos de imagen (JPG, PNG, GIF, WEBP)');
+        this.value = '';
+        return;
+      }
+      
+      const reader = new FileReader();
+      
+      reader.onload = function(event) {
+        texturaData = event.target.result;
+        preview.src = texturaData;
+        preview.alt = `Textura cargada: ${file.name}`;
+        previewContainer.style.display = 'block';
+        
+        // Actualizar estado
+        statusDot.className = 'active';
+        const nombreCorto = file.name.length > 20 ? file.name.substring(0, 17) + "..." : file.name;
+        statusMsg.textContent = `✅ ${nombreCorto}`;
+        
+        // Si la escena ya está cargada, actualizar textura
+        if (sceneLoaded && arActivo) {
+          const asset = document.getElementById('textura-asset');
+          if (asset) {
+            asset.setAttribute('src', texturaData);
+            const modelo = document.getElementById('modelo-3d');
+            if (modelo) {
+              modelo.setAttribute('material', `src: #textura-asset; metalness: 0.3; roughness: 0.5; side: double`);
+            }
+          }
+        }
+        
+        anunciarA11y(`Textura cargada exitosamente: ${nombreCorto}`);
+        reproducirSonido('click');
+      };
+      
+      reader.onerror = function() {
+        alert('❌ Error al leer el archivo de imagen. Intenta con otra imagen.');
+        statusDot.className = '';
+        statusMsg.textContent = 'Error al cargar';
+      };
+      
+      reader.readAsDataURL(file);
+    }
+    
+    function generarConfig() {
+      figuraSeleccionada = document.getElementById('figura').value;
+      const qrContainer = document.getElementById('qrcode');
+      const qrArea = document.getElementById('qr-area');
+      const btnStart = document.getElementById('btn-iniciar');
+      
+      qrContainer.innerHTML = "";
+      qrArea.style.display = "none";
+      
+      const configData = {
+        app: "WILL-AR",
+        version: "2.0",
+        figura: figuraSeleccionada,
+        timestamp: new Date().toISOString(),
+        escala: 1.0
+      };
+      
+      try {
+        // Generar QR con configuración
+        new QRCode(qrContainer, {
+          text: JSON.stringify(configData),
+          width: 150,
+          height: 150,
+          colorDark: "#000000",
+          colorLight: "#ffffff",
+          correctLevel: QRCode.CorrectLevel.H
+        });
+        
+        qrArea.style.display = "block";
+        btnStart.style.display = "block";
+        btnStart.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // Actualizar información educativa inmediatamente
+        actualizarInfoFigura();
+        
+        anunciarA11y(`Configuración generada para ${figurasInfo[figuraSeleccionada].nombre}. Presiona INICIAR para Realidad Aumentada.`);
+        reproducirSonido('confirm');
+        
+      } catch(e) {
+        console.error('❌ Error generando QR:', e);
+        alert('Error al generar código QR. La aplicación funcionará igual sin él.');
+      }
+    }
+    
+    function crearFigura3D() {
+      const contenedor = document.getElementById('contenedor-principal');
+      const modeloViejo = document.getElementById('modelo-3d');
+      const wireframeViejo = document.getElementById('wireframe-guia');
+      
+      if (modeloViejo) modeloViejo.remove();
+      if (wireframeViejo) wireframeViejo.remove();
+      
+      const modelo = document.createElement('a-entity');
+      modelo.setAttribute('id', 'modelo-3d');
+      modelo.setAttribute('position', '0 0.5 0');
+      
+      // Configuración geométrica por tipo
+      let geoParams = '';
+      let rotation = '0 45 0';
+      
+      switch(figuraSeleccionada) {
+        case 'box':
+          geoParams = 'primitive: box; width: 1; height: 1; depth: 1';
+          break;
+        case 'sphere':
+          geoParams = 'primitive: sphere; radius: 0.5; segmentsWidth: 48; segmentsHeight: 48';
+          rotation = '0 0 0';
+          break;
+        case 'cylinder':
+          geoParams = 'primitive: cylinder; radius: 0.5; height: 1.5; segmentsRadial: 32';
+          break;
+        case 'cone':
+          geoParams = 'primitive: cone; radiusBottom: 0.5; radiusTop: 0; height: 1.5; segmentsRadial: 24';
+          break;
+        case 'torus':
+          geoParams = 'primitive: torus; radius: 0.5; radiusTubular: 0.15; segmentsRadial: 32; segmentsTubular: 24';
+          break;
+        case 'tetrahedron':
+          geoParams = 'primitive: tetrahedron; radius: 0.6; detail: 0';
+          break;
+        case 'dodecahedron':
+          geoParams = 'primitive: dodecahedron; radius: 0.5; detail: 0';
+          break;
+        case 'icosahedron':
+          geoParams = 'primitive: icosahedron; radius: 0.5; detail: 0';
+          break;
+        case 'octahedron':
+          geoParams = 'primitive: octahedron; radius: 0.6; detail: 0';
+          break;
+        default:
+          geoParams = 'primitive: box; width: 1; height: 1; depth: 1';
+      }
+      
+      modelo.setAttribute('geometry', geoParams);
+      modelo.setAttribute('rotation', rotation);
+      
+      // Material con textura o por defecto
+      const materialParams = texturaData 
+        ? 'src: #textura-asset; metalness: 0.3; roughness: 0.5; side: double'
+        : 'color: #4ECDC4; metalness: 0.3; roughness: 0.5; side: double';
+      
+      modelo.setAttribute('material', materialParams);
+      
+      // Animación de rotación
+      if (rotacionActiva) {
+        modelo.setAttribute('animation', 'property: rotation; to: 0 405 0; dur: 10000; loop: true; easing: linear');
+      }
+      
+      // Wireframe guía
+      const wireframe = document.createElement('a-entity');
+      wireframe.setAttribute('id', 'wireframe-guia');
+      wireframe.setAttribute('geometry', geoParams);
+      wireframe.setAttribute('material', 'wireframe: true; color: #FFE66D; opacity: 0.8; side: double');
+      wireframe.setAttribute('scale', '1.05 1.05 1.05');
+      wireframe.setAttribute('rotation', rotation);
+      wireframe.setAttribute('position', '0 0.5 0');
+      
+      contenedor.appendChild(modelo);
+      contenedor.appendChild(wireframe);
+      
+      console.log(`✅ Figura 3D creada: ${figuraSeleccionada}`);
+      actualizarMediciones();
+    }
+    
+    async function iniciarAR() {
+      if (!cameraStream && !verificarHTTPS()) {
+        alert('⚠️ Necesitas conexión HTTPS segura para usar la cámara en dispositivos móviles.');
+        return;
+      }
+      
+      console.log('🎬 Iniciando experiencia de Realidad Aumentada...');
+      anunciarA11y('Iniciando Realidad Aumentada. Buscando marcador HIRO...');
+      
+      // Mostrar escena AR
+      document.getElementById('ar-scene-container').style.display = 'block';
+      document.getElementById('camera-status').style.display = 'block';
+      
+      // Esperar inicialización de A-Frame
+      await new Promise(resolve => setTimeout(resolve, 1200));
+      
+      if (!sceneLoaded) {
+        sceneLoaded = true;
+        
+        // Cargar textura si existe
+        if (texturaData) {
+          const asset = document.getElementById('textura-asset');
+          if (asset) {
+            asset.setAttribute('src', texturaData);
+          }
+        }
+        
+        // Crear figura
+        crearFigura3D();
+        
+        // Configurar eventos de marcador
+        const marker = document.querySelector('#hiro-marker');
+        if (marker) {
+          marker.addEventListener('markerFound', () => {
+            markerDetected = true;
+            console.log('✅ ¡Marcador HIRO detectado!');
+            
+            const statusText = document.getElementById('camera-status-text');
+            statusText.textContent = '✅ ¡Objeto 3D visible! Mueve el dispositivo para explorar';
+            statusText.className = 'status-active';
+            
+            reproducirSonido('marker-found');
+            
+            // Ocultar mensaje después de 3 segundos
+            setTimeout(() => {
+              if (markerDetected) {
+                document.getElementById('camera-status').style.display = 'none';
+              }
+            }, 3000);
+          });
+          
+          marker.addEventListener('markerLost', () => {
+            markerDetected = false;
+            console.log('🔍 Marcador perdido');
+            
+            const statusText = document.getElementById('camera-status-text');
+            statusText.textContent = '🔍 Buscando marcador HIRO... Ilumina mejor la superficie';
+            statusText.className = 'status-searching';
+            document.getElementById('camera-status').style.display = 'block';
+          });
+        }
+        
+        // Actualizar interfaz
+        actualizarInfoFigura();
+        actualizarMediciones();
+        document.getElementById('label-figura').innerText = figurasInfo[figuraSeleccionada].nombre;
+        
+        // Transiciones de UI
+        document.getElementById('menu-overlay').classList.add('hidden');
+        document.getElementById('ar-controls').style.display = 'block';
+        
+        arActivo = true;
+        console.log('🚀 WILL AR iniciado correctamente');
+        anunciarA11y(`Realidad Aumentada activa. Figura: ${figurasInfo[figuraSeleccionada].nombre}. Usa controles para interactuar.`);
+        
+        // Timeout de ayuda si no se detecta marcador en 15s
+        setTimeout(() => {
+          if (!markerDetected && arActivo) {
+            const statusText = document.getElementById('camera-status-text');
+            statusText.innerHTML = '❓ ¿Problemas? <br>• Ilumina mejor el marcador<br>• Mantén distancia 20-40cm<br>• Evita reflejos';
+            statusText.className = 'status-searching';
+            document.getElementById('camera-status').style.display = 'block';
+            reproducirSonido('warning');
+          }
+        }, 15000);
+      }
+    }
+    
+    function actualizarInfoFigura() {
+      const info = figurasInfo[figuraSeleccionada];
+      if (!info) return;
+      
+      document.getElementById('info-figura-titulo').innerText = info.nombre;
+      document.getElementById('info-definicion').innerText = info.definicion;
+      document.getElementById('info-caras').innerText = info.caras;
+      document.getElementById('info-vertices').innerText = info.vertices;
+      document.getElementById('info-aristas').innerText = info.aristas;
+      document.getElementById('info-simetria').innerText = info.simetria;
+      document.getElementById('info-formulas').innerHTML = info.formulas;
+      document.getElementById('info-aplicaciones').innerText = info.aplicaciones;
+      document.getElementById('info-curiosidades').innerText = info.curiosidades || "Información no disponible";
+      
+      // Re-renderizar fórmulas con MathJax
+      if (window.MathJax) {
+        MathJax.typesetPromise([document.getElementById('info-formulas')]).catch(err => {
+          console.warn('MathJax render error:', err);
+        });
+      }
+    }
+    
+    function toggleInfoPanel() {
+      const panel = document.getElementById('figura-info-panel');
+      const isVisible = panel.classList.toggle('visible');
+      anunciarA11y(`Panel de información ${isVisible ? 'abierto' : 'cerrado'}`);
+      
+      // En móviles, scroll automático al panel
+      if (isVisible && window.innerWidth < 768) {
+        panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+    
+    function toggleRotacion() {
+      rotacionActiva = !rotacionActiva;
+      const modelo = document.getElementById('modelo-3d');
+      const btn = document.getElementById('btn-rotation');
+      const text = document.getElementById('rotation-text');
+      
+      if (modelo) {
+        if (rotacionActiva) {
+          modelo.setAttribute('animation', 'property: rotation; to: 0 405 0; dur: 10000; loop: true; easing: linear');
+          btn.innerHTML = '⏸️<br>Pausar';
+          text.textContent = 'Pausar';
+        } else {
+          modelo.removeAttribute('animation');
+          btn.innerHTML = '▶️<br>Rotar';
+          text.textContent = 'Rotar';
+        }
+      }
+      
+      anunciarA11y(`Rotación ${rotacionActiva ? 'activada' : 'pausada'}`);
+      reproducirSonido('toggle');
+    }
+    
+    function cambiarEscala(val) {
+      escalaActual = parseFloat(val);
+      const modelo = document.getElementById('modelo-3d');
+      const guia = document.getElementById('wireframe-guia');
+      
+      if (modelo) {
+        modelo.setAttribute('scale', `${val} ${val} ${val}`);
+      }
+      if (guia) {
+        guia.setAttribute('scale', `${val * 1.05} ${val * 1.05} ${val * 1.05}`);
+      }
+      
+      document.getElementById('scale-value').innerText = escalaActual.toFixed(1);
+      actualizarMediciones();
+      
+      // Feedback háptico suave en móviles
+      if (navigator.vibrate && escalaActual % 0.5 < 0.1) {
+        navigator.vibrate(30);
+      }
+    }
+    
+    function toggleRegla() {
+      reglaVisible = !reglaVisible;
+      const regla = document.getElementById('regla-virtual');
+      const toggle = document.getElementById('ruler-toggle');
+      
+      if (regla) {
+        regla.setAttribute('visible', reglaVisible.toString());
+      }
+      
+      if (reglaVisible) {
+        toggle.classList.add('active');
+        toggle.setAttribute('aria-checked', 'true');
+      } else {
+        toggle.classList.remove('active');
+        toggle.setAttribute('aria-checked', 'false');
+      }
+      
+      anunciarA11y(`Regla virtual ${reglaVisible ? 'mostrada' : 'oculta'}`);
+      reproducirSonido('toggle');
+    }
+    
+    function actualizarMediciones() {
+      const dims = dimensionesBase[figuraSeleccionada];
+      if (!dims) return;
+      
+      const altura = Math.round(dims.altura * escalaActual);
+      const ancho = Math.round(dims.ancho * escalaActual);
+      const profundidad = Math.round(dims.profundidad * escalaActual);
+      
+      // Cálculo de volumen según figura
+      let volumen = 0;
+      switch(figuraSeleccionada) {
+        case 'box':
+          volumen = altura * ancho * profundidad;
+          break;
+        case 'sphere':
+          const radio = ancho / 2;
+          volumen = (4/3) * Math.PI * Math.pow(radio, 3);
+          break;
+        case 'cylinder':
+          const radioCil = ancho / 2;
+          volumen = Math.PI * Math.pow(radioCil, 2) * altura;
+          break;
+        case 'cone':
+          const radioCono = ancho / 2;
+          volumen = (1/3) * Math.PI * Math.pow(radioCono, 2) * altura;
+          break;
+        case 'torus':
+          const R = ancho / 2;
+          const r = altura / 2;
+          volumen = 2 * Math.PI * Math.PI * R * r * r;
+          break;
+        case 'tetrahedron':
+          volumen = (Math.pow(ancho, 3)) / (6 * Math.sqrt(2));
+          break;
+        case 'dodecahedron':
+          volumen = ((15 + 7 * Math.sqrt(5)) / 4) * Math.pow(ancho, 3);
+          break;
+        case 'icosahedron':
+          volumen = (5 * (3 + Math.sqrt(5)) / 12) * Math.pow(ancho, 3);
+          break;
+        case 'octahedron':
+          volumen = (Math.sqrt(2) / 3) * Math.pow(ancho, 3);
+          break;
+        default:
+          volumen = altura * ancho * profundidad;
+      }
+      
+      // Actualizar UI
+      document.getElementById('measure-height').innerText = altura.toLocaleString('es-ES');
+      document.getElementById('measure-width').innerText = ancho.toLocaleString('es-ES');
+      document.getElementById('measure-depth').innerText = profundidad.toLocaleString('es-ES');
+      document.getElementById('measure-volume').innerText = Math.round(volumen).toLocaleString('es-ES');
+    }
+    
+    function salirAR() {
+      if (confirm('¿Volver al menú principal? Perderás la sesión AR actual.')) {
+        // Limpiar recursos de cámara
+        try {
+          const video = document.querySelector('video');
+          if (video && video.srcObject) {
+            video.srcObject.getTracks().forEach(track => track.stop());
+            video.srcObject = null;
+          }
+        } catch (e) {
+          console.log('Info: Limpieza de cámara no requerida o ya realizada', e);
+        }
+        
+        // Reiniciar estado
+        arActivo = false;
+        markerDetected = false;
+        sceneLoaded = false;
+        
+        // Recargar interfaz limpia
+        location.reload();
+      }
+    }
+    
+    // ===== FUNCIONES DE ACCESIBILIDAD =====
+    function anunciarA11y(mensaje) {
+      const feedback = document.getElementById('a11y-feedback');
+      feedback.textContent = mensaje;
+      feedback.classList.add('visible');
+      
+      setTimeout(() => {
+        feedback.classList.remove('visible');
+      }, 3000);
+    }
+    
+    function reproducirSonido(tipo) {
+      if (!window.Tone || !toneInitialized) return;
+      
+      try {
+        switch(tipo) {
+          case 'click':
+            new Tone.Player("https://cdn.jsdelivr.net/gh/Tonejs/Tone.js@dev/examples/audio/synth/chord.mp3")
+              .toDestination()
+              .start();
+            break;
+          case 'success':
+            new Tone.Player("https://cdn.jsdelivr.net/gh/Tonejs/Tone.js@dev/examples/audio/synth/chord.mp3")
+              .toDestination()
+              .start();
+            break;
+          case 'error':
+            new Tone.Player("https://cdn.jsdelivr.net/gh/Tonejs/Tone.js@dev/examples/audio/synth/chord.mp3")
+              .toDestination()
+              .start();
+            break;
+          case 'marker-found':
+            new Tone.Player("https://cdn.jsdelivr.net/gh/Tonejs/Tone.js@dev/examples/audio/synth/chord.mp3")
+              .toDestination()
+              .start();
+            break;
+          case 'toggle':
+            new Tone.Player("https://cdn.jsdelivr.net/gh/Tonejs/Tone.js@dev/examples/audio/synth/chord.mp3")
+              .toDestination()
+              .start();
+            break;
+          case 'warning':
+            new Tone.Player("https://cdn.jsdelivr.net/gh/Tonejs/Tone.js@dev/examples/audio/synth/chord.mp3")
+              .toDestination()
+              .start();
+            break;
+        }
+      } catch (e) {
+        console.log('Sonido no disponible:', e);
+      }
+    }
+    
+    function prepararMathJax() {
+      if (window.MathJax) {
+        MathJax.startup.promise.then(() => {
+          console.log('✅ MathJax inicializado correctamente');
+        }).catch(err => {
+          console.warn('MathJax initialization warning:', err);
+        });
+      }
+    }
+    
+    function bloquearGestosProblematicos() {
+      // Prevenir gestos de pellizco/zoom que rompen AR
+      ['gesturestart', 'gesturechange', 'gestureend'].forEach(event => {
+        document.addEventListener(event, e => {
+          e.preventDefault();
+        }, { passive: false });
+      });
+      
+      // Prevenir zoom con gestos de dos dedos
+      document.addEventListener('touchmove', e => {
+        if (e.touches.length > 1) {
+          e.preventDefault();
+        }
+      }, { passive: false });
+      
+      // Bloquear zoom con teclas
+      document.addEventListener('keydown', e => {
+        if ((e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '-' || e.key === '0' || e.key === '=')) {
+          e.preventDefault();
+        }
+      });
+    }
+    
+    // ===== LIMPIEZA DE RECURSOS =====
+    window.addEventListener('beforeunload', () => {
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+      }
+    });
+    
+    // ===== INICIALIZACIÓN DE TONO (Audio) =====
+    if (window.Tone) {
+      Tone.start().then(() => {
+        toneInitialized = true;
+        console.log('✅ Audio (Tone.js) inicializado');
+      }).catch(err => {
+        console.log('Audio no disponible:', err);
+      });
+    }
+    
+    console.log('✅ WILL AR - Sistema inicializado completamente');
+    console.log('💡 Consejo: Imprime el marcador HIRO en tamaño A4 para mejor experiencia');
+  </script>
+</body>
+</html>
