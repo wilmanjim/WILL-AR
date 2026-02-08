@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Will AR - Laboratorio Matemático Avanzado</title>
+    <title>Will AR - Laboratorio Matemático</title>
     
+    <!-- VERSIONES OPTIMIZADAS - CARGA MÁS RÁPIDA -->
     <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/3.4.3/aframe/build/aframe-ar.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -439,7 +440,6 @@
             color: #f39c12 !important;
         }
 
-        /* PANEL DE INFORMACIÓN - MÁS ANCHO */
         #figura-info-panel {
             position: fixed;
             top: 70px;
@@ -583,25 +583,6 @@
             grid-column: span 3;
         }
 
-        #ar-loading {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.9);
-            color: white;
-            padding: 30px;
-            border-radius: 20px;
-            text-align: center;
-            z-index: 1500;
-            display: none;
-            border: 3px solid #3498db;
-        }
-
-        #ar-loading.visible {
-            display: block;
-        }
-
         .exercise-hint {
             background: rgba(241, 196, 15, 0.2);
             border-left: 4px solid #f1c40f;
@@ -617,21 +598,14 @@
 
     <div id="loading-screen">
         <div class="loader"></div>
-        <p id="loading-text">Cargando AR.js...</p>
-        <p id="loading-tip">💡 Tip: Ten el marcador HIRO impreso o en otra pantalla</p>
-    </div>
-
-    <div id="ar-loading">
-        <div class="loader" style="margin: 0 auto 15px auto;"></div>
-        <p style="font-size: 1.1rem;">🎥 Iniciando cámara...</p>
-        <p style="font-size: 0.9rem; color: #95a5a6; margin-top: 10px;">Esto puede tardar unos segundos</p>
+        <p id="loading-text">Cargando...</p>
+        <p id="loading-tip">Preparando la experiencia AR</p>
     </div>
 
     <div id="camera-status">
         <span id="camera-status-text">🔍 Buscando marcador HIRO...</span>
     </div>
 
-    <!-- PANEL DE INFORMACIÓN COMPLETO -->
     <div id="figura-info-panel">
         <div class="info-header">
             <span class="info-title" id="info-figura-titulo">CUBO</span>
@@ -737,7 +711,7 @@
             <strong style="font-size: 1rem;">📌 INSTRUCCIONES:</strong><br><br>
             1. Configura tu objeto 3D<br>
             2. Descarga e imprime el marcador HIRO<br>
-            3. Al iniciar AR, espera 3-5 segundos<br>
+            3. Presiona "INICIAR AR"<br>
             4. Apunta la cámara al marcador<br>
             5. Usa la regla para medir las dimensiones<br>
             6. Calcula perímetro, área y volumen<br><br>
@@ -798,193 +772,133 @@
         </div>
     </div>
 
-    <!-- ESCENA A-FRAME CON REGLA MEJORADA -->
-    <a-scene 
-        id="ar-scene"
-        embedded 
-        arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
-        vr-mode-ui="enabled: false"
-        renderer="logarithmicDepthBuffer: true; precision: medium;"
-        loading-screen="enabled: false"
-        device-orientation-permission-ui="enabled: false">
-        
-        <a-assets timeout="30000">
-            <img id="textura-asset" crossorigin="anonymous" src=""> 
-            <img id="textura-defecto" src="https://cdn.pixabay.com/photo/2016/11/29/05/45/astronomy-1867616_960_720.jpg" crossorigin="anonymous">
-        </a-assets>
-
-        <a-marker 
-            preset="hiro" 
-            id="hiro-marker"
-            smooth="true" 
-            smoothCount="10" 
-            smoothTolerance="0.01" 
-            smoothThreshold="5">
+    <!-- ESCENA A-FRAME - NO SE CARGA HASTA QUE EL USUARIO PRESIONE INICIAR -->
+    <div id="ar-scene-container" style="display: none;">
+        <a-scene 
+            id="ar-scene"
+            embedded 
+            arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
+            vr-mode-ui="enabled: false"
+            renderer="logarithmicDepthBuffer: true; precision: medium;"
+            loading-screen="enabled: false"
+            device-orientation-permission-ui="enabled: false">
             
-            <a-entity id="contenedor-principal" position="0 0 0">
+            <a-assets timeout="30000">
+                <img id="textura-asset" crossorigin="anonymous" src=""> 
+                <img id="textura-defecto" src="https://cdn.pixabay.com/photo/2016/11/29/05/45/astronomy-1867616_960_720.jpg" crossorigin="anonymous">
+            </a-assets>
+
+            <a-marker 
+                preset="hiro" 
+                id="hiro-marker"
+                smooth="true" 
+                smoothCount="10" 
+                smoothTolerance="0.01" 
+                smoothThreshold="5">
                 
-                <a-box
-                    id="modelo-3d"
-                    position="0 0.5 0"
-                    rotation="0 45 0"
-                    scale="1 1 1"
-                    color="#4ECDC4"
-                    material="metalness: 0.3; roughness: 0.5"
-                    animation="property: rotation; to: 0 405 0; dur: 10000; loop: true; easing: linear">
-                </a-box>
-
-                <a-box
-                    id="wireframe-guia" 
-                    position="0 0.5 0"
-                    material="wireframe: true; color: #FFE66D; opacity: 0.8" 
-                    scale="1.05 1.05 1.05"
-                    rotation="0 45 0">
-                </a-box>
-
-                <!-- REGLA VIRTUAL ULTRA VISIBLE EN CENTÍMETROS -->
-                <a-entity id="regla-virtual" visible="true" position="0 0.5 0">
+                <a-entity id="contenedor-principal" position="0 0 0">
                     
-                    <!-- EJE VERTICAL (ALTURA) - DORADO -->
-                    <a-entity position="-0.9 0 0">
-                        <!-- Línea principal EXTRA GRUESA -->
-                        <a-cylinder 
-                            radius="0.025" 
-                            height="2.4" 
-                            color="#FFD700"
-                            material="shader: flat; emissive: #FFD700; emissiveIntensity: 0.8; side: double">
-                        </a-cylinder>
+                    <a-box
+                        id="modelo-3d"
+                        position="0 0.5 0"
+                        rotation="0 45 0"
+                        scale="1 1 1"
+                        color="#4ECDC4"
+                        material="metalness: 0.3; roughness: 0.5"
+                        animation="property: rotation; to: 0 405 0; dur: 10000; loop: true; easing: linear">
+                    </a-box>
+
+                    <a-box
+                        id="wireframe-guia" 
+                        position="0 0.5 0"
+                        material="wireframe: true; color: #FFE66D; opacity: 0.8" 
+                        scale="1.05 1.05 1.05"
+                        rotation="0 45 0">
+                    </a-box>
+
+                    <!-- REGLA VIRTUAL ULTRA VISIBLE -->
+                    <a-entity id="regla-virtual" visible="true" position="0 0.5 0">
                         
-                        <!-- Marcas cada 10cm - SUPER VISIBLES -->
-                        <!-- Zona inferior -->
-                        <a-box position="0 -1.0 0" width="0.18" height="0.03" depth="0.03" color="#FFD700" material="shader: flat; emissive: #FFD700; emissiveIntensity: 0.5"></a-box>
-                        <a-box position="0 -0.9 0" width="0.10" height="0.025" depth="0.025" color="#FFD700" material="shader: flat"></a-box>
-                        <a-box position="0 -0.8 0" width="0.10" height="0.025" depth="0.025" color="#FFD700" material="shader: flat"></a-box>
-                        <a-box position="0 -0.7 0" width="0.10" height="0.025" depth="0.025" color="#FFD700" material="shader: flat"></a-box>
-                        <a-box position="0 -0.6 0" width="0.10" height="0.025" depth="0.025" color="#FFD700" material="shader: flat"></a-box>
-                        <a-box position="0 -0.5 0" width="0.18" height="0.03" depth="0.03" color="#FFD700" material="shader: flat; emissive: #FFD700; emissiveIntensity: 0.5"></a-box>
-                        <a-box position="0 -0.4 0" width="0.10" height="0.025" depth="0.025" color="#FFD700" material="shader: flat"></a-box>
-                        <a-box position="0 -0.3 0" width="0.10" height="0.025" depth="0.025" color="#FFD700" material="shader: flat"></a-box>
-                        <a-box position="0 -0.2 0" width="0.10" height="0.025" depth="0.025" color="#FFD700" material="shader: flat"></a-box>
-                        <a-box position="0 -0.1 0" width="0.10" height="0.025" depth="0.025" color="#FFD700" material="shader: flat"></a-box>
-                        <!-- Centro 0cm - MÁS GRANDE -->
-                        <a-box position="0 0.0 0" width="0.22" height="0.035" depth="0.035" color="#FFD700" material="shader: flat; emissive: #FFD700; emissiveIntensity: 0.8"></a-box>
-                        <!-- Zona superior -->
-                        <a-box position="0 0.1 0" width="0.10" height="0.025" depth="0.025" color="#FFD700" material="shader: flat"></a-box>
-                        <a-box position="0 0.2 0" width="0.10" height="0.025" depth="0.025" color="#FFD700" material="shader: flat"></a-box>
-                        <a-box position="0 0.3 0" width="0.10" height="0.025" depth="0.025" color="#FFD700" material="shader: flat"></a-box>
-                        <a-box position="0 0.4 0" width="0.10" height="0.025" depth="0.025" color="#FFD700" material="shader: flat"></a-box>
-                        <a-box position="0 0.5 0" width="0.18" height="0.03" depth="0.03" color="#FFD700" material="shader: flat; emissive: #FFD700; emissiveIntensity: 0.5"></a-box>
-                        <a-box position="0 0.6 0" width="0.10" height="0.025" depth="0.025" color="#FFD700" material="shader: flat"></a-box>
-                        <a-box position="0 0.7 0" width="0.10" height="0.025" depth="0.025" color="#FFD700" material="shader: flat"></a-box>
-                        <a-box position="0 0.8 0" width="0.10" height="0.025" depth="0.025" color="#FFD700" material="shader: flat"></a-box>
-                        <a-box position="0 0.9 0" width="0.10" height="0.025" depth="0.025" color="#FFD700" material="shader: flat"></a-box>
-                        <a-box position="0 1.0 0" width="0.18" height="0.03" depth="0.03" color="#FFD700" material="shader: flat; emissive: #FFD700; emissiveIntensity: 0.5"></a-box>
+                        <!-- EJE VERTICAL (ALTURA) -->
+                        <a-entity position="-0.9 0 0">
+                            <a-cylinder 
+                                radius="0.025" 
+                                height="2.4" 
+                                color="#FFD700"
+                                material="shader: flat; emissive: #FFD700; emissiveIntensity: 0.8; side: double">
+                            </a-cylinder>
+                            
+                            <!-- Marcas -->
+                            <a-box position="0 -1.0 0" width="0.18" height="0.03" depth="0.03" color="#FFD700" material="shader: flat; emissive: #FFD700; emissiveIntensity: 0.5"></a-box>
+                            <a-box position="0 -0.5 0" width="0.18" height="0.03" depth="0.03" color="#FFD700" material="shader: flat; emissive: #FFD700; emissiveIntensity: 0.5"></a-box>
+                            <a-box position="0 0.0 0" width="0.22" height="0.035" depth="0.035" color="#FFD700" material="shader: flat; emissive: #FFD700; emissiveIntensity: 0.8"></a-box>
+                            <a-box position="0 0.5 0" width="0.18" height="0.03" depth="0.03" color="#FFD700" material="shader: flat; emissive: #FFD700; emissiveIntensity: 0.5"></a-box>
+                            <a-box position="0 1.0 0" width="0.18" height="0.03" depth="0.03" color="#FFD700" material="shader: flat; emissive: #FFD700; emissiveIntensity: 0.5"></a-box>
+                            
+                            <a-text value="0cm" position="-0.30 0.0 0" scale="0.4 0.4 0.4" color="#FFD700" align="right" shader="flat"></a-text>
+                            <a-text value="50cm" position="-0.30 0.5 0" scale="0.35 0.35 0.35" color="#FFD700" align="right" shader="flat"></a-text>
+                            <a-text value="100cm" position="-0.30 1.0 0" scale="0.35 0.35 0.35" color="#FFD700" align="right" shader="flat"></a-text>
+                            
+                            <a-text value="ALTURA (cm)" position="-0.30 -1.3 0" align="right" color="#FFD700" scale="0.32 0.32 0.32" shader="flat"></a-text>
+                        </a-entity>
+
+                        <!-- EJE HORIZONTAL (ANCHO) -->
+                        <a-entity position="0 -0.7 0">
+                            <a-cylinder 
+                                radius="0.025" 
+                                height="2.4" 
+                                color="#00FF88"
+                                rotation="0 0 90"
+                                material="shader: flat; emissive: #00FF88; emissiveIntensity: 0.8; side: double">
+                            </a-cylinder>
+                            
+                            <a-box position="-0.5 0 0" width="0.03" height="0.22" depth="0.03" color="#00FF88" material="shader: flat; emissive: #00FF88; emissiveIntensity: 0.8"></a-box>
+                            <a-box position="0.0 0 0" width="0.035" height="0.22" depth="0.035" color="#00FF88" material="shader: flat; emissive: #00FF88; emissiveIntensity: 0.8"></a-box>
+                            <a-box position="0.5 0 0" width="0.03" height="0.22" depth="0.03" color="#00FF88" material="shader: flat; emissive: #00FF88; emissiveIntensity: 0.8"></a-box>
+                            
+                            <a-text value="0cm" position="0.0 -0.28 0" scale="0.4 0.4 0.4" color="#00FF88" align="center" shader="flat"></a-text>
+                            <a-text value="50cm" position="0.5 -0.28 0" scale="0.35 0.35 0.35" color="#00FF88" align="center" shader="flat"></a-text>
+                            
+                            <a-text value="ANCHO (cm)" position="0 -0.4 0" align="center" color="#00FF88" scale="0.32 0.32 0.32" shader="flat"></a-text>
+                        </a-entity>
+
+                        <!-- EJE PROFUNDIDAD -->
+                        <a-entity position="0.9 0 0">
+                            <a-cylinder 
+                                radius="0.025" 
+                                height="2.4" 
+                                color="#FF6B6B"
+                                rotation="0 90 90"
+                                material="shader: flat; emissive: #FF6B6B; emissiveIntensity: 0.8; side: double">
+                            </a-cylinder>
+                            
+                            <a-box position="0 0 -0.5" width="0.03" height="0.22" depth="0.03" color="#FF6B6B" material="shader: flat; emissive: #FF6B6B; emissiveIntensity: 0.8"></a-box>
+                            <a-box position="0 0 0.0" width="0.035" height="0.22" depth="0.035" color="#FF6B6B" material="shader: flat; emissive: #FF6B6B; emissiveIntensity: 0.8"></a-box>
+                            <a-box position="0 0 0.5" width="0.03" height="0.22" depth="0.03" color="#FF6B6B" material="shader: flat; emissive: #FF6B6B; emissiveIntensity: 0.8"></a-box>
+                            
+                            <a-text value="0cm" position="0 -0.28 0.0" scale="0.4 0.4 0.4" color="#FF6B6B" align="center" shader="flat"></a-text>
+                            <a-text value="50cm" position="0 -0.28 0.5" scale="0.35 0.35 0.35" color="#FF6B6B" align="center" shader="flat"></a-text>
+                            
+                            <a-text value="PROF (cm)" position="0 -0.4 0" align="center" color="#FF6B6B" scale="0.32 0.32 0.32" shader="flat"></a-text>
+                        </a-entity>
                         
-                        <!-- Etiquetas GRANDES Y BRILLANTES -->
-                        <a-text value="0cm" position="-0.30 0.0 0" scale="0.4 0.4 0.4" color="#FFD700" align="right" shader="flat"></a-text>
-                        <a-text value="50cm" position="-0.30 0.5 0" scale="0.35 0.35 0.35" color="#FFD700" align="right" shader="flat"></a-text>
-                        <a-text value="100cm" position="-0.30 1.0 0" scale="0.35 0.35 0.35" color="#FFD700" align="right" shader="flat"></a-text>
-                        
-                        <a-text 
-                            value="ALTURA (cm)" 
-                            position="-0.30 -1.3 0" 
-                            align="right" 
-                            color="#FFD700" 
-                            scale="0.32 0.32 0.32"
-                            shader="flat">
-                        </a-text>
                     </a-entity>
 
-                    <!-- EJE HORIZONTAL (ANCHO) - VERDE -->
-                    <a-entity position="0 -0.7 0">
-                        <a-cylinder 
-                            radius="0.025" 
-                            height="2.4" 
-                            color="#00FF88"
-                            rotation="0 0 90"
-                            material="shader: flat; emissive: #00FF88; emissiveIntensity: 0.8; side: double">
-                        </a-cylinder>
-                        
-                        <a-box position="-1.0 0 0" width="0.03" height="0.18" depth="0.03" color="#00FF88" material="shader: flat; emissive: #00FF88; emissiveIntensity: 0.5"></a-box>
-                        <a-box position="-0.5 0 0" width="0.03" height="0.22" depth="0.03" color="#00FF88" material="shader: flat; emissive: #00FF88; emissiveIntensity: 0.8"></a-box>
-                        <a-box position="-0.4 0 0" width="0.025" height="0.10" depth="0.025" color="#00FF88" material="shader: flat"></a-box>
-                        <a-box position="-0.3 0 0" width="0.025" height="0.10" depth="0.025" color="#00FF88" material="shader: flat"></a-box>
-                        <a-box position="-0.2 0 0" width="0.025" height="0.10" depth="0.025" color="#00FF88" material="shader: flat"></a-box>
-                        <a-box position="-0.1 0 0" width="0.025" height="0.10" depth="0.025" color="#00FF88" material="shader: flat"></a-box>
-                        <a-box position="0.0 0 0" width="0.035" height="0.22" depth="0.035" color="#00FF88" material="shader: flat; emissive: #00FF88; emissiveIntensity: 0.8"></a-box>
-                        <a-box position="0.1 0 0" width="0.025" height="0.10" depth="0.025" color="#00FF88" material="shader: flat"></a-box>
-                        <a-box position="0.2 0 0" width="0.025" height="0.10" depth="0.025" color="#00FF88" material="shader: flat"></a-box>
-                        <a-box position="0.3 0 0" width="0.025" height="0.10" depth="0.025" color="#00FF88" material="shader: flat"></a-box>
-                        <a-box position="0.4 0 0" width="0.025" height="0.10" depth="0.025" color="#00FF88" material="shader: flat"></a-box>
-                        <a-box position="0.5 0 0" width="0.03" height="0.22" depth="0.03" color="#00FF88" material="shader: flat; emissive: #00FF88; emissiveIntensity: 0.8"></a-box>
-                        <a-box position="1.0 0 0" width="0.03" height="0.18" depth="0.03" color="#00FF88" material="shader: flat; emissive: #00FF88; emissiveIntensity: 0.5"></a-box>
-                        
-                        <a-text value="0cm" position="0.0 -0.28 0" scale="0.4 0.4 0.4" color="#00FF88" align="center" shader="flat"></a-text>
-                        <a-text value="50cm" position="0.5 -0.28 0" scale="0.35 0.35 0.35" color="#00FF88" align="center" shader="flat"></a-text>
-                        
-                        <a-text 
-                            value="ANCHO (cm)" 
-                            position="0 -0.4 0" 
-                            align="center" 
-                            color="#00FF88" 
-                            scale="0.32 0.32 0.32"
-                            shader="flat">
-                        </a-text>
-                    </a-entity>
+                    <a-text 
+                        value="WILL-AR" 
+                        position="0 2.0 0" 
+                        align="center" 
+                        color="#4ECDC4" 
+                        scale="1 1 1"
+                        shader="flat">
+                    </a-text>
 
-                    <!-- EJE PROFUNDIDAD - ROJO -->
-                    <a-entity position="0.9 0 0">
-                        <a-cylinder 
-                            radius="0.025" 
-                            height="2.4" 
-                            color="#FF6B6B"
-                            rotation="0 90 90"
-                            material="shader: flat; emissive: #FF6B6B; emissiveIntensity: 0.8; side: double">
-                        </a-cylinder>
-                        
-                        <a-box position="0 0 -1.0" width="0.03" height="0.18" depth="0.03" color="#FF6B6B" material="shader: flat; emissive: #FF6B6B; emissiveIntensity: 0.5"></a-box>
-                        <a-box position="0 0 -0.5" width="0.03" height="0.22" depth="0.03" color="#FF6B6B" material="shader: flat; emissive: #FF6B6B; emissiveIntensity: 0.8"></a-box>
-                        <a-box position="0 0 -0.4" width="0.025" height="0.10" depth="0.025" color="#FF6B6B" material="shader: flat"></a-box>
-                        <a-box position="0 0 -0.3" width="0.025" height="0.10" depth="0.025" color="#FF6B6B" material="shader: flat"></a-box>
-                        <a-box position="0 0 -0.2" width="0.025" height="0.10" depth="0.025" color="#FF6B6B" material="shader: flat"></a-box>
-                        <a-box position="0 0 -0.1" width="0.025" height="0.10" depth="0.025" color="#FF6B6B" material="shader: flat"></a-box>
-                        <a-box position="0 0 0.0" width="0.035" height="0.22" depth="0.035" color="#FF6B6B" material="shader: flat; emissive: #FF6B6B; emissiveIntensity: 0.8"></a-box>
-                        <a-box position="0 0 0.1" width="0.025" height="0.10" depth="0.025" color="#FF6B6B" material="shader: flat"></a-box>
-                        <a-box position="0 0 0.2" width="0.025" height="0.10" depth="0.025" color="#FF6B6B" material="shader: flat"></a-box>
-                        <a-box position="0 0 0.3" width="0.025" height="0.10" depth="0.025" color="#FF6B6B" material="shader: flat"></a-box>
-                        <a-box position="0 0 0.4" width="0.025" height="0.10" depth="0.025" color="#FF6B6B" material="shader: flat"></a-box>
-                        <a-box position="0 0 0.5" width="0.03" height="0.22" depth="0.03" color="#FF6B6B" material="shader: flat; emissive: #FF6B6B; emissiveIntensity: 0.8"></a-box>
-                        <a-box position="0 0 1.0" width="0.03" height="0.18" depth="0.03" color="#FF6B6B" material="shader: flat; emissive: #FF6B6B; emissiveIntensity: 0.5"></a-box>
-                        
-                        <a-text value="0cm" position="0 -0.28 0.0" scale="0.4 0.4 0.4" color="#FF6B6B" align="center" shader="flat"></a-text>
-                        <a-text value="50cm" position="0 -0.28 0.5" scale="0.35 0.35 0.35" color="#FF6B6B" align="center" shader="flat"></a-text>
-                        
-                        <a-text 
-                            value="PROF (cm)" 
-                            position="0 -0.4 0" 
-                            align="center" 
-                            color="#FF6B6B" 
-                            scale="0.32 0.32 0.32"
-                            shader="flat">
-                        </a-text>
-                    </a-entity>
-                    
                 </a-entity>
-
-                <a-text 
-                    value="WILL-AR" 
-                    position="0 2.0 0" 
-                    align="center" 
-                    color="#4ECDC4" 
-                    scale="1 1 1"
-                    shader="flat">
-                </a-text>
-
-            </a-entity>
-        </a-marker>
-        
-        <a-entity camera></a-entity>
-    </a-scene>
+            </a-marker>
+            
+            <a-entity camera></a-entity>
+        </a-scene>
+    </div>
 
     <script>
         let texturaData = null; 
@@ -994,8 +908,8 @@
         let escalaActual = 1;
         let markerDetected = false;
         let rotacionActiva = true;
+        let sceneLoaded = false;
 
-        // DIMENSIONES BASE EN CENTÍMETROS
         const dimensionesBase = {
             box: { altura: 100, ancho: 100, profundidad: 100 },
             sphere: { altura: 160, ancho: 160, profundidad: 160 },
@@ -1008,123 +922,84 @@
             octahedron: { altura: 140, ancho: 100, profundidad: 100 }
         };
 
-        // BASE DE DATOS COMPLETA DE FIGURAS
         const figurasInfo = {
             box: {
                 nombre: "CUBO",
                 definicion: "Un cubo (o hexaedro regular) es un poliedro regular formado por seis caras cuadradas iguales. Es uno de los cinco sólidos platónicos y representa la máxima simetría en el espacio tridimensional.",
-                caras: 6,
-                vertices: 8,
-                aristas: 12,
-                simetria: "Cúbica Oh",
-                formulas: "<strong>Volumen:</strong> V = a³<br><strong>Área Total:</strong> A = 6a²<br><strong>Diagonal Espacial:</strong> d = a√3<br><strong>Diagonal de Cara:</strong> d₂ = a√2",
-                aplicaciones: "Construcción (bloques, edificios), embalaje (cajas), juegos (dados de 6 caras), cristalografía (estructura cúbica), almacenamiento, diseño de muebles, arquitectura modular."
+                caras: 6, vertices: 8, aristas: 12, simetria: "Cúbica Oh",
+                formulas: "<strong>Volumen:</strong> V = a³<br><strong>Área Total:</strong> A = 6a²<br><strong>Diagonal Espacial:</strong> d = a√3",
+                aplicaciones: "Construcción, embalaje, dados, cristalografía, almacenamiento, diseño."
             },
             sphere: {
                 nombre: "ESFERA",
-                definicion: "Una esfera es un cuerpo geométrico tridimensional perfectamente redondo, definido como el conjunto de todos los puntos en el espacio que equidistan de un punto central llamado centro. Es el único cuerpo de revolución con curvatura constante.",
-                caras: 1,
-                vertices: 0,
-                aristas: 0,
-                simetria: "Esférica infinita",
-                formulas: "<strong>Volumen:</strong> V = (4/3)πr³<br><strong>Área Superficie:</strong> A = 4πr²<br><strong>Diámetro:</strong> d = 2r<br><strong>Radio:</strong> r = d/2",
-                aplicaciones: "Pelotas deportivas (fútbol, baloncesto), astronomía (planetas, estrellas), burbujas, tanques de presión, lentes ópticas, cojinetes de bolas, globos terráqueos."
+                definicion: "Una esfera es un cuerpo geométrico tridimensional perfectamente redondo, definido como el conjunto de todos los puntos en el espacio que equidistan de un punto central.",
+                caras: 1, vertices: 0, aristas: 0, simetria: "Esférica infinita",
+                formulas: "<strong>Volumen:</strong> V = (4/3)πr³<br><strong>Área:</strong> A = 4πr²<br><strong>Diámetro:</strong> d = 2r",
+                aplicaciones: "Pelotas, planetas, burbujas, tanques, lentes, cojinetes."
             },
             cylinder: {
                 nombre: "CILINDRO",
-                definicion: "Un cilindro es un cuerpo geométrico formado por dos círculos paralelos e iguales (bases) unidos por una superficie curva. Es un cuerpo de revolución generado al girar un rectángulo alrededor de uno de sus lados.",
-                caras: 3,
-                vertices: 0,
-                aristas: 2,
-                simetria: "Cilíndrica",
-                formulas: "<strong>Volumen:</strong> V = πr²h<br><strong>Área Lateral:</strong> A_l = 2πrh<br><strong>Área Total:</strong> A_t = 2πr(r+h)<br><strong>Área de Base:</strong> A_b = πr²",
-                aplicaciones: "Latas de bebidas, tuberías, columnas arquitectónicas, tanques de almacenamiento, pistones de motores, envases cilíndricos, silos, baterías."
+                definicion: "Un cilindro es un cuerpo geométrico formado por dos círculos paralelos e iguales unidos por una superficie curva.",
+                caras: 3, vertices: 0, aristas: 2, simetria: "Cilíndrica",
+                formulas: "<strong>Volumen:</strong> V = πr²h<br><strong>Área Lateral:</strong> A = 2πrh<br><strong>Área Total:</strong> A = 2πr(r+h)",
+                aplicaciones: "Latas, tuberías, columnas, tanques, pistones, envases."
             },
             cone: {
                 nombre: "CONO",
-                definicion: "Un cono es un cuerpo geométrico con una base circular y un vértice único (ápice), unidos por una superficie curva que se estrecha uniformemente. Es un cuerpo de revolución generado al girar un triángulo rectángulo sobre uno de sus catetos.",
-                caras: 2,
-                vertices: 1,
-                aristas: 1,
-                simetria: "Cónica circular",
-                formulas: "<strong>Volumen:</strong> V = (1/3)πr²h<br><strong>Área Lateral:</strong> A_l = πrl<br><strong>Área Total:</strong> A_t = πr(r+l)<br><strong>Generatriz:</strong> l = √(r²+h²)",
-                aplicaciones: "Conos de tráfico, embudos, cucuruchos de helado, volcanes, altavoces (bocinas), sombreros cónicos, techos piramidales."
+                definicion: "Un cono es un cuerpo geométrico con una base circular y un vértice único unidos por una superficie curva.",
+                caras: 2, vertices: 1, aristas: 1, simetria: "Cónica",
+                formulas: "<strong>Volumen:</strong> V = (1/3)πr²h<br><strong>Área Lateral:</strong> A = πrl<br><strong>Generatriz:</strong> l = √(r²+h²)",
+                aplicaciones: "Conos de tráfico, embudos, helados, volcanes, altavoces."
             },
             torus: {
-                nombre: "TOROIDE (Toro)",
-                definicion: "Un toroide o toro es una superficie de revolución generada al girar un círculo (sección transversal) alrededor de un eje coplanar que no lo interseca. Tiene forma de rosquilla o salvavidas.",
-                caras: 1,
-                vertices: 0,
-                aristas: 0,
-                simetria: "Toroidal",
-                formulas: "<strong>Volumen:</strong> V = 2π²Rr²<br><strong>Área Superficie:</strong> A = 4π²Rr<br><strong>R:</strong> Radio mayor (centro a centro del tubo)<br><strong>r:</strong> Radio menor (radio del tubo)",
-                aplicaciones: "Neumáticos de vehículos, rosquillas (donuts), salvavidas, tokamaks (reactores de fusión), campos magnéticos toroidales, geometría topológica, juntas tóricas."
+                nombre: "TOROIDE",
+                definicion: "Un toroide es una superficie de revolución generada al girar un círculo alrededor de un eje coplanar.",
+                caras: 1, vertices: 0, aristas: 0, simetria: "Toroidal",
+                formulas: "<strong>Volumen:</strong> V = 2π²Rr²<br><strong>Área:</strong> A = 4π²Rr<br>R=mayor, r=menor",
+                aplicaciones: "Neumáticos, rosquillas, salvavidas, tokamaks, juntas."
             },
             tetrahedron: {
                 nombre: "TETRAEDRO",
-                definicion: "Un tetraedro regular es un poliedro de cuatro caras triangulares equiláteras iguales. Es el más simple de los cinco sólidos platónicos y el poliedro regular con menor número de caras. Tiene forma de pirámide triangular.",
-                caras: 4,
-                vertices: 4,
-                aristas: 6,
-                simetria: "Tetraédrica Td",
-                formulas: "<strong>Volumen:</strong> V = a³/(6√2)<br><strong>Área Total:</strong> A = √3a²<br><strong>Altura:</strong> h = a√(2/3)<br><strong>Radio Circunscrito:</strong> R = a√6/4",
-                aplicaciones: "Química molecular (metano CH₄), cristalografía (estructura diamante), embalaje eficiente, estructuras espaciales, dados de rol (D4), arquitectura tensegrity."
+                definicion: "Un tetraedro regular es un poliedro de cuatro caras triangulares equiláteras. Es el más simple de los sólidos platónicos.",
+                caras: 4, vertices: 4, aristas: 6, simetria: "Tetraédrica Td",
+                formulas: "<strong>Volumen:</strong> V = a³/(6√2)<br><strong>Área:</strong> A = √3a²<br><strong>Altura:</strong> h = a√(2/3)",
+                aplicaciones: "Química molecular, cristalografía, embalaje, dados D4."
             },
             dodecahedron: {
                 nombre: "DODECAEDRO",
-                definicion: "Un dodecaedro regular es un poliedro formado por doce caras pentagonales regulares iguales. Es uno de los cinco sólidos platónicos. Platón asoció esta figura con el universo en su filosofía cosmológica.",
-                caras: 12,
-                vertices: 20,
-                aristas: 30,
-                simetria: "Icosaédrica Ih",
-                formulas: "<strong>Volumen:</strong> V = [(15+7√5)/4]a³<br><strong>Área Total:</strong> A = 3√(25+10√5)a²<br><strong>Diagonal Espacial:</strong> d = a·φ√3<br><strong>φ:</strong> Proporción áurea (1+√5)/2",
-                aplicaciones: "Cristalografía (cuasicristales), dados de rol (D12), arquitectura decorativa, diseño de joyas, virología (algunos virus), arte geométrico."
+                definicion: "Un dodecaedro regular es un poliedro formado por doce caras pentagonales regulares.",
+                caras: 12, vertices: 20, aristas: 30, simetria: "Icosaédrica Ih",
+                formulas: "<strong>Volumen:</strong> V = [(15+7√5)/4]a³<br><strong>Área:</strong> A = 3√(25+10√5)a²",
+                aplicaciones: "Cristalografía, dados D12, arquitectura decorativa."
             },
             icosahedron: {
                 nombre: "ICOSAEDRO",
-                definicion: "Un icosaedro regular es un poliedro de veinte caras triangulares equiláteras. Es el sólido platónico con mayor número de caras y el que más se aproxima a una esfera. Tiene 12 vértices donde convergen 5 triángulos.",
-                caras: 20,
-                vertices: 12,
-                aristas: 30,
-                simetria: "Icosaédrica Ih",
-                formulas: "<strong>Volumen:</strong> V = [5(3+√5)/12]a³<br><strong>Área Total:</strong> A = 5√3a²<br><strong>Radio Circunscrito:</strong> R = a·φ/√3<br><strong>φ:</strong> Proporción áurea ≈ 1.618",
-                aplicaciones: "Virus (cápsides virales), balones de fútbol (patrón truncado), domos geodésicos (arquitectura Fuller), dados de rol (D20), moléculas (fullerenos), diseño de antenas."
+                definicion: "Un icosaedro regular es un poliedro de veinte caras triangulares equiláteras.",
+                caras: 20, vertices: 12, aristas: 30, simetria: "Icosaédrica Ih",
+                formulas: "<strong>Volumen:</strong> V = [5(3+√5)/12]a³<br><strong>Área:</strong> A = 5√3a²",
+                aplicaciones: "Virus, balones, domos geodésicos, dados D20."
             },
             octahedron: {
                 nombre: "OCTAEDRO",
-                definicion: "Un octaedro regular es un poliedro de ocho caras triangulares equiláteras. Es el dual del cubo (si conectas los centros de las caras de un cubo, obtienes un octaedro). Tiene forma de dos pirámides cuadradas unidas por la base.",
-                caras: 8,
-                vertices: 6,
-                aristas: 12,
-                simetria: "Octaédrica Oh",
-                formulas: "<strong>Volumen:</strong> V = (√2/3)a³<br><strong>Área Total:</strong> A = 2√3a²<br><strong>Altura:</strong> h = a√2<br><strong>Radio Circunscrito:</strong> R = a/√2",
-                aplicaciones: "Cristalografía (diamantes, alúmina), dados de rol (D8), embalaje molecular, diseño de joyas, estructuras de celosía FCC, arte geométrico, modelos atómicos."
+                definicion: "Un octaedro regular es un poliedro de ocho caras triangulares equiláteras. Es dual del cubo.",
+                caras: 8, vertices: 6, aristas: 12, simetria: "Octaédrica Oh",
+                formulas: "<strong>Volumen:</strong> V = (√2/3)a³<br><strong>Área:</strong> A = 2√3a²<br><strong>Altura:</strong> h = a√2",
+                aplicaciones: "Diamantes, dados D8, estructuras moleculares."
             }
         };
 
+        // LOADING RÁPIDO - Ocultar después de cargar librerías
         window.addEventListener('load', () => {
+            setTimeout(() => {
+                const loadingScreen = document.getElementById('loading-screen');
+                loadingScreen.classList.add('hidden');
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                }, 500);
+            }, 800);
+
             if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
                 document.getElementById('https-alert').style.display = 'block';
-            }
-        });
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const scene = document.querySelector('a-scene');
-            if (scene) {
-                scene.addEventListener('loaded', () => {
-                    setTimeout(() => {
-                        const loadingScreen = document.getElementById('loading-screen');
-                        loadingScreen.classList.add('hidden');
-                        setTimeout(() => {
-                            loadingScreen.style.display = 'none';
-                        }, 500);
-                    }, 1500);
-                });
-            } else {
-                setTimeout(() => {
-                    const loadingScreen = document.getElementById('loading-screen');
-                    loadingScreen.classList.add('hidden');
-                }, 3000);
             }
         });
 
@@ -1149,8 +1024,10 @@
                     const nombre = file.name.length > 15 ? file.name.substring(0, 15) + "..." : file.name;
                     document.getElementById('status-msg').innerText = "✅ " + nombre;
                     
-                    const texturaAsset = document.getElementById('textura-asset');
-                    texturaAsset.setAttribute('src', texturaData);
+                    if (sceneLoaded) {
+                        const texturaAsset = document.getElementById('textura-asset');
+                        texturaAsset.setAttribute('src', texturaData);
+                    }
                 };
                 reader.readAsDataURL(file);
             }
@@ -1264,51 +1141,59 @@
             console.log('✅ Figura creada:', figuraSeleccionada);
         }
 
+        // INICIAR AR - SIN CONFLICTOS DE CÁMARA
         async function iniciarAR() {
-            document.getElementById('ar-loading').classList.add('visible');
+            console.log('🎬 Iniciando AR...');
             
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { 
-                        facingMode: 'environment',
-                        width: { ideal: 1280 },
-                        height: { ideal: 720 }
-                    } 
-                });
+                // NO solicitar cámara aquí - AR.js lo hará automáticamente
+                // Mostrar escena
+                document.getElementById('ar-scene-container').style.display = 'block';
                 
-                stream.getTracks().forEach(track => track.stop());
-
-                crearFigura3D();
-                actualizarInfoFigura();
-
-                const marker = document.querySelector('#hiro-marker');
-                
-                marker.addEventListener('markerFound', () => {
-                    markerDetected = true;
-                    console.log('✅ Marcador HIRO detectado!');
-                    const status = document.getElementById('camera-status');
-                    const statusText = document.getElementById('camera-status-text');
-                    statusText.innerText = '✅ Marcador detectado';
-                    statusText.className = 'status-active';
-                    status.style.display = 'block';
-                    
-                    setTimeout(() => {
-                        status.style.display = 'none';
-                    }, 2000);
-                });
-                
-                marker.addEventListener('markerLost', () => {
-                    markerDetected = false;
-                    const status = document.getElementById('camera-status');
-                    const statusText = document.getElementById('camera-status-text');
-                    statusText.innerText = '🔍 Buscando marcador...';
-                    statusText.className = 'status-searching';
-                    status.style.display = 'block';
-                });
-
-                actualizarMediciones();
-
+                // Esperar a que A-Frame esté listo
                 setTimeout(() => {
+                    if (!sceneLoaded) {
+                        sceneLoaded = true;
+                        
+                        // Cargar textura si existe
+                        if (texturaData) {
+                            const texturaAsset = document.getElementById('textura-asset');
+                            texturaAsset.setAttribute('src', texturaData);
+                        }
+
+                        crearFigura3D();
+                        actualizarInfoFigura();
+
+                        const marker = document.querySelector('#hiro-marker');
+                        
+                        if (marker) {
+                            marker.addEventListener('markerFound', () => {
+                                markerDetected = true;
+                                console.log('✅ Marcador detectado!');
+                                const status = document.getElementById('camera-status');
+                                const statusText = document.getElementById('camera-status-text');
+                                statusText.innerText = '✅ Marcador detectado';
+                                statusText.className = 'status-active';
+                                status.style.display = 'block';
+                                
+                                setTimeout(() => {
+                                    status.style.display = 'none';
+                                }, 2000);
+                            });
+                            
+                            marker.addEventListener('markerLost', () => {
+                                markerDetected = false;
+                                const status = document.getElementById('camera-status');
+                                const statusText = document.getElementById('camera-status-text');
+                                statusText.innerText = '🔍 Buscando marcador...';
+                                statusText.className = 'status-searching';
+                                status.style.display = 'block';
+                            });
+                        }
+
+                        actualizarMediciones();
+                    }
+
                     arActivo = true;
                     document.getElementById('menu-overlay').style.transform = "translateY(-100%)";
                     document.getElementById('ar-controls').style.display = "block";
@@ -1320,28 +1205,12 @@
                     statusText.className = 'status-searching';
                     status.style.display = 'block';
 
-                    document.getElementById('ar-loading').classList.remove('visible');
-
                     console.log('🚀 AR iniciado correctamente');
-                }, 1500);
+                }, 1000);
 
             } catch(error) {
-                document.getElementById('ar-loading').classList.remove('visible');
-                
-                console.error('Error cámara:', error);
-                let msg = '⚠️ Error de cámara.\n\n';
-                
-                if (error.name === 'NotAllowedError') {
-                    msg += 'Permisos denegados. Habilita la cámara en configuración.';
-                } else if (error.name === 'NotFoundError') {
-                    msg += 'No se encontró cámara en el dispositivo.';
-                } else if (error.name === 'NotReadableError') {
-                    msg += 'Cámara en uso por otra aplicación.';
-                } else {
-                    msg += 'Verifica permisos y que uses HTTPS.';
-                }
-                
-                alert(msg);
+                console.error('Error:', error);
+                alert('Error al iniciar AR: ' + error.message);
             }
         }
 
@@ -1367,12 +1236,14 @@
             const modelo = document.getElementById('modelo-3d');
             const btn = document.getElementById('btn-rotation');
             
-            if(rotacionActiva) {
-                modelo.setAttribute('animation', 'property: rotation; to: 0 405 0; dur: 10000; loop: true; easing: linear');
-                btn.innerHTML = '⏸️<br>Pausar';
-            } else {
-                modelo.removeAttribute('animation');
-                btn.innerHTML = '▶️<br>Rotar';
+            if(modelo) {
+                if(rotacionActiva) {
+                    modelo.setAttribute('animation', 'property: rotation; to: 0 405 0; dur: 10000; loop: true; easing: linear');
+                    btn.innerHTML = '⏸️<br>Pausar';
+                } else {
+                    modelo.removeAttribute('animation');
+                    btn.innerHTML = '▶️<br>Rotar';
+                }
             }
         }
 
