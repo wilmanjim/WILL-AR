@@ -6,7 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <title>Will AR - Laboratorio Matemático Avanzado</title>
     
-    <!-- LIBRERÍAS CORREGIDAS - SIN ESPACIOS, VERSIONES ESTABLES -->
+    <!-- LIBRERÍAS CORREGIDAS - ESTABLES Y SIN CONFLICTOS -->
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar-nft.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -751,30 +751,30 @@
         
         <div class="measurements">
             <div style="text-align: center; margin-bottom: 8px; font-size: 0.85rem; color: #95a5a6;">
-                📏 Medidas en <strong>Metros (m)</strong> - Sistema Internacional
+                📏 Medidas en <strong>Centímetros (cm)</strong> - Sistema Métrico
             </div>
             <div class="measurement-grid">
                 <div class="measurement-item">
                     <span class="measurement-label">Alto</span>
-                    <span class="measurement-value"><span id="measure-height">1.00</span> m</span>
+                    <span class="measurement-value"><span id="measure-height">100</span> cm</span>
                 </div>
                 <div class="measurement-item">
                     <span class="measurement-label">Ancho</span>
-                    <span class="measurement-value"><span id="measure-width">1.00</span> m</span>
+                    <span class="measurement-value"><span id="measure-width">100</span> cm</span>
                 </div>
                 <div class="measurement-item">
                     <span class="measurement-label">Profundidad</span>
-                    <span class="measurement-value"><span id="measure-depth">1.00</span> m</span>
+                    <span class="measurement-value"><span id="measure-depth">100</span> cm</span>
                 </div>
             </div>
             <div class="measurement-item" style="margin-top:10px; background: rgba(231, 76, 60, 0.2); border-color: rgba(231, 76, 60, 0.4);">
                 <span class="measurement-label">Volumen Aprox.</span>
-                <span class="measurement-value"><span id="measure-volume">1.000</span> m³</span>
+                <span class="measurement-value"><span id="measure-volume">1,000,000</span> cm³</span>
             </div>
         </div>
     </div>
     
-    <!-- ESCENA A-FRAME - CONFIGURACIÓN CORREGIDA Y OPTIMIZADA -->
+    <!-- ESCENA A-FRAME - CONFIGURACIÓN CORREGIDA -->
     <a-scene
         id="ar-scene"
         embedded
@@ -825,54 +825,78 @@
                     position="0 0.5 0">
                 </a-entity>
                 
-                <!-- REGLA VIRTUAL CORRECTAMENTE GRADUADA EN METROS -->
+                <!-- REGLA VIRTUAL CORRECTAMENTE GRADUADA EN CENTÍMETROS -->
                 <a-entity id="regla-virtual" visible="true" position="0 0.5 0">
                     
-                    <!-- EJE Y (ALTURA) - AMARILLO - GRADUADO EN METROS -->
-                    <a-cylinder radius="0.012" height="2.4" color="#FFD700" position="-0.85 0 0"></a-cylinder>
-                    <!-- Marcas cada 0.5m -->
-                    <a-box width="0.18" height="0.025" depth="0.025" color="#FFD700" position="-0.85 1.0 0"></a-box>
-                    <a-box width="0.12" height="0.02" depth="0.02" color="#FFD700" position="-0.85 0.5 0"></a-box>
-                    <a-box width="0.22" height="0.03" depth="0.03" color="#FFD700" position="-0.85 0.0 0"></a-box>
-                    <a-box width="0.12" height="0.02" depth="0.02" color="#FFD700" position="-0.85 -0.5 0"></a-box>
-                    <a-box width="0.18" height="0.025" depth="0.025" color="#FFD700" position="-0.85 -1.0 0"></a-box>
-                    <!-- Etiquetas en METROS -->
-                    <a-text value="1.0m" position="-1.15 1.0 0" color="#FFD700" scale="0.32 0.32 0.32" align="center"></a-text>
-                    <a-text value="0.5m" position="-1.15 0.5 0" color="#FFD700" scale="0.30 0.30 0.30" align="center"></a-text>
-                    <a-text value="0m" position="-1.15 0.0 0" color="#FFD700" scale="0.35 0.35 0.35" align="center" bold="true"></a-text>
-                    <a-text value="-0.5m" position="-1.15 -0.5 0" color="#FFD700" scale="0.30 0.30 0.30" align="center"></a-text>
-                    <a-text value="-1.0m" position="-1.15 -1.0 0" color="#FFD700" scale="0.32 0.32 0.32" align="center"></a-text>
-                    <a-text value="ALTURA (m)" position="-1.15 -1.3 0" color="#FFD700" scale="0.28 0.28 0.28" align="center"></a-text>
+                    <!-- EJE Y (ALTURA) - AMARILLO - GRADUADO EN CENTÍMETROS -->
+                    <a-cylinder radius="0.015" height="2.4" color="#FFD700" position="-0.85 0 0"></a-cylinder>
+                    <!-- Marcas cada 25cm -->
+                    <a-box width="0.20" height="0.03" depth="0.03" color="#FFD700" position="-0.85 1.0 0"></a-box>
+                    <a-box width="0.15" height="0.025" depth="0.025" color="#FFD700" position="-0.85 0.75 0"></a-box>
+                    <a-box width="0.15" height="0.025" depth="0.025" color="#FFD700" position="-0.85 0.5 0"></a-box>
+                    <a-box width="0.15" height="0.025" depth="0.025" color="#FFD700" position="-0.85 0.25 0"></a-box>
+                    <a-box width="0.25" height="0.035" depth="0.035" color="#FFD700" position="-0.85 0.0 0"></a-box>
+                    <a-box width="0.15" height="0.025" depth="0.025" color="#FFD700" position="-0.85 -0.25 0"></a-box>
+                    <a-box width="0.15" height="0.025" depth="0.025" color="#FFD700" position="-0.85 -0.5 0"></a-box>
+                    <a-box width="0.15" height="0.025" depth="0.025" color="#FFD700" position="-0.85 -0.75 0"></a-box>
+                    <a-box width="0.20" height="0.03" depth="0.03" color="#FFD700" position="-0.85 -1.0 0"></a-box>
+                    <!-- Etiquetas en CENTÍMETROS -->
+                    <a-text value="100cm" position="-1.15 1.0 0" color="#FFD700" scale="0.32 0.32 0.32" align="center"></a-text>
+                    <a-text value="75cm" position="-1.15 0.75 0" color="#FFD700" scale="0.30 0.30 0.30" align="center"></a-text>
+                    <a-text value="50cm" position="-1.15 0.5 0" color="#FFD700" scale="0.30 0.30 0.30" align="center"></a-text>
+                    <a-text value="25cm" position="-1.15 0.25 0" color="#FFD700" scale="0.30 0.30 0.30" align="center"></a-text>
+                    <a-text value="0cm" position="-1.15 0.0 0" color="#FFD700" scale="0.35 0.35 0.35" align="center" bold="true"></a-text>
+                    <a-text value="-25cm" position="-1.15 -0.25 0" color="#FFD700" scale="0.30 0.30 0.30" align="center"></a-text>
+                    <a-text value="-50cm" position="-1.15 -0.5 0" color="#FFD700" scale="0.30 0.30 0.30" align="center"></a-text>
+                    <a-text value="-75cm" position="-1.15 -0.75 0" color="#FFD700" scale="0.30 0.30 0.30" align="center"></a-text>
+                    <a-text value="-100cm" position="-1.15 -1.0 0" color="#FFD700" scale="0.32 0.32 0.32" align="center"></a-text>
+                    <a-text value="ALTURA (cm)" position="-1.15 -1.3 0" color="#FFD700" scale="0.28 0.28 0.28" align="center"></a-text>
                     
-                    <!-- EJE X (ANCHO) - VERDE - GRADUADO EN METROS -->
-                    <a-cylinder radius="0.012" height="2.4" color="#00FF88" rotation="0 90 0" position="0 -0.85 0"></a-cylinder>
-                    <a-box width="0.025" height="0.025" depth="0.18" color="#00FF88" position="-1.0 -0.85 0" rotation="0 90 0"></a-box>
-                    <a-box width="0.02" height="0.02" depth="0.12" color="#00FF88" position="-0.5 -0.85 0" rotation="0 90 0"></a-box>
-                    <a-box width="0.03" height="0.03" depth="0.22" color="#00FF88" position="0.0 -0.85 0" rotation="0 90 0"></a-box>
-                    <a-box width="0.02" height="0.02" depth="0.12" color="#00FF88" position="0.5 -0.85 0" rotation="0 90 0"></a-box>
-                    <a-box width="0.025" height="0.025" depth="0.18" color="#00FF88" position="1.0 -0.85 0" rotation="0 90 0"></a-box>
-                    <!-- Etiquetas en METROS -->
-                    <a-text value="-1.0m" position="-1.0 -1.15 0" color="#00FF88" scale="0.32 0.32 0.32" align="center" rotation="0 90 0"></a-text>
-                    <a-text value="-0.5m" position="-0.5 -1.15 0" color="#00FF88" scale="0.30 0.30 0.30" align="center" rotation="0 90 0"></a-text>
-                    <a-text value="0m" position="0.0 -1.15 0" color="#00FF88" scale="0.35 0.35 0.35" align="center" rotation="0 90 0" bold="true"></a-text>
-                    <a-text value="0.5m" position="0.5 -1.15 0" color="#00FF88" scale="0.30 0.30 0.30" align="center" rotation="0 90 0"></a-text>
-                    <a-text value="1.0m" position="1.0 -1.15 0" color="#00FF88" scale="0.32 0.32 0.32" align="center" rotation="0 90 0"></a-text>
-                    <a-text value="ANCHO (m)" position="0.0 -1.3 0" color="#00FF88" scale="0.28 0.28 0.28" align="center" rotation="0 90 0"></a-text>
+                    <!-- EJE X (ANCHO) - VERDE - GRADUADO EN CENTÍMETROS -->
+                    <a-cylinder radius="0.015" height="2.4" color="#00FF88" rotation="0 90 0" position="0 -0.85 0"></a-cylinder>
+                    <a-box width="0.03" height="0.03" depth="0.20" color="#00FF88" position="-1.0 -0.85 0" rotation="0 90 0"></a-box>
+                    <a-box width="0.025" height="0.025" depth="0.15" color="#00FF88" position="-0.75 -0.85 0" rotation="0 90 0"></a-box>
+                    <a-box width="0.025" height="0.025" depth="0.15" color="#00FF88" position="-0.5 -0.85 0" rotation="0 90 0"></a-box>
+                    <a-box width="0.025" height="0.025" depth="0.15" color="#00FF88" position="-0.25 -0.85 0" rotation="0 90 0"></a-box>
+                    <a-box width="0.035" height="0.035" depth="0.25" color="#00FF88" position="0.0 -0.85 0" rotation="0 90 0"></a-box>
+                    <a-box width="0.025" height="0.025" depth="0.15" color="#00FF88" position="0.25 -0.85 0" rotation="0 90 0"></a-box>
+                    <a-box width="0.025" height="0.025" depth="0.15" color="#00FF88" position="0.5 -0.85 0" rotation="0 90 0"></a-box>
+                    <a-box width="0.025" height="0.025" depth="0.15" color="#00FF88" position="0.75 -0.85 0" rotation="0 90 0"></a-box>
+                    <a-box width="0.03" height="0.03" depth="0.20" color="#00FF88" position="1.0 -0.85 0" rotation="0 90 0"></a-box>
+                    <!-- Etiquetas en CENTÍMETROS -->
+                    <a-text value="-100cm" position="-1.0 -1.15 0" color="#00FF88" scale="0.32 0.32 0.32" align="center" rotation="0 90 0"></a-text>
+                    <a-text value="-75cm" position="-0.75 -1.15 0" color="#00FF88" scale="0.30 0.30 0.30" align="center" rotation="0 90 0"></a-text>
+                    <a-text value="-50cm" position="-0.5 -1.15 0" color="#00FF88" scale="0.30 0.30 0.30" align="center" rotation="0 90 0"></a-text>
+                    <a-text value="-25cm" position="-0.25 -1.15 0" color="#00FF88" scale="0.30 0.30 0.30" align="center" rotation="0 90 0"></a-text>
+                    <a-text value="0cm" position="0.0 -1.15 0" color="#00FF88" scale="0.35 0.35 0.35" align="center" rotation="0 90 0" bold="true"></a-text>
+                    <a-text value="25cm" position="0.25 -1.15 0" color="#00FF88" scale="0.30 0.30 0.30" align="center" rotation="0 90 0"></a-text>
+                    <a-text value="50cm" position="0.5 -1.15 0" color="#00FF88" scale="0.30 0.30 0.30" align="center" rotation="0 90 0"></a-text>
+                    <a-text value="75cm" position="0.75 -1.15 0" color="#00FF88" scale="0.30 0.30 0.30" align="center" rotation="0 90 0"></a-text>
+                    <a-text value="100cm" position="1.0 -1.15 0" color="#00FF88" scale="0.32 0.32 0.32" align="center" rotation="0 90 0"></a-text>
+                    <a-text value="ANCHO (cm)" position="0.0 -1.3 0" color="#00FF88" scale="0.28 0.28 0.28" align="center" rotation="0 90 0"></a-text>
                     
-                    <!-- EJE Z (PROFUNDIDAD) - ROJO - GRADUADO EN METROS -->
-                    <a-cylinder radius="0.012" height="2.4" color="#FF6B6B" rotation="90 0 0" position="0.85 0 0"></a-cylinder>
-                    <a-box width="0.025" height="0.18" depth="0.025" color="#FF6B6B" position="0.85 1.0 0" rotation="90 0 0"></a-box>
-                    <a-box width="0.02" height="0.12" depth="0.02" color="#FF6B6B" position="0.85 0.5 0" rotation="90 0 0"></a-box>
-                    <a-box width="0.03" height="0.22" depth="0.03" color="#FF6B6B" position="0.85 0.0 0" rotation="90 0 0"></a-box>
-                    <a-box width="0.02" height="0.12" depth="0.02" color="#FF6B6B" position="0.85 -0.5 0" rotation="90 0 0"></a-box>
-                    <a-box width="0.025" height="0.18" depth="0.025" color="#FF6B6B" position="0.85 -1.0 0" rotation="90 0 0"></a-box>
-                    <!-- Etiquetas en METROS -->
-                    <a-text value="-1.0m" position="1.15 0.0 -1.0" color="#FF6B6B" scale="0.32 0.32 0.32" align="center" rotation="0 90 0"></a-text>
-                    <a-text value="-0.5m" position="1.15 0.0 -0.5" color="#FF6B6B" scale="0.30 0.30 0.30" align="center" rotation="0 90 0"></a-text>
-                    <a-text value="0m" position="1.15 0.0 0.0" color="#FF6B6B" scale="0.35 0.35 0.35" align="center" rotation="0 90 0" bold="true"></a-text>
-                    <a-text value="0.5m" position="1.15 0.0 0.5" color="#FF6B6B" scale="0.30 0.30 0.30" align="center" rotation="0 90 0"></a-text>
-                    <a-text value="1.0m" position="1.15 0.0 1.0" color="#FF6B6B" scale="0.32 0.32 0.32" align="center" rotation="0 90 0"></a-text>
-                    <a-text value="PROF (m)" position="1.15 0.0 0.0" color="#FF6B6B" scale="0.28 0.28 0.28" align="center" rotation="0 90 90"></a-text>
+                    <!-- EJE Z (PROFUNDIDAD) - ROJO - GRADUADO EN CENTÍMETROS -->
+                    <a-cylinder radius="0.015" height="2.4" color="#FF6B6B" rotation="90 0 0" position="0.85 0 0"></a-cylinder>
+                    <a-box width="0.03" height="0.20" depth="0.03" color="#FF6B6B" position="0.85 1.0 0" rotation="90 0 0"></a-box>
+                    <a-box width="0.025" height="0.15" depth="0.025" color="#FF6B6B" position="0.85 0.75 0" rotation="90 0 0"></a-box>
+                    <a-box width="0.025" height="0.15" depth="0.025" color="#FF6B6B" position="0.85 0.5 0" rotation="90 0 0"></a-box>
+                    <a-box width="0.025" height="0.15" depth="0.025" color="#FF6B6B" position="0.85 0.25 0" rotation="90 0 0"></a-box>
+                    <a-box width="0.035" height="0.25" depth="0.035" color="#FF6B6B" position="0.85 0.0 0" rotation="90 0 0"></a-box>
+                    <a-box width="0.025" height="0.15" depth="0.025" color="#FF6B6B" position="0.85 -0.25 0" rotation="90 0 0"></a-box>
+                    <a-box width="0.025" height="0.15" depth="0.025" color="#FF6B6B" position="0.85 -0.5 0" rotation="90 0 0"></a-box>
+                    <a-box width="0.025" height="0.15" depth="0.025" color="#FF6B6B" position="0.85 -0.75 0" rotation="90 0 0"></a-box>
+                    <a-box width="0.03" height="0.20" depth="0.03" color="#FF6B6B" position="0.85 -1.0 0" rotation="90 0 0"></a-box>
+                    <!-- Etiquetas en CENTÍMETROS -->
+                    <a-text value="-100cm" position="1.15 0.0 -1.0" color="#FF6B6B" scale="0.32 0.32 0.32" align="center" rotation="0 90 0"></a-text>
+                    <a-text value="-75cm" position="1.15 0.0 -0.75" color="#FF6B6B" scale="0.30 0.30 0.30" align="center" rotation="0 90 0"></a-text>
+                    <a-text value="-50cm" position="1.15 0.0 -0.5" color="#FF6B6B" scale="0.30 0.30 0.30" align="center" rotation="0 90 0"></a-text>
+                    <a-text value="-25cm" position="1.15 0.0 -0.25" color="#FF6B6B" scale="0.30 0.30 0.30" align="center" rotation="0 90 0"></a-text>
+                    <a-text value="0cm" position="1.15 0.0 0.0" color="#FF6B6B" scale="0.35 0.35 0.35" align="center" rotation="0 90 0" bold="true"></a-text>
+                    <a-text value="25cm" position="1.15 0.0 0.25" color="#FF6B6B" scale="0.30 0.30 0.30" align="center" rotation="0 90 0"></a-text>
+                    <a-text value="50cm" position="1.15 0.0 0.5" color="#FF6B6B" scale="0.30 0.30 0.30" align="center" rotation="0 90 0"></a-text>
+                    <a-text value="75cm" position="1.15 0.0 0.75" color="#FF6B6B" scale="0.30 0.30 0.30" align="center" rotation="0 90 0"></a-text>
+                    <a-text value="100cm" position="1.15 0.0 1.0" color="#FF6B6B" scale="0.32 0.32 0.32" align="center" rotation="0 90 0"></a-text>
+                    <a-text value="PROF (cm)" position="1.15 0.0 0.0" color="#FF6B6B" scale="0.28 0.28 0.28" align="center" rotation="0 90 90"></a-text>
                     
                 </a-entity>
                 
@@ -895,7 +919,7 @@
         let wireframeGuia = null;
         let contenedorPrincipal = null;
         
-        // BASE DE DATOS COMPLETA DE FIGURAS (9 figuras con dimensiones en METROS)
+        // BASE DE DATOS COMPLETA DE FIGURAS (9 figuras con dimensiones en CENTÍMETROS)
         const figurasInfo = {
             box: {
                 nombre: "CUBO",
@@ -907,7 +931,7 @@
                 formulas: "Volumen: V = a³<br>Área: A = 6a²<br>Diagonal: d = a√3",
                 aplicaciones: "Arquitectura, embalaje, dados, cristalografía, diseño industrial, almacenamiento.",
                 curiosidades: "El cubo es el único poliedro regular que puede llenar el espacio tridimensional sin dejar huecos (teselación cúbica).",
-                altura: 1.0, ancho: 1.0, profundidad: 1.0,
+                altura: 100, ancho: 100, profundidad: 100,
                 colorBase: "#3498db"
             },
             sphere: {
@@ -920,7 +944,7 @@
                 formulas: "Volumen: V = (4/3)πr³<br>Área: A = 4πr²<br>Diámetro: d = 2r",
                 aplicaciones: "Pelotas deportivas, planetas, burbujas, tanques de presión, óptica, astronomía.",
                 curiosidades: "La esfera tiene el menor área superficial por volumen de cualquier forma geométrica, lo que la hace ideal para burbujas y gotas.",
-                altura: 1.0, ancho: 1.0, profundidad: 1.0,
+                altura: 100, ancho: 100, profundidad: 100,
                 colorBase: "#e74c3c"
             },
             cylinder: {
@@ -933,7 +957,7 @@
                 formulas: "Volumen: V = πr²h<br>Área lateral: A = 2πrh<br>Área total: A = 2πr(r+h)",
                 aplicaciones: "Latas, tuberías, columnas, tanques, pistones, envases cilíndricos.",
                 curiosidades: "Los cilindros son fundamentales en motores de combustión interna, donde el pistón se mueve dentro de un cilindro.",
-                altura: 1.5, ancho: 1.0, profundidad: 1.0,
+                altura: 150, ancho: 100, profundidad: 100,
                 colorBase: "#2ecc71"
             },
             cone: {
@@ -946,7 +970,7 @@
                 formulas: "Volumen: V = (1/3)πr²h<br>Área lateral: A = πr√(r²+h²)<br>Generatriz: g = √(r²+h²)",
                 aplicaciones: "Conos de tráfico, embudos, sombreros, helados, volcanes, altavoces.",
                 curiosidades: "El cono es una de las secciones cónicas, junto con la elipse, parábola e hipérbola, obtenidas al cortar un cono con un plano.",
-                altura: 1.5, ancho: 1.0, profundidad: 1.0,
+                altura: 150, ancho: 100, profundidad: 100,
                 colorBase: "#f39c12"
             },
             torus: {
@@ -959,7 +983,7 @@
                 formulas: "Volumen: V = 2π²Rr²<br>Área: A = 4π²Rr<br>(R=radio mayor, r=radio menor)",
                 aplicaciones: "Rosquillas, neumáticos, tokamaks (reactores de fusión), campos magnéticos, topología matemática.",
                 curiosidades: "En topología, el toro es una superficie bidimensional sin frontera que no es equivalente a una esfera (tiene un 'agujero').",
-                altura: 0.3, ancho: 1.0, profundidad: 1.0,
+                altura: 30, ancho: 100, profundidad: 100,
                 colorBase: "#9b59b6"
             },
             tetrahedron: {
@@ -972,7 +996,7 @@
                 formulas: "Volumen: V = a³/(6√2)<br>Área: A = √3a²<br>Altura: h = a√(2/3)",
                 aplicaciones: "Cristalografía (metano CH₄), química molecular, embalaje tetraédrico, estructuras espaciales.",
                 curiosidades: "El tetraedro es el único sólido platónico que no tiene caras opuestas paralelas.",
-                altura: 0.82, ancho: 1.0, profundidad: 1.0,
+                altura: 82, ancho: 100, profundidad: 100,
                 colorBase: "#1abc9c"
             },
             dodecahedron: {
@@ -985,7 +1009,7 @@
                 formulas: "Volumen: V = (15+7√5)a³/4<br>Área: A = 3√(25+10√5)a²",
                 aplicaciones: "Dados de rol (d12), cristalografía (pirita), arquitectura geodésica, diseño decorativo.",
                 curiosidades: "Los antiguos griegos asociaban el dodecaedro con el cosmos o el éter, el quinto elemento.",
-                altura: 1.0, ancho: 1.0, profundidad: 1.0,
+                altura: 100, ancho: 100, profundidad: 100,
                 colorBase: "#34495e"
             },
             icosahedron: {
@@ -998,7 +1022,7 @@
                 formulas: "Volumen: V = (5(3+√5)/12)a³<br>Área: A = 5√3a²",
                 aplicaciones: "Virus (cápside icosaédrica), domos geodésicos, dados de rol (d20), fullerenos (C₆₀).",
                 curiosidades: "Muchos virus, incluido el adenovirus, tienen cápsides con simetría icosaédrica por su eficiencia estructural.",
-                altura: 1.0, ancho: 1.0, profundidad: 1.0,
+                altura: 100, ancho: 100, profundidad: 100,
                 colorBase: "#e67e22"
             },
             octahedron: {
@@ -1011,9 +1035,22 @@
                 formulas: "Volumen: V = (√2/3)a³<br>Área: A = 2√3a²<br>Diagonal: d = a√2",
                 aplicaciones: "Cristalografía (diamante), dados de rol (d8), estructuras moleculares, diseño arquitectónico.",
                 curiosidades: "El octaedro y el cubo son duales: los vértices de uno corresponden a las caras del otro.",
-                altura: 1.0, ancho: 1.0, profundidad: 1.0,
+                altura: 100, ancho: 100, profundidad: 100,
                 colorBase: "#16a085"
             }
+        };
+        
+        // DIMENSIONES BASE EN CENTÍMETROS (1 unidad A-Frame = 1 metro = 100 cm)
+        const dimensionesBaseCM = {
+            box: { altura: 100, ancho: 100, profundidad: 100 },
+            sphere: { altura: 100, ancho: 100, profundidad: 100 },
+            cylinder: { altura: 150, ancho: 100, profundidad: 100 },
+            cone: { altura: 150, ancho: 100, profundidad: 100 },
+            torus: { altura: 30, ancho: 100, profundidad: 100 },
+            tetrahedron: { altura: 82, ancho: 100, profundidad: 100 },
+            dodecahedron: { altura: 100, ancho: 100, profundidad: 100 },
+            icosahedron: { altura: 100, ancho: 100, profundidad: 100 },
+            octahedron: { altura: 100, ancho: 100, profundidad: 100 }
         };
         
         // INICIALIZACIÓN COMPLETA
@@ -1023,9 +1060,10 @@
                 document.getElementById('https-alert').style.display = 'block';
             }
             
-            // Detectar iOS
+            // Detectar iOS para mostrar alerta específica
             if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
                 document.getElementById('ios-alert').style.display = 'block';
+                // Prevenir sleep con audio silencioso
                 const audio = new Audio();
                 audio.volume = 0;
                 document.body.addEventListener('touchstart', () => {
@@ -1033,13 +1071,14 @@
                 }, { once: true });
             }
             
-            // Referencias a elementos
+            // Referencias a elementos A-Frame
             setTimeout(() => {
                 escenaAR = document.getElementById('ar-scene');
                 modelo3D = document.getElementById('modelo-3d');
                 wireframeGuia = document.getElementById('wireframe-guia');
                 contenedorPrincipal = document.getElementById('contenedor-principal');
                 
+                // Ocultar loading después de que A-Frame cargue
                 if (escenaAR) {
                     escenaAR.addEventListener('loaded', () => {
                         setTimeout(() => {
@@ -1053,7 +1092,7 @@
                 }
             }, 1000);
             
-            // Manejar carga de imagen - CORREGIDO PARA iOS/ANDROID
+            // Manejar carga de imagen - CORREGIDO PARA iOS/ANDROID (sin FileReader)
             document.getElementById('imgUpload').addEventListener('change', function(e) {
                 const file = e.target.files[0];
                 if (!file) {
@@ -1077,11 +1116,13 @@
                 preview.src = texturaURL;
                 document.getElementById('preview-label').textContent = `📄 ${file.name.substring(0, 20)}${file.name.length > 20 ? '...' : ''}`;
                 document.getElementById('image-preview-container').style.display = 'block';
-                document.getElementById('texture-status').innerHTML = `<span style="color:#2ecc71;">✅ Textura cargada</span>`;
+                document.getElementById('texture-status').innerHTML = `<span style="color:#2ecc71;">✅ Textura cargada: ${file.name}</span>`;
+                
+                console.log('✅ Imagen cargada correctamente en móvil');
             });
         });
         
-        // GENERAR CONFIGURACIÓN
+        // GENERAR CONFIGURACIÓN (QR + preparación)
         function generarConfig() {
             figuraSeleccionada = document.getElementById('figura').value;
             const qrContainer = document.getElementById('qrcode');
@@ -1090,6 +1131,7 @@
             
             qrContainer.innerHTML = "";
             
+            // Generar QR con enlace directo al marcador HIRO
             try {
                 new QRCode(qrContainer, {
                     text: "https://raw.githubusercontent.com/AR-js-org/AR.js/master/data/images/Hiro%20marker.jpg",
@@ -1106,8 +1148,11 @@
                 qrArea.style.display = "block";
             }
             
+            // Mostrar botón de inicio
             btnStart.style.display = "block";
             btnStart.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // Actualizar info del panel
             actualizarInfoFigura();
             
             // Feedback visual
@@ -1118,9 +1163,12 @@
             setTimeout(() => { status.style.display = 'none'; }, 3000);
         }
         
-        // CREAR FIGURA 3D COMPLETA
+        // CREAR FIGURA 3D COMPLETA (9 figuras con todas sus propiedades)
         function crearFigura3D() {
-            if (!modelo3D || !wireframeGuia) return;
+            if (!modelo3D || !wireframeGuia) {
+                console.error('❌ Elementos A-Frame no disponibles');
+                return;
+            }
             
             // Limpiar modelo anterior
             modelo3D.setAttribute('geometry', '');
@@ -1132,45 +1180,47 @@
             let geoParams = '';
             let rotation = '0 45 0';
             
+            // Configurar geometría según figura seleccionada
             switch(figuraSeleccionada) {
-                case 'box': 
-                    geoParams = 'primitive: box; width: 1; height: 1; depth: 1'; 
+                case 'box':
+                    geoParams = 'primitive: box; width: 1; height: 1; depth: 1';
+                    rotation = '0 30 0';
                     break;
-                case 'sphere': 
-                    geoParams = 'primitive: sphere; radius: 0.5; segmentsWidth: 48; segmentsHeight: 48'; 
+                case 'sphere':
+                    geoParams = 'primitive: sphere; radius: 0.5; segmentsWidth: 48; segmentsHeight: 48';
                     rotation = '0 0 0';
                     break;
-                case 'cylinder': 
-                    geoParams = 'primitive: cylinder; radius: 0.5; height: 1.5; segmentsRadial: 48; openEnded: false'; 
+                case 'cylinder':
+                    geoParams = 'primitive: cylinder; radius: 0.5; height: 1.5; segmentsRadial: 48; openEnded: false';
                     rotation = '0 0 0';
                     break;
-                case 'cone': 
-                    geoParams = 'primitive: cone; radiusBottom: 0.5; radiusTop: 0; height: 1.5; segmentsRadial: 48; openEnded: false'; 
+                case 'cone':
+                    geoParams = 'primitive: cone; radiusBottom: 0.5; radiusTop: 0; height: 1.5; segmentsRadial: 48; openEnded: false';
                     rotation = '0 0 0';
                     break;
-                case 'torus': 
-                    geoParams = 'primitive: torus; radius: 0.4; radiusTubular: 0.15; segmentsRadial: 48; segmentsTubular: 32'; 
+                case 'torus':
+                    geoParams = 'primitive: torus; radius: 0.4; radiusTubular: 0.15; segmentsRadial: 48; segmentsTubular: 32';
                     rotation = '0 0 0';
                     break;
-                case 'tetrahedron': 
-                    geoParams = 'primitive: tetrahedron; radius: 0.7'; 
+                case 'tetrahedron':
+                    geoParams = 'primitive: tetrahedron; radius: 0.7';
                     rotation = '20 30 0';
                     break;
-                case 'dodecahedron': 
-                    geoParams = 'primitive: dodecahedron; radius: 0.6'; 
+                case 'dodecahedron':
+                    geoParams = 'primitive: dodecahedron; radius: 0.6';
                     rotation = '20 30 0';
                     break;
-                case 'icosahedron': 
-                    geoParams = 'primitive: icosahedron; radius: 0.6'; 
+                case 'icosahedron':
+                    geoParams = 'primitive: icosahedron; radius: 0.6';
                     rotation = '20 30 0';
                     break;
-                case 'octahedron': 
-                    geoParams = 'primitive: octahedron; radius: 0.7'; 
+                case 'octahedron':
+                    geoParams = 'primitive: octahedron; radius: 0.7';
                     rotation = '20 30 0';
                     break;
             }
             
-            // Material
+            // Material con textura o color base
             let materialParams;
             if (texturaURL) {
                 materialParams = `src: ${texturaURL}; metalness: 0.3; roughness: 0.5; side: double;`;
@@ -1179,7 +1229,7 @@
                 materialParams = `color: ${colorBase}; metalness: 0.6; roughness: 0.4;`;
             }
             
-            // Aplicar
+            // Aplicar configuración
             modelo3D.setAttribute('geometry', geoParams);
             modelo3D.setAttribute('material', materialParams);
             modelo3D.setAttribute('rotation', rotation);
@@ -1190,7 +1240,7 @@
             wireframeGuia.setAttribute('rotation', rotation);
             wireframeGuia.setAttribute('position', '0 0 0');
             
-            // Rotación
+            // Animación de rotación
             if (rotacionActiva) {
                 modelo3D.setAttribute('animation', {
                     property: 'rotation',
@@ -1204,12 +1254,20 @@
             console.log(`✅ Figura "${figuraSeleccionada}" creada correctamente`);
         }
         
-        // INICIAR AR - CORREGIDO PARA MÓVILES
+        // INICIAR AR - ¡CORREGIDO! SIN getUserMedia() manual (deja que AR.js lo maneje)
         function iniciarAR() {
+            // ¡CRÍTICO! NO usar navigator.mediaDevices.getUserMedia() aquí
+            // AR.js ya maneja internamente el acceso a la cámara
+            // La llamada manual causa conflictos y errores en iOS/Safari
+            
+            // Mostrar loading AR
             document.getElementById('ar-loading').classList.add('visible');
             
             try {
+                // Crear figura 3D
                 crearFigura3D();
+                
+                // Actualizar interfaz
                 document.getElementById('label-figura').innerText = figurasInfo[figuraSeleccionada].nombre;
                 actualizarMedidasTexto();
                 
@@ -1218,7 +1276,15 @@
                 const status = document.getElementById('camera-status');
                 const statusText = document.getElementById('camera-status-text');
                 
-                marker.addEventListener('markerFound', () => {
+                // Limpiar eventos previos
+                marker.removeEventListener('markerFound', handleMarkerFound);
+                marker.removeEventListener('markerLost', handleMarkerLost);
+                
+                // Nuevos handlers
+                marker.addEventListener('markerFound', handleMarkerFound);
+                marker.addEventListener('markerLost', handleMarkerLost);
+                
+                function handleMarkerFound() {
                     markerDetected = true;
                     statusText.textContent = '✅ ¡Marcador detectado! Mueve lentamente el dispositivo';
                     statusText.className = 'status-active';
@@ -1226,42 +1292,53 @@
                     setTimeout(() => {
                         if (markerDetected) status.style.display = 'none';
                     }, 3000);
-                });
+                    console.log('✅ Marcador HIRO detectado');
+                }
                 
-                marker.addEventListener('markerLost', () => {
+                function handleMarkerLost() {
                     markerDetected = false;
                     statusText.textContent = '🔍 Buscando marcador HIRO...';
                     statusText.className = 'status-searching';
                     status.style.display = 'block';
-                });
+                    console.log('⚠️ Marcador perdido');
+                }
                 
-                // Transición a vista AR
+                // Transición a vista AR (sin solicitar cámara manualmente)
                 setTimeout(() => {
                     document.getElementById('menu-overlay').style.display = 'none';
                     document.getElementById('ar-controls').style.display = 'block';
                     document.getElementById('camera-status').style.display = 'block';
                     
+                    // Feedback inicial
                     statusText.textContent = '📱 Cámara activa. Apunta al marcador HIRO';
                     statusText.className = 'status-searching';
                     
+                    // Ocultar loading
                     document.getElementById('ar-loading').classList.remove('visible');
-                    console.log('🚀 AR iniciado correctamente');
+                    
+                    console.log('🚀 AR iniciado correctamente - Cámara gestionada por AR.js');
                 }, 1800);
                 
             } catch(error) {
+                // Ocultar loading
                 document.getElementById('ar-loading').classList.remove('visible');
-                console.error('Error crítico:', error);
                 
+                // Manejar errores específicos
                 let msg = '❌ Error al iniciar cámara:\n';
-                if (error.name === 'NotAllowedError') {
+                if (error.name === 'NotAllowedError' || error.message.includes('permission')) {
                     msg += '• Permisos de cámara denegados\n• Ve a Ajustes > Privacidad > Cámara';
-                } else if (error.message.includes('secure context')) {
+                } else if (error.name === 'NotFoundError' || error.message.includes('no camera')) {
+                    msg += '• No se detectó cámara en el dispositivo';
+                } else if (error.message.includes('secure context') || location.protocol !== 'https:') {
                     msg += '• Requiere conexión HTTPS\n• Hostea en GitHub Pages/Netlify';
                 } else {
-                    msg += '• Error desconocido\n• Recarga la página';
+                    msg += '• Error desconocido\n• Recarga la página o prueba en otro navegador';
                 }
                 
+                console.error('Error crítico:', error);
                 alert(msg);
+                
+                // Mostrar status de error
                 const status = document.getElementById('camera-status');
                 status.textContent = '❌ Error de cámara. Ver consola para detalles.';
                 status.className = 'status-error';
@@ -1347,67 +1424,68 @@
             }
         }
         
-        // ACTUALIZAR MEDIDAS EN METROS Y m³ - ¡COHERENTE!
+        // ACTUALIZAR MEDIDAS EN CENTÍMETROS Y cm³ - ¡COHERENTE!
         function actualizarMedidasTexto() {
-            const info = figurasInfo[figuraSeleccionada];
-            if (!info) return;
+            const dims = dimensionesBaseCM[figuraSeleccionada];
+            if (!dims) return;
             
-            // Dimensiones en METROS (unidad estándar de A-Frame)
-            const altura = (info.altura * escalaActual).toFixed(2);
-            const ancho = (info.ancho * escalaActual).toFixed(2);
-            const profundidad = (info.profundidad * escalaActual).toFixed(2);
+            // Dimensiones en CENTÍMETROS (1 unidad A-Frame = 1 metro = 100 cm)
+            const altura = Math.round(dims.altura * escalaActual);
+            const ancho = Math.round(dims.ancho * escalaActual);
+            const profundidad = Math.round(dims.profundidad * escalaActual);
             
-            // Volumen en METROS CÚBICOS
+            // Volumen en CENTÍMETROS CÚBICOS
             let volumen = 0;
-            const a = parseFloat(ancho);
-            const h = parseFloat(altura);
-            const p = parseFloat(profundidad);
+            const a_cm = ancho;      // ya en cm
+            const h_cm = altura;     // ya en cm
+            const p_cm = profundidad; // ya en cm
             
             switch(figuraSeleccionada) {
                 case 'box':
-                    volumen = a * h * p;
+                    volumen = a_cm * h_cm * p_cm;
                     break;
                 case 'sphere':
-                    const radio = a / 2;
-                    volumen = (4/3) * Math.PI * Math.pow(radio, 3);
+                    const radio_cm = a_cm / 2;
+                    volumen = (4/3) * Math.PI * Math.pow(radio_cm, 3);
                     break;
                 case 'cylinder':
-                    const radioCil = a / 2;
-                    volumen = Math.PI * Math.pow(radioCil, 2) * h;
+                    const radioCil_cm = a_cm / 2;
+                    volumen = Math.PI * Math.pow(radioCil_cm, 2) * h_cm;
                     break;
                 case 'cone':
-                    const radioCono = a / 2;
-                    volumen = (1/3) * Math.PI * Math.pow(radioCono, 2) * h;
+                    const radioCono_cm = a_cm / 2;
+                    volumen = (1/3) * Math.PI * Math.pow(radioCono_cm, 2) * h_cm;
                     break;
                 case 'torus':
-                    const R = a / 2;
-                    const r = h / 2;
-                    volumen = 2 * Math.PI * Math.PI * R * r * r;
+                    const R_cm = a_cm / 2; // radio mayor en cm
+                    const r_cm = h_cm / 2; // radio menor en cm
+                    volumen = 2 * Math.PI * Math.PI * R_cm * r_cm * r_cm;
                     break;
                 case 'tetrahedron':
-                    volumen = Math.pow(a, 3) / (6 * Math.sqrt(2));
+                    volumen = Math.pow(a_cm, 3) / (6 * Math.sqrt(2));
                     break;
                 case 'dodecahedron':
-                    volumen = ((15 + 7 * Math.sqrt(5)) / 4) * Math.pow(a, 3);
+                    volumen = ((15 + 7 * Math.sqrt(5)) / 4) * Math.pow(a_cm, 3);
                     break;
                 case 'icosahedron':
-                    volumen = (5 * (3 + Math.sqrt(5)) / 12) * Math.pow(a, 3);
+                    volumen = (5 * (3 + Math.sqrt(5)) / 12) * Math.pow(a_cm, 3);
                     break;
                 case 'octahedron':
-                    volumen = (Math.sqrt(2) / 3) * Math.pow(a, 3);
+                    volumen = (Math.sqrt(2) / 3) * Math.pow(a_cm, 3);
                     break;
             }
             
-            // Actualizar UI - TODO EN METROS
-            document.getElementById('measure-height').innerText = altura;
-            document.getElementById('measure-width').innerText = ancho;
-            document.getElementById('measure-depth').innerText = profundidad;
-            document.getElementById('measure-volume').innerText = volumen.toFixed(3);
+            // Actualizar UI - TODO EN CENTÍMETROS
+            document.getElementById('measure-height').innerText = altura.toLocaleString('es-ES');
+            document.getElementById('measure-width').innerText = ancho.toLocaleString('es-ES');
+            document.getElementById('measure-depth').innerText = profundidad.toLocaleString('es-ES');
+            document.getElementById('measure-volume').innerText = Math.round(volumen).toLocaleString('es-ES');
         }
         
-        // SALIR DE AR
+        // SALIR DE AR (recarga limpia)
         function salirAR() {
             if (confirm('¿Volver al menú principal?')) {
+                // Liberar URL de objeto si existe
                 if (texturaURL) {
                     URL.revokeObjectURL(texturaURL);
                     texturaURL = null;
@@ -1416,14 +1494,27 @@
             }
         }
         
-        // PREVENIR GESTOS DE ZOOM
+        // PREVENIR GESTOS DE ZOOM EN MÓVILES
         document.addEventListener('touchmove', (e) => {
-            if (e.touches.length > 1) e.preventDefault();
+            if (e.touches.length > 1) {
+                e.preventDefault();
+            }
         }, { passive: false });
         
         document.addEventListener('gesturestart', (e) => e.preventDefault());
         document.addEventListener('gesturechange', (e) => e.preventDefault());
         document.addEventListener('gestureend', (e) => e.preventDefault());
+        
+        // MANEJO DE ERRORES GLOBALES
+        window.addEventListener('error', (e) => {
+            if (e.message.includes('getUserMedia') || e.message.includes('camera')) {
+                const status = document.getElementById('camera-status');
+                status.textContent = '❌ Error crítico de cámara. Recarga y permite permisos.';
+                status.className = 'status-error';
+                status.style.display = 'block';
+                console.error('Error de cámara:', e.message);
+            }
+        });
     </script>
 </body>
 </html>
